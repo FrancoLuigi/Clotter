@@ -1,0 +1,105 @@
+<clones>
+<systeminfo processor="nicad3" system="NoteManager" granularity="functions" threshold="20%" minlines="10" maxlines="30"/>
+<cloneinfo npcs="305" npairs="983"/>
+<runinfo ncompares="4199" cputime="124421"/>
+<classinfo nclasses="9"/>
+
+<class classid="1" nclones="44" nlines="13" similarity="100">
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/SignUpActivityTest1.java" startline="84" endline="101" pcid="34"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/ModifyNoteActivityTest5.java" startline="142" endline="159" pcid="195"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/GetNoteActivityTest3.java" startline="133" endline="150" pcid="151"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/GetNoteActivityTest1.java" startline="119" endline="136" pcid="207"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/ModifyNoteActivityTest4.java" startline="142" endline="159" pcid="94"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/LogInActivityTest5.java" startline="83" endline="100" pcid="134"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/RemoveAllNotesActivityTest2.java" startline="117" endline="134" pcid="86"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/SignUpActivityTest4.java" startline="119" endline="136" pcid="62"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/AddNoteActivityTest2.java" startline="119" endline="136" pcid="90"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/AddNoteActivityTest5.java" startline="144" endline="161" pcid="122"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/LogInActivityTest2.java" startline="62" endline="79" pcid="102"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/GetNoteByDateActivityTest2.java" startline="151" endline="168" pcid="199"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/BackGetAllNotesActivityTest.java" startline="99" endline="116" pcid="38"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/LogInActivityTest6.java" startline="95" endline="112" pcid="187"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/GetNoteByDateActivityTest1.java" startline="154" endline="171" pcid="203"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/BackModifyNoteActivityTest.java" startline="100" endline="117" pcid="155"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/RemoveAllNotesActivityTest1.java" startline="117" endline="134" pcid="179"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/BackSignUpActivityTest.java" startline="56" endline="73" pcid="42"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/AddNoteActivityTest4.java" startline="133" endline="150" pcid="191"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/RemoveNoteActivityTest2.java" startline="121" endline="138" pcid="58"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/GetSizeActivityTest1.java" startline="119" endline="136" pcid="130"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/GetAllNotesActivityTest1.java" startline="126" endline="143" pcid="159"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/SignUpActivityTest2.java" startline="97" endline="114" pcid="54"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/BackGetNoteByDateActivityTest.java" startline="100" endline="117" pcid="82"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/LogInActivityTest4.java" startline="75" endline="92" pcid="126"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/BackRemoveNoteActivityTest.java" startline="99" endline="116" pcid="138"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/BackNumberOfNotesActivityTest.java" startline="100" endline="117" pcid="183"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/BackAddNoteActivityTest.java" startline="91" endline="108" pcid="163"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/GetAllNotesActivityTest2.java" startline="117" endline="134" pcid="171"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/ModifyNoteActivityTest3.java" startline="131" endline="148" pcid="147"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/AddNoteActivityTest3.java" startline="133" endline="150" pcid="114"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/SignUpActivityTest5.java" startline="106" endline="123" pcid="142"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/SignUpActivityTest3.java" startline="92" endline="109" pcid="70"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/RemoveNoteActivityTest3.java" startline="131" endline="148" pcid="167"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/LogInActivityTest1.java" startline="106" endline="123" pcid="46"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/BackGetNoteActivityTest.java" startline="100" endline="117" pcid="74"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/LogInActivityTest3.java" startline="86" endline="103" pcid="98"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/RemoveNoteActivityTest1.java" startline="117" endline="134" pcid="50"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/ModifyNoteActivityTest2.java" startline="131" endline="148" pcid="66"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/BackRemoveAllNotesActivityTest.java" startline="99" endline="116" pcid="175"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/GetNoteActivityTest2.java" startline="168" endline="185" pcid="78"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/AddNoteActivityTest1.java" startline="152" endline="169" pcid="118"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/ModifyNoteActivityTest1.java" startline="119" endline="136" pcid="110"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/GetSizeActivityTest2.java" startline="117" endline="134" pcid="106"></source>
+</class>
+
+<class classid="2" nclones="7" nlines="17" similarity="82">
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/BackGetAllNotesActivityTest.java" startline="40" endline="97" pcid="37"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/BackGetNoteActivityTest.java" startline="40" endline="98" pcid="73"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/BackRemoveAllNotesActivityTest.java" startline="40" endline="97" pcid="174"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/BackRemoveNoteActivityTest.java" startline="40" endline="97" pcid="137"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/BackGetNoteByDateActivityTest.java" startline="40" endline="98" pcid="81"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/BackNumberOfNotesActivityTest.java" startline="40" endline="98" pcid="182"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/BackModifyNoteActivityTest.java" startline="40" endline="98" pcid="154"></source>
+</class>
+
+<class classid="3" nclones="3" nlines="20" similarity="80">
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/RemoveNoteActivityTest1.java" startline="39" endline="115" pcid="49"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/RemoveNoteActivityTest2.java" startline="40" endline="119" pcid="57"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/RemoveNoteActivityTest3.java" startline="40" endline="129" pcid="166"></source>
+</class>
+
+<class classid="4" nclones="5" nlines="20" similarity="80">
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/ModifyNoteActivityTest2.java" startline="40" endline="129" pcid="65"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/ModifyNoteActivityTest4.java" startline="40" endline="140" pcid="93"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/ModifyNoteActivityTest3.java" startline="40" endline="129" pcid="146"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/ModifyNoteActivityTest1.java" startline="39" endline="117" pcid="109"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/ModifyNoteActivityTest5.java" startline="40" endline="140" pcid="194"></source>
+</class>
+
+<class classid="5" nclones="2" nlines="19" similarity="94">
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/RemoveAllNotesActivityTest2.java" startline="39" endline="115" pcid="85"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/RemoveAllNotesActivityTest1.java" startline="39" endline="115" pcid="178"></source>
+</class>
+
+<class classid="6" nclones="3" nlines="19" similarity="85">
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/AddNoteActivityTest2.java" startline="39" endline="117" pcid="89"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/AddNoteActivityTest3.java" startline="40" endline="131" pcid="113"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/AddNoteActivityTest4.java" startline="40" endline="131" pcid="190"></source>
+</class>
+
+<class classid="7" nclones="2" nlines="19" similarity="80">
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/GetNoteActivityTest3.java" startline="40" endline="131" pcid="150"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/GetNoteActivityTest1.java" startline="39" endline="117" pcid="206"></source>
+</class>
+
+<class classid="8" nclones="2" nlines="25" similarity="84">
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/GetNoteByDateActivityTest2.java" startline="43" endline="149" pcid="198"></source>
+<source file="examples/NoteManager/NoteManagerAndroidClient/app/src/androidTest/java/it/libero/alessandragenca/notemanagerandroidclient/GetNoteByDateActivityTest1.java" startline="44" endline="152" pcid="202"></source>
+</class>
+
+<class classid="9" nclones="3" nlines="13" similarity="92">
+<source file="examples/NoteManager/NoteManager/src/test/java/it/libero/alessandragenca/notesmanager/server/web/resources/NoteRegSizeJSONTest.java" startline="156" endline="171" pcid="251"></source>
+<source file="examples/NoteManager/NoteManager/src/test/java/it/libero/alessandragenca/notesmanager/server/web/resources/NoteRegJsonTest.java" startline="37" endline="52" pcid="252"></source>
+<source file="examples/NoteManager/NoteManager/src/test/java/it/libero/alessandragenca/notesmanager/server/web/resources/UserRegJSONTest.java" startline="118" endline="134" pcid="262"></source>
+</class>
+
+</clones>
