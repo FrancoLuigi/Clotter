@@ -1,0 +1,3675 @@
+Commit:
+9b4d18b66899aa14bdfc40c03d1760db872ebe07
+Paul King
+paulk@asert.com.au
+2018-06-23 16:47:12 +1000
+show result of expanding unicode as comment
+diff --git a/src/test/groovy/EscapedUnicodeTest.groovy b/src/test/groovy/EscapedUnicodeTest.groovy
+index a463218a98..af64aaa689 100644
+--- a/src/test/groovy/EscapedUnicodeTest.groovy
++++ b/src/test/groovy/EscapedUnicodeTest.groovy
+@@ -51,3 +51,31 @@ class EscapedUnicodeTest extends GroovyTestCase {
+ \u007d
+ */
+ 
++/*
++class EscapedUnicodeTest extends GroovyTestCase {
++
++    void testAssert() {
++        def x = "abc"
++
++        assert x != "foo"
++        assert x !=  null
++        assert x != "def"
++        assert x == "abc"
++
++        assert x.equals("abc")
++	}
++
++    void testUnknownVariable() {
++        try {
++	        def y = this.x
++	        fail("x is undefined, should throw an exception")
++        }
++        catch (MissingPropertyException e) {
++			assert e.getProperty() == "x"
++            def text = e.message
++            assert text == "No such property: x for class: EscapedUnicodeTest"
++        }
++    }
++
++}
++ */
+
+Commit:
+5e3958762becb4cbda8d92e4dab1ee13bae0d2fd
+Paul King
+paulk@asert.com.au
+2018-06-23 10:43:44 +1000
+GROOVY-8661: bump gradle to 4.8.1
+diff --git a/gradle.properties b/gradle.properties
+index 7d13c16cad..64aa234d6c 100644
+--- a/gradle.properties
++++ b/gradle.properties
+@@ -17,7 +17,7 @@ groovyVersion = 3.0.0-SNAPSHOT
+ # bundle version format: major('.'minor('.'micro('.'qualifier)?)?)? (first 3 only digits)
+ groovyBundleVersion = 3.0.0.SNAPSHOT
+ 
+-gradle_version=4.8
++gradle_version=4.8.1
+ 
+ groovyJUnit_ms=512m
+ groovyJUnit_mx=1g
+diff --git a/gradle/wrapper/gradle-wrapper.jar b/gradle/wrapper/gradle-wrapper.jar
+index 91ca28c8b8..1948b9074f 100644
+Binary files a/gradle/wrapper/gradle-wrapper.jar and b/gradle/wrapper/gradle-wrapper.jar differ
+diff --git a/gradle/wrapper/gradle-wrapper.properties b/gradle/wrapper/gradle-wrapper.properties
+index d2c45a4b26..2d80b69a76 100644
+--- a/gradle/wrapper/gradle-wrapper.properties
++++ b/gradle/wrapper/gradle-wrapper.properties
+@@ -1,5 +1,5 @@
+ distributionBase=GRADLE_USER_HOME
+ distributionPath=wrapper/dists
+-distributionUrl=https\://services.gradle.org/distributions/gradle-4.8-bin.zip
++distributionUrl=https\://services.gradle.org/distributions/gradle-4.8.1-bin.zip
+ zipStoreBase=GRADLE_USER_HOME
+ zipStorePath=wrapper/dists
+
+Commit:
+9e084981806f26b837ffb0194653f9a9c75e62b0
+Paul King
+paulk@asert.com.au
+2018-06-21 16:23:36 +1000
+GROOVY-8224: Stubs for classes implementing traits with fields don't include getters/setters
+diff --git a/src/main/java/org/codehaus/groovy/tools/javac/JavaStubGenerator.java b/src/main/java/org/codehaus/groovy/tools/javac/JavaStubGenerator.java
+index 0add1d3516..9814ee4641 100644
+--- a/src/main/java/org/codehaus/groovy/tools/javac/JavaStubGenerator.java
++++ b/src/main/java/org/codehaus/groovy/tools/javac/JavaStubGenerator.java
+@@ -31,6 +31,7 @@ import org.codehaus.groovy.ast.InnerClassNode;
+ import org.codehaus.groovy.ast.MethodNode;
+ import org.codehaus.groovy.ast.ModuleNode;
+ import org.codehaus.groovy.ast.Parameter;
++import org.codehaus.groovy.ast.PropertyNode;
+ import org.codehaus.groovy.ast.expr.ArgumentListExpression;
+ import org.codehaus.groovy.ast.expr.ClassExpression;
+ import org.codehaus.groovy.ast.expr.ClosureExpression;
+@@ -157,6 +158,14 @@ public class JavaStubGenerator {
+                     List<Statement> savedStatements = new ArrayList<Statement>(node.getObjectInitializerStatements());
+                     super.visitClass(node);
+                     node.getObjectInitializerStatements().addAll(savedStatements);
++                    for (ClassNode inode : node.getAllInterfaces()) {
++                        if (Traits.isTrait(inode)) {
++                            List<PropertyNode> traitProps = inode.getProperties();
++                            for (PropertyNode pn : traitProps) {
++                                visitProperty(pn);
++                            }
++                        }
++                    }
+                 }
+ 
+                 @Override
+diff --git a/src/test/org/codehaus/groovy/tools/stubgenerator/TraitPropertiesStubTest.groovy b/src/test/org/codehaus/groovy/tools/stubgenerator/TraitPropertiesStubTest.groovy
+new file mode 100644
+index 0000000000..4c0e668777
+--- /dev/null
++++ b/src/test/org/codehaus/groovy/tools/stubgenerator/TraitPropertiesStubTest.groovy
+@@ -0,0 +1,70 @@
++/*
++ *  Licensed to the Apache Software Foundation (ASF) under one
++ *  or more contributor license agreements.  See the NOTICE file
++ *  distributed with this work for additional information
++ *  regarding copyright ownership.  The ASF licenses this file
++ *  to you under the Apache License, Version 2.0 (the
++ *  "License"); you may not use this file except in compliance
++ *  with the License.  You may obtain a copy of the License at
++ *
++ *    http://www.apache.org/licenses/LICENSE-2.0
++ *
++ *  Unless required by applicable law or agreed to in writing,
++ *  software distributed under the License is distributed on an
++ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
++ *  KIND, either express or implied.  See the License for the
++ *  specific language governing permissions and limitations
++ *  under the License.
++ */
++package org.codehaus.groovy.tools.stubgenerator
++
++/**
++ * GROOVY-8224: Checks that trait properties appear within stubs
++ */
++class TraitPropertiesStubTest extends StringSourcesStubTestCase {
++
++    @Override
++    Map<String, String> provideSources() {
++        [
++            'GroovyXTrait.groovy': '''
++                trait GroovyXTrait {
++                    int bar
++                    boolean foo
++                    String baz() { 'baz' }
++                }
++            ''',
++
++            'GroovyXImpl.groovy': '''
++                class GroovyXImpl implements GroovyXTrait { }
++            ''',
++
++            'Main.java': '''
++                public class Main {
++                    public static void main(String[] args) {
++                        new GroovyXImpl();
++                    }
++                }
++            ''',
++        ]
++    }
++
++//    protected void init() {
++//        debug = true
++//        delete = false
++//    }
++
++    @Override
++    void verifyStubs() {
++        verifyMethodAndPropsInStubs(stubJavaSourceFor('GroovyXTrait'))
++        verifyMethodAndPropsInStubs(stubJavaSourceFor('GroovyXImpl'))
++    }
++
++    private static void verifyMethodAndPropsInStubs(String stubSource) {
++        assert stubSource.contains('String baz()')
++        assert stubSource.contains('int getBar()')
++        assert stubSource.contains('void setBar(int value)')
++        assert stubSource.contains('boolean getFoo()')
++        assert stubSource.contains('boolean isFoo()')
++        assert stubSource.contains('void setFoo(boolean value)')
++    }
++}
+
+Commit:
+4a8b52e527ebcf601d070abedfc95e49a113a6ce
+John Wagenleitner
+jwagenleitner@apache.org
+2018-06-20 22:20:45 -0700
+GROOVY-8654: fixed documentation build command (closes #761)
+diff --git a/README.adoc b/README.adoc
+index fb9191cb2b..d90490c140 100644
+--- a/README.adoc
++++ b/README.adoc
+@@ -155,7 +155,7 @@ Then open the generated project and the generated subprojects in Eclipse. But be
+ 
+ To build the documentation (Groovy Language Documentation):
+ 
+-    gradlew assembleAsciidoc
++    gradlew asciidoc
+ 
+ All code samples of the documentation guide are pulled from actual test cases. To run a single documentation test case, take for example `src/spec/test/semantics/PowerAssertTest.groovy`
+ 
+
+Commit:
+a35432405c03cbc73be5448c3cf73a696a517bbc
+John Wagenleitner
+jwagenleitner@apache.org
+2018-06-20 22:00:09 -0700
+GROOVY-8008: AIOOB inner class ctor params with runtime annotations (closes #757)
+diff --git a/src/main/java/org/codehaus/groovy/vmplugin/v5/Java5.java b/src/main/java/org/codehaus/groovy/vmplugin/v5/Java5.java
+index 6580b76ee6..1c0a46881c 100644
+--- a/src/main/java/org/codehaus/groovy/vmplugin/v5/Java5.java
++++ b/src/main/java/org/codehaus/groovy/vmplugin/v5/Java5.java
+@@ -384,7 +384,12 @@ public class Java5 implements VMPlugin {
+             }
+             Constructor[] constructors = clazz.getDeclaredConstructors();
+             for (Constructor ctor : constructors) {
+-                Parameter[] params = makeParameters(compileUnit, ctor.getGenericParameterTypes(), ctor.getParameterTypes(), ctor.getParameterAnnotations());
++                Parameter[] params = makeParameters(
++                        compileUnit,
++                        ctor.getGenericParameterTypes(),
++                        ctor.getParameterTypes(),
++                        getConstructorParameterAnnotations(ctor)
++                );
+                 ClassNode[] exceptions = makeClassNodes(compileUnit, ctor.getGenericExceptionTypes(), ctor.getExceptionTypes());
+                 classNode.addConstructor(ctor.getModifiers(), params, exceptions, null);
+             }
+@@ -405,6 +410,49 @@ public class Java5 implements VMPlugin {
+         }
+     }
+ 
++    /**
++     * Synthetic parameters such as those added for inner class constructors may
++     * not be included in the parameter annotations array. This is the case when
++     * at least one parameter of an inner class constructor has an annotation with
++     * a RUNTIME retention (this occurs for JDK8 and below). This method will
++     * normalize the annotations array so that it contains the same number of
++     * elements as the array returned from {@link Constructor#getParameterTypes()}.
++     *
++     * If adjustment is required, the adjusted array will be prepended with a
++     * zero-length element. If no adjustment is required, the original array
++     * from {@link Constructor#getParameterAnnotations()} will be returned.
++     *
++     * @param constructor the Constructor for which to return parameter annotations
++     * @return array of arrays containing the annotations on the parameters of the given Constructor
++     */
++    private Annotation[][] getConstructorParameterAnnotations(Constructor<?> constructor) {
++        /*
++         * TODO: Remove after JDK9 is the minimum JDK supported
++         *
++         * JDK9+ correctly accounts for the synthetic parameter and when it becomes
++         * the minimum version this method should no longer be required.
++         */
++        int parameterCount = constructor.getParameterTypes().length;
++        Annotation[][] annotations = constructor.getParameterAnnotations();
++        int diff = parameterCount - annotations.length;
++        if (diff > 0) {
++            // May happen on JDK8 and below, but we only expect to have to
++            // add a single element to the front of the array to account
++            // for the synthetic outer reference
++            if (diff > 1) {
++                throw new GroovyBugError(
++                        "Constructor parameter annotations length [" + annotations.length + "] " +
++                        "does not match the parameter length: " + constructor
++                );
++            }
++            Annotation[][] adjusted = new Annotation[parameterCount][];
++            adjusted[0] = new Annotation[0];
++            System.arraycopy(annotations, 0, adjusted, 1, annotations.length);
++            return adjusted;
++        }
++        return annotations;
++    }
++
+     private void makeInterfaceTypes(CompileUnit cu, ClassNode classNode, Class clazz) {
+         Type[] interfaceTypes = clazz.getGenericInterfaces();
+         if (interfaceTypes.length == 0) {
+diff --git a/src/test/groovy/bugs/Groovy8008Bug.java b/src/test/groovy/bugs/Groovy8008Bug.java
+new file mode 100644
+index 0000000000..84c1f86752
+--- /dev/null
++++ b/src/test/groovy/bugs/Groovy8008Bug.java
+@@ -0,0 +1,81 @@
++/*
++ *  Licensed to the Apache Software Foundation (ASF) under one
++ *  or more contributor license agreements.  See the NOTICE file
++ *  distributed with this work for additional information
++ *  regarding copyright ownership.  The ASF licenses this file
++ *  to you under the Apache License, Version 2.0 (the
++ *  "License"); you may not use this file except in compliance
++ *  with the License.  You may obtain a copy of the License at
++ *
++ *    http://www.apache.org/licenses/LICENSE-2.0
++ *
++ *  Unless required by applicable law or agreed to in writing,
++ *  software distributed under the License is distributed on an
++ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
++ *  KIND, either express or implied.  See the License for the
++ *  specific language governing permissions and limitations
++ *  under the License.
++ */
++package groovy.bugs;
++
++import junit.framework.TestCase;
++import org.codehaus.groovy.ast.ClassNode;
++import org.codehaus.groovy.ast.ConstructorNode;
++import org.codehaus.groovy.ast.Parameter;
++
++import java.lang.annotation.Retention;
++import java.lang.annotation.RetentionPolicy;
++import java.lang.reflect.Constructor;
++import java.util.Date;
++import java.util.List;
++
++/**
++ * Synthetic parameters such as those added for inner class constructors may not be
++ * included in the parameter annotations array.  This is the case when at least one
++ * parameter of an inner class constructor is annotated with an annotation with
++ * a RUNTIME retention policy.
++ */
++public class Groovy8008Bug extends TestCase {
++
++    @Retention(RetentionPolicy.RUNTIME)
++    @interface TestAnno1 {}
++
++    @Retention(RetentionPolicy.RUNTIME)
++    @interface TestAnno2 {}
++
++    public void testConstructorParamAnnotationsWithSyntheticParam() throws Exception {
++        Class<Inner> innerClass = Inner.class;
++        Constructor<Inner> ctor = innerClass.getDeclaredConstructor(Groovy8008Bug.class, String.class, Date.class, String.class);
++
++        assertEquals(4, ctor.getParameterTypes().length);       //Groovy8008Bug,String,Date,String
++        // JDK 9 and above correctly report 4
++        // assertEquals(3, ctor.getParameterAnnotations().length); //[],[@Anno1,@Anno2],[@Anno2]
++
++        ClassNode cn = new ClassNode(innerClass);
++
++        // this will trigger the call to VMPlugin#configureClassNode(CompileUnit,ClassNode)
++        List<ConstructorNode> ctors = cn.getDeclaredConstructors();
++        assertEquals(1, ctors.size());
++
++        Parameter[] params = ctors.get(0).getParameters();
++
++        assertEquals(Groovy8008Bug.class.getName(), params[0].getType().getName());
++        assertEquals(0, params[0].getAnnotations().size());
++
++        assertEquals(String.class.getName(), params[1].getType().getName());
++        assertEquals(0, params[1].getAnnotations().size());
++
++        assertEquals(Date.class.getName(), params[2].getType().getName());
++        assertEquals(2, params[2].getAnnotations().size());
++        assertEquals(TestAnno1.class.getName(), params[2].getAnnotations().get(0).getClassNode().getName());
++        assertEquals(TestAnno2.class.getName(), params[2].getAnnotations().get(1).getClassNode().getName());
++
++        assertEquals(String.class.getName(), params[3].getType().getName());
++        assertEquals(1, params[3].getAnnotations().size());
++        assertEquals(TestAnno2.class.getName(), params[3].getAnnotations().get(0).getClassNode().getName());
++    }
++
++    private class Inner {
++        private Inner(String arg1, @TestAnno1 @TestAnno2 Date arg2, @TestAnno2 String arg3) { }
++    }
++}
+
+Commit:
+93d9ba1e5048e99841d3f957f0dac69c2173b863
+Paul King
+paulk@asert.com.au
+2018-06-19 17:36:57 +1000
+provide slightly more error information when stub test case fails
+diff --git a/src/test/org/codehaus/groovy/tools/stubgenerator/StubTestCase.groovy b/src/test/org/codehaus/groovy/tools/stubgenerator/StubTestCase.groovy
+index 2ecbef556b..6e8f288cf0 100644
+--- a/src/test/org/codehaus/groovy/tools/stubgenerator/StubTestCase.groovy
++++ b/src/test/org/codehaus/groovy/tools/stubgenerator/StubTestCase.groovy
+@@ -159,6 +159,7 @@ abstract class StubTestCase extends GroovyTestCase {
+             }
+         }
+ 
++        Throwable compileError = null
+         try {
+             compile(sources)
+ 
+@@ -183,9 +184,19 @@ abstract class StubTestCase extends GroovyTestCase {
+ 
+                 println "Verifying the stubs"
+             }
++        } catch(Throwable t) {
++            compileError = t
+         } finally {
+-            use (QDoxCategory) {
+-                verifyStubs()
++            try {
++                use (QDoxCategory) {
++                    verifyStubs()
++                }
++            } catch(ex) {
++                if (compileError) {
++                    println "Unable to verify stubs: $ex.message\nPerhaps due to earlier error?"
++                    throw compileError
++                }
++                throw ex
+             }
+             if (sourceRootPath.getAbsolutePath() =~ 'stubgentests') {
+                 sourceRootPath.deleteDir()
+
+Commit:
+c59c12c4d7cd5934150adb9ad0105f9bfb92584e
+Paul King
+paulk@asert.com.au
+2018-06-19 15:05:05 +1000
+GROOVY-8637: @NamedVariant processing error
+diff --git a/src/main/java/org/codehaus/groovy/ast/tools/BeanUtils.java b/src/main/java/org/codehaus/groovy/ast/tools/BeanUtils.java
+index ab266c2ce0..28c22709b7 100644
+--- a/src/main/java/org/codehaus/groovy/ast/tools/BeanUtils.java
++++ b/src/main/java/org/codehaus/groovy/ast/tools/BeanUtils.java
+@@ -18,6 +18,7 @@
+  */
+ package org.codehaus.groovy.ast.tools;
+ 
++import groovy.transform.Generated;
+ import org.codehaus.groovy.ast.ClassHelper;
+ import org.codehaus.groovy.ast.ClassNode;
+ import org.codehaus.groovy.ast.MethodNode;
+@@ -35,6 +36,7 @@ public class BeanUtils {
+     static final String GET_PREFIX = "get";
+     static final String SET_PREFIX = "set";
+     static final String IS_PREFIX = "is";
++    private static final ClassNode GENERATED_TYPE = ClassHelper.make(Generated.class);
+ 
+     /**
+      * Get all properties including JavaBean pseudo properties matching getter conventions.
+@@ -97,6 +99,7 @@ public class BeanUtils {
+         List<MethodNode> methods = cNode.getAllDeclaredMethods();
+         for (MethodNode mNode : methods) {
+             if (!includeStatic && mNode.isStatic()) continue;
++            if (mNode.getAnnotations(GENERATED_TYPE).size() > 0) continue;
+             String name = mNode.getName();
+             if ((name.length() <= 3 && !name.startsWith(IS_PREFIX)) || name.equals("getClass") || name.equals("getMetaClass") || name.equals("getDeclaringClass")) {
+                 // Optimization: skip invalid propertyNames
+diff --git a/src/test/org/codehaus/groovy/transform/NamedVariantTransformTest.groovy b/src/test/org/codehaus/groovy/transform/NamedVariantTransformTest.groovy
+index 48fff3d146..4e5077f93d 100644
+--- a/src/test/org/codehaus/groovy/transform/NamedVariantTransformTest.groovy
++++ b/src/test/org/codehaus/groovy/transform/NamedVariantTransformTest.groovy
+@@ -143,4 +143,17 @@ class NamedVariantTransformTest extends GroovyShellTestCase {
+         '''
+     }
+ 
++    void testGeneratedMethodsSkipped() {
++        assertScript '''
++            import groovy.transform.*
++            import static org.codehaus.groovy.transform.NamedVariantTransformTest.*
++
++            @NamedVariant
++            def baz(@NamedDelegate Storm st, @NamedDelegate Switch sw) { st.front + sw.back }
++            assert baz(front: 'Hello', back: 'World') == 'HelloWorld'
++        '''
++    }
++
++    static class Storm { String front }
++    static class Switch { String back }
+ }
+
+Commit:
+a9822f70a79664d7a692422fafd987bba1f9c19b
+Paul King
+paulk@asert.com.au
+2018-06-19 14:37:52 +1000
+GROOVY-8627: Compile error using NamedParam with value
+diff --git a/src/main/groovy/groovy/transform/NamedParam.java b/src/main/groovy/groovy/transform/NamedParam.java
+index 6e05350206..19835e3062 100644
+--- a/src/main/groovy/groovy/transform/NamedParam.java
++++ b/src/main/groovy/groovy/transform/NamedParam.java
+@@ -35,7 +35,7 @@ import java.lang.annotation.Target;
+ @Target(ElementType.PARAMETER)
+ @Repeatable(NamedParams.class)
+ public @interface NamedParam {
+-    String value();
++    String value() default Undefined.STRING;
+     Class type() default Object.class;
+     boolean required() default false;
+ }
+diff --git a/src/main/java/org/codehaus/groovy/transform/NamedVariantASTTransformation.java b/src/main/java/org/codehaus/groovy/transform/NamedVariantASTTransformation.java
+index 64e2b32158..b5e85e76b9 100644
+--- a/src/main/java/org/codehaus/groovy/transform/NamedVariantASTTransformation.java
++++ b/src/main/java/org/codehaus/groovy/transform/NamedVariantASTTransformation.java
+@@ -113,7 +113,7 @@ public class NamedVariantASTTransformation extends AbstractASTTransformation {
+                 if (AnnotatedNodeUtils.hasAnnotation(fromParam, NAMED_PARAM_TYPE)) {
+                     AnnotationNode namedParam = fromParam.getAnnotations(NAMED_PARAM_TYPE).get(0);
+                     boolean required = memberHasValue(namedParam, "required", true);
+-                    if (getMemberValue(namedParam, "name") == null) {
++                    if (getMemberStringValue(namedParam, "value") == null) {
+                         namedParam.addMember("value", constX(fromParam.getName()));
+                     }
+                     String name = getMemberStringValue(namedParam, "value");
+diff --git a/src/test/org/codehaus/groovy/transform/NamedVariantTransformTest.groovy b/src/test/org/codehaus/groovy/transform/NamedVariantTransformTest.groovy
+index db15babaaa..48fff3d146 100644
+--- a/src/test/org/codehaus/groovy/transform/NamedVariantTransformTest.groovy
++++ b/src/test/org/codehaus/groovy/transform/NamedVariantTransformTest.groovy
+@@ -49,6 +49,24 @@ class NamedVariantTransformTest extends GroovyShellTestCase {
+         '''
+     }
+ 
++    void testNamedParamWithRename() {
++        assertScript '''
++            import groovy.transform.*
++
++            @ToString(includeNames=true)
++            class Color {
++                Integer r, g, b
++            }
++
++            @NamedVariant
++            String m(@NamedDelegate Color color, @NamedParam('a') int alpha) {
++                return [color, alpha].join(' ')
++            }
++
++            assert m(r:1, g:2, b:3, a: 0) == 'Color(r:1, g:2, b:3) 0'
++        '''
++    }
++
+     void testNamedParamConstructor() {
+         assertScript """
+             import groovy.transform.*
+
+Commit:
+ea8a5fe48341c855a83b60a8ba0e6556f34895ab
+John Wagenleitner
+jwagenleitner@apache.org
+2018-06-18 16:50:45 -0700
+GROOVY-8614: Invalid reference generated in InnerClasses attribute for nested interface (closes #756)
+diff --git a/src/main/java/org/codehaus/groovy/classgen/AsmClassGenerator.java b/src/main/java/org/codehaus/groovy/classgen/AsmClassGenerator.java
+index c16190555f..a49b1602f0 100644
+--- a/src/main/java/org/codehaus/groovy/classgen/AsmClassGenerator.java
++++ b/src/main/java/org/codehaus/groovy/classgen/AsmClassGenerator.java
+@@ -1438,7 +1438,7 @@ public class AsmClassGenerator extends ClassGenerator {
+         ClassNode icl =  controller.getInterfaceClassLoadingClass();
+ 
+         if (referencedClasses.isEmpty()) {
+-            Iterator<InnerClassNode> it = controller.getClassNode().getInnerClasses();
++            Iterator<InnerClassNode> it = icl.getOuterClass().getInnerClasses();
+             while(it.hasNext()) {
+                 InnerClassNode inner = it.next();
+                 if (inner==icl) {
+diff --git a/src/test/groovy/bugs/Groovy3830Bug.groovy b/src/test/groovy/bugs/Groovy3830Bug.groovy
+index 867c287708..4c5bbe438b 100644
+--- a/src/test/groovy/bugs/Groovy3830Bug.groovy
++++ b/src/test/groovy/bugs/Groovy3830Bug.groovy
+@@ -24,10 +24,49 @@ class Groovy3830Bug extends GroovyTestCase {
+         assert I3830.i2 == 5
+         assert I3830.i3 == 6
+     }
++
++    void testCallSitesUsageInNestedInterface() {
++        assert C3830.I3830.i == 2
++        assert C3830.I3830.i2 == 5
++        assert C3830.I3830.i3 == 6
++
++        assert C3830.I3830.I3830_1.i == 4
++        assert C3830.I3830.I3830_1.i2 == 7
++        assert C3830.I3830.I3830_1.i3 == 12
++
++        assert C3830.I3830.I3830_2.i == 6
++        assert C3830.I3830.I3830_2.i2 == 9
++        assert C3830.I3830.I3830_2.i3 == 18
++    }
++
+ }
+ 
+ interface I3830 {
+     Integer i = 2
+     Integer i2 = i + 3
+     Integer i3 = i * 3
+-}
+\ No newline at end of file
++}
++
++class C3830 {
++    interface I3830 {
++        Integer i = 2
++        Integer i2 = i + 3
++        Integer i3 = i * 3
++        interface I3830_1 {
++            // ensure inner class number increments for callsites helper
++            // anon C3830$I3830$I3830_1$1 and helper C3830$I3830$I3830_1$2
++            def x = new Runnable() {
++                @Override
++                void run() {}
++            }
++            Integer i = 4
++            Integer i2 = i + 3
++            Integer i3 = i * 3
++        }
++        interface I3830_2 {
++            Integer i = 6
++            Integer i2 = i + 3
++            Integer i3 = i * 3
++        }
++    }
++}
+diff --git a/src/test/groovy/bugs/Groovy8614Bug.groovy b/src/test/groovy/bugs/Groovy8614Bug.groovy
+new file mode 100644
+index 0000000000..36e8ac108f
+--- /dev/null
++++ b/src/test/groovy/bugs/Groovy8614Bug.groovy
+@@ -0,0 +1,58 @@
++/*
++ *  Licensed to the Apache Software Foundation (ASF) under one
++ *  or more contributor license agreements.  See the NOTICE file
++ *  distributed with this work for additional information
++ *  regarding copyright ownership.  The ASF licenses this file
++ *  to you under the Apache License, Version 2.0 (the
++ *  "License"); you may not use this file except in compliance
++ *  with the License.  You may obtain a copy of the License at
++ *
++ *    http://www.apache.org/licenses/LICENSE-2.0
++ *
++ *  Unless required by applicable law or agreed to in writing,
++ *  software distributed under the License is distributed on an
++ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
++ *  KIND, either express or implied.  See the License for the
++ *  specific language governing permissions and limitations
++ *  under the License.
++ */
++package groovy.bugs
++
++import org.codehaus.groovy.classgen.asm.AbstractBytecodeTestCase
++
++/**
++ * see Groovy3830Bug for tests when call sites are present
++ */
++class Groovy8614Bug extends AbstractBytecodeTestCase {
++
++    void testNestedInterfaceHelperClassNotGeneratedIfNoCallsites() {
++        def bytecode = compile('classNamePattern': 'X', '''
++            class X {
++                interface Y {}
++            }
++        ''')
++        assert !bytecode.hasSequence(['static synthetic INNERCLASS X$Y$1 X 1'])
++    }
++
++    void testDoubleNestedInterfaceHelperClassNotGeneratedIfNoCallsites() {
++        def bytecode = compile('classNamePattern': 'X\\$Y', '''
++            class X {
++                class Y {
++                    interface Z {}
++                }
++            }
++        ''')
++        assert !bytecode.hasSequence(['static synthetic INNERCLASS X$Y$Z$1 X$Y 1'])
++    }
++
++    //GROOVY-5082
++    void testInterfaceHelperClassNotGeneratedIfNoCallsites() {
++        def bytecode = compile('classNamePattern': 'X', '''
++            interface X {
++              public String compute();
++            }
++        ''')
++        assert !bytecode.hasSequence(['static synthetic INNERCLASS X$1 X 1'])
++    }
++
++}
+
+Commit:
+b2ddd06f9edd188246efe34d043883a00038b710
+John Wagenleitner
+jwagenleitner@apache.org
+2018-06-15 06:03:13 -0700
+add license
+diff --git a/src/test/org/codehaus/groovy/ast/decompiled/support/Groovy8632.java b/src/test/org/codehaus/groovy/ast/decompiled/support/Groovy8632.java
+index 95fe04460e..bf33782920 100644
+--- a/src/test/org/codehaus/groovy/ast/decompiled/support/Groovy8632.java
++++ b/src/test/org/codehaus/groovy/ast/decompiled/support/Groovy8632.java
+@@ -1,3 +1,21 @@
++/*
++ *  Licensed to the Apache Software Foundation (ASF) under one
++ *  or more contributor license agreements.  See the NOTICE file
++ *  distributed with this work for additional information
++ *  regarding copyright ownership.  The ASF licenses this file
++ *  to you under the Apache License, Version 2.0 (the
++ *  "License"); you may not use this file except in compliance
++ *  with the License.  You may obtain a copy of the License at
++ *
++ *    http://www.apache.org/licenses/LICENSE-2.0
++ *
++ *  Unless required by applicable law or agreed to in writing,
++ *  software distributed under the License is distributed on an
++ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
++ *  KIND, either express or implied.  See the License for the
++ *  specific language governing permissions and limitations
++ *  under the License.
++ */
+ package org.codehaus.groovy.ast.decompiled.support;
+ 
+ public class Groovy8632 extends Groovy8632Abstract {
+diff --git a/src/test/org/codehaus/groovy/ast/decompiled/support/Groovy8632Abstract.java b/src/test/org/codehaus/groovy/ast/decompiled/support/Groovy8632Abstract.java
+index 40726eac86..2b55ee0b79 100644
+--- a/src/test/org/codehaus/groovy/ast/decompiled/support/Groovy8632Abstract.java
++++ b/src/test/org/codehaus/groovy/ast/decompiled/support/Groovy8632Abstract.java
+@@ -1,3 +1,21 @@
++/*
++ *  Licensed to the Apache Software Foundation (ASF) under one
++ *  or more contributor license agreements.  See the NOTICE file
++ *  distributed with this work for additional information
++ *  regarding copyright ownership.  The ASF licenses this file
++ *  to you under the Apache License, Version 2.0 (the
++ *  "License"); you may not use this file except in compliance
++ *  with the License.  You may obtain a copy of the License at
++ *
++ *    http://www.apache.org/licenses/LICENSE-2.0
++ *
++ *  Unless required by applicable law or agreed to in writing,
++ *  software distributed under the License is distributed on an
++ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
++ *  KIND, either express or implied.  See the License for the
++ *  specific language governing permissions and limitations
++ *  under the License.
++ */
+ package org.codehaus.groovy.ast.decompiled.support;
+ 
+ public abstract class Groovy8632Abstract {
+diff --git a/src/test/org/codehaus/groovy/ast/decompiled/support/Groovy8632Groovy.groovy b/src/test/org/codehaus/groovy/ast/decompiled/support/Groovy8632Groovy.groovy
+index 304d4038ed..6ea5488cad 100644
+--- a/src/test/org/codehaus/groovy/ast/decompiled/support/Groovy8632Groovy.groovy
++++ b/src/test/org/codehaus/groovy/ast/decompiled/support/Groovy8632Groovy.groovy
+@@ -1,3 +1,21 @@
++/*
++ *  Licensed to the Apache Software Foundation (ASF) under one
++ *  or more contributor license agreements.  See the NOTICE file
++ *  distributed with this work for additional information
++ *  regarding copyright ownership.  The ASF licenses this file
++ *  to you under the Apache License, Version 2.0 (the
++ *  "License"); you may not use this file except in compliance
++ *  with the License.  You may obtain a copy of the License at
++ *
++ *    http://www.apache.org/licenses/LICENSE-2.0
++ *
++ *  Unless required by applicable law or agreed to in writing,
++ *  software distributed under the License is distributed on an
++ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
++ *  KIND, either express or implied.  See the License for the
++ *  specific language governing permissions and limitations
++ *  under the License.
++ */
+ package org.codehaus.groovy.ast.decompiled.support
+ 
+ class Groovy8632Groovy {
+
+Commit:
+351544823ad7a4e250ce036d822ce3207c0edf98
+John Wagenleitner
+jwagenleitner@apache.org
+2018-06-14 18:56:13 -0700
+GROOVY-8632: Groovy 2.5.0 fails to compile Google Java Client sample code (closes #753)
+diff --git a/src/main/java/org/codehaus/groovy/ast/decompiled/AsmDecompiler.java b/src/main/java/org/codehaus/groovy/ast/decompiled/AsmDecompiler.java
+index 5efb60bcef..f0bf0bdddb 100644
+--- a/src/main/java/org/codehaus/groovy/ast/decompiled/AsmDecompiler.java
++++ b/src/main/java/org/codehaus/groovy/ast/decompiled/AsmDecompiler.java
+@@ -103,7 +103,28 @@ public abstract class AsmDecompiler {
+ 
+         @Override
+         public void visitInnerClass(String name, String outerName, String innerName, int access) {
+-            result.innerClassModifiers.put(innerName, access);
++            /*
++             * Class files generated for inner classes have an INNERCLASS
++             * reference to self. The top level class access modifiers for
++             * an inner class will not accurately reflect their access. For
++             * example, top-level access modifiers for private inner classes
++             * are package-private, protected inner classes are public, and
++             * the static modifier is not included. So the INNERCLASS self
++             * reference is used to capture the correct modifiers.
++             *
++             * Must compare against the fully qualified name because there may
++             * be other INNERCLASS references to same named nested classes from
++             * other classes.
++             *
++             * Example:
++             *
++             *   public final class org/foo/Groovy8632$Builder extends org/foo/Groovy8632Abstract$Builder  {
++             *     public final static INNERCLASS org/foo/Groovy8632$Builder org/foo/Groovy8632 Builder
++             *     public static abstract INNERCLASS org/foo/Groovy8632Abstract$Builder org/foo/Groovy8632Abstract Builder
++             */
++            if (fromInternalName(name).equals(result.className)) {
++                result.innerClassModifiers = access;
++            }
+         }
+ 
+         @Override
+diff --git a/src/main/java/org/codehaus/groovy/ast/decompiled/ClassStub.java b/src/main/java/org/codehaus/groovy/ast/decompiled/ClassStub.java
+index 364b69de81..ebfb286184 100644
+--- a/src/main/java/org/codehaus/groovy/ast/decompiled/ClassStub.java
++++ b/src/main/java/org/codehaus/groovy/ast/decompiled/ClassStub.java
+@@ -35,7 +35,9 @@ public class ClassStub extends MemberStub {
+     final String[] interfaceNames;
+     List<MethodStub> methods;
+     List<FieldStub> fields;
+-    final Map<String, Integer> innerClassModifiers = new HashMap<String, Integer>();
++
++    // Used to store the real access modifiers for inner classes
++    int innerClassModifiers = -1;
+ 
+     public ClassStub(String className, int accessModifiers, String signature, String superName, String[] interfaceNames) {
+         this.className = className;
+diff --git a/src/main/java/org/codehaus/groovy/ast/decompiled/DecompiledClassNode.java b/src/main/java/org/codehaus/groovy/ast/decompiled/DecompiledClassNode.java
+index 18cc79f745..7376348295 100644
+--- a/src/main/java/org/codehaus/groovy/ast/decompiled/DecompiledClassNode.java
++++ b/src/main/java/org/codehaus/groovy/ast/decompiled/DecompiledClassNode.java
+@@ -44,34 +44,20 @@ public class DecompiledClassNode extends ClassNode {
+     private boolean membersInitialized = false;
+ 
+     public DecompiledClassNode(ClassStub data, AsmReferenceResolver resolver) {
+-        super(data.className, getFullModifiers(data, resolver), null, null, MixinNode.EMPTY_ARRAY);
++        super(data.className, getFullModifiers(data), null, null, MixinNode.EMPTY_ARRAY);
+         classData = data;
+         this.resolver = resolver;
+         isPrimaryNode = false;
+     }
+ 
+     /**
+-     * Static inner classes don't have "static" part in their own modifiers. Their containing classes have to be inspected
+-     * whether they have an inner class with the same name that's static. '$' separator convention is used to search
+-     * for parent classes.
++     * Handle the case of inner classes returning the correct modifiers from
++     * the INNERCLASS reference since the top-level modifiers for inner classes
++     * wont include static or private/protected.
+      */
+-    private static int getFullModifiers(ClassStub data, AsmReferenceResolver resolver) {
+-        String className = data.className;
+-        int bound = className.length();
+-        while (bound > 0) {
+-            int idx = className.lastIndexOf('$', bound);
+-            if (idx > 0) {
+-                ClassNode outerClass = resolver.resolveClassNullable(className.substring(0, idx));
+-                if (outerClass instanceof DecompiledClassNode) {
+-                    Integer outerModifiers = ((DecompiledClassNode) outerClass).classData.innerClassModifiers.get(className.substring(idx + 1));
+-                    if (outerModifiers != null) {
+-                        return data.accessModifiers | outerModifiers;
+-                    }
+-                }
+-            }
+-            bound = idx - 1;
+-        }
+-        return data.accessModifiers;
++    private static int getFullModifiers(ClassStub data) {
++        return (data.innerClassModifiers == -1)
++                ? data.accessModifiers : data.innerClassModifiers;
+     }
+ 
+     public long getCompilationTimeStamp() {
+diff --git a/src/test/org/codehaus/groovy/ast/decompiled/AsmDecompilerTest.groovy b/src/test/org/codehaus/groovy/ast/decompiled/AsmDecompilerTest.groovy
+index 7a27998d15..ab1516f118 100644
+--- a/src/test/org/codehaus/groovy/ast/decompiled/AsmDecompilerTest.groovy
++++ b/src/test/org/codehaus/groovy/ast/decompiled/AsmDecompilerTest.groovy
+@@ -21,6 +21,7 @@ import junit.framework.TestCase
+ import org.codehaus.groovy.ast.AnnotationNode
+ import org.codehaus.groovy.ast.ClassHelper
+ import org.codehaus.groovy.ast.ClassNode
++import org.codehaus.groovy.ast.decompiled.support.*
+ import org.codehaus.groovy.ast.expr.*
+ import org.codehaus.groovy.control.ClassNodeResolver
+ import org.codehaus.groovy.control.CompilationUnit
+@@ -284,10 +285,50 @@ class AsmDecompilerTest extends TestCase {
+         assert (decompile(SomeInnerclass.name).modifiers & Opcodes.ACC_STATIC) != 0
+     }
+ 
++    void "test static inner classes with same name"() {
++        ClassNode cn = decompile(Groovy8632Abstract.Builder.name)
++        assert (cn.modifiers & Opcodes.ACC_STATIC) != 0
++        assert (cn.modifiers & Opcodes.ACC_ABSTRACT) != 0
++
++        cn = decompile(Groovy8632.Builder.name)
++        assert (cn.modifiers & Opcodes.ACC_STATIC) != 0
++        assert (cn.modifiers & Opcodes.ACC_ABSTRACT) == 0
++
++        cn = decompile(Groovy8632Groovy.Builder.name)
++        assert (cn.modifiers & Opcodes.ACC_STATIC) != 0
++        assert (cn.modifiers & Opcodes.ACC_ABSTRACT) == 0
++    }
++
+     void "test static inner with dollar"() {
+         assert (decompile(AsmDecompilerTestData.Inner$WithDollar.name).modifiers & Opcodes.ACC_STATIC) != 0
+     }
+ 
++    void "test inner classes with same name"() {
++        ClassNode cn = decompile(Groovy8632Abstract.InnerBuilder.name)
++        assert (cn.modifiers & Opcodes.ACC_STATIC) == 0
++        assert (cn.modifiers & Opcodes.ACC_ABSTRACT) != 0
++
++        cn = decompile(Groovy8632.InnerBuilder.name)
++        assert (cn.modifiers & Opcodes.ACC_STATIC) == 0
++        assert (cn.modifiers & Opcodes.ACC_ABSTRACT) == 0
++
++        cn = decompile(Groovy8632Groovy.InnerBuilder.name)
++        assert (cn.modifiers & Opcodes.ACC_STATIC) == 0
++        assert (cn.modifiers & Opcodes.ACC_ABSTRACT) == 0
++    }
++
++    void "test private inner class"() {
++        ClassNode cn = decompile(Groovy8632.InnerPrivate.name)
++        assert (cn.modifiers & Opcodes.ACC_PRIVATE) != 0
++        assert (cn.modifiers & Opcodes.ACC_PUBLIC) == 0
++    }
++
++    void "test protected inner class"() {
++        ClassNode cn = decompile(Groovy8632.InnerProtected.name)
++        assert (cn.modifiers & Opcodes.ACC_PROTECTED) != 0
++        assert (cn.modifiers & Opcodes.ACC_PUBLIC) == 0
++    }
++
+     void "test non-parameterized generics"() {
+         assert decompile().getDeclaredMethod("nonParameterizedGenerics").genericsTypes == null
+     }
+diff --git a/src/test/org/codehaus/groovy/ast/decompiled/support/Groovy8632.java b/src/test/org/codehaus/groovy/ast/decompiled/support/Groovy8632.java
+new file mode 100644
+index 0000000000..95fe04460e
+--- /dev/null
++++ b/src/test/org/codehaus/groovy/ast/decompiled/support/Groovy8632.java
+@@ -0,0 +1,9 @@
++package org.codehaus.groovy.ast.decompiled.support;
++
++public class Groovy8632 extends Groovy8632Abstract {
++    Groovy8632(Builder builder) { super(builder); }
++    public static final class Builder extends Groovy8632Abstract.Builder {}
++    public class InnerBuilder extends Groovy8632Abstract.InnerBuilder {}
++    private class InnerPrivate {}
++    protected class InnerProtected {}
++}
+diff --git a/src/test/org/codehaus/groovy/ast/decompiled/support/Groovy8632Abstract.java b/src/test/org/codehaus/groovy/ast/decompiled/support/Groovy8632Abstract.java
+new file mode 100644
+index 0000000000..40726eac86
+--- /dev/null
++++ b/src/test/org/codehaus/groovy/ast/decompiled/support/Groovy8632Abstract.java
+@@ -0,0 +1,7 @@
++package org.codehaus.groovy.ast.decompiled.support;
++
++public abstract class Groovy8632Abstract {
++    Groovy8632Abstract(Builder builder) {}
++    public abstract static class Builder {}
++    public abstract class InnerBuilder {}
++}
+diff --git a/src/test/org/codehaus/groovy/ast/decompiled/support/Groovy8632Groovy.groovy b/src/test/org/codehaus/groovy/ast/decompiled/support/Groovy8632Groovy.groovy
+new file mode 100644
+index 0000000000..304d4038ed
+--- /dev/null
++++ b/src/test/org/codehaus/groovy/ast/decompiled/support/Groovy8632Groovy.groovy
+@@ -0,0 +1,6 @@
++package org.codehaus.groovy.ast.decompiled.support
++
++class Groovy8632Groovy {
++    static class Builder extends Groovy8632Abstract.Builder {}
++    class InnerBuilder extends Groovy8632Abstract.InnerBuilder {}
++}
+
+Commit:
+fb5e7f591eefb5ca5a195286a6b81b4ca29063a4
+sunlan
+sunlan@apache.org
+2018-06-14 17:38:08 +0800
+Fix inferring return type issues(closes #755)
+diff --git a/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingVisitor.java b/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingVisitor.java
+index 40fe3ba082..d51491b6e0 100644
+--- a/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingVisitor.java
++++ b/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingVisitor.java
+@@ -3288,12 +3288,14 @@ public class StaticTypeCheckingVisitor extends ClassCodeVisitorSupport {
+                         if (typeCheckMethodsWithGenericsOrFail(chosenReceiver.getType(), args, mn.get(0), call)) {
+                             returnType = adjustWithTraits(directMethodCallCandidate, chosenReceiver.getType(), args, returnType);
+ 
++                            /*
+                             if (null != typeCheckingContext.getEnclosingReturnStatement() && !isNestedOrSandwichedMethodCall()) {
+                                 ClassNode inferredType = infer(returnType, typeCheckingContext.getEnclosingMethod().getReturnType());
+                                 if (null != inferredType) {
+                                     returnType = inferredType;
+                                 }
+                             }
++                            */
+ 
+                             storeType(call, returnType);
+                             storeTargetMethod(call, directMethodCallCandidate);
+
+Commit:
+65daf37ea608fb143e53e659cf9903c38a4e7f0c
+John Wagenleitner
+jwagenleitner@apache.org
+2018-06-11 10:41:16 -0700
+reword one small section of the documentation on string interpolation (closes #754)
+diff --git a/src/spec/doc/core-syntax.adoc b/src/spec/doc/core-syntax.adoc
+index 6d3bf45fe6..30b48fdfb4 100644
+--- a/src/spec/doc/core-syntax.adoc
++++ b/src/spec/doc/core-syntax.adoc
+@@ -367,7 +367,7 @@ include::{projectdir}/src/spec/test/SyntaxTest.groovy[tags=gstring_2,indent=0]
+ ----
+ 
+ [NOTE]
+-Not only expressions are actually allowed in between the `${}` placeholder. Statements are also allowed, but a statement's value is just `null`.
++Not only are expressions allowed in between the `${}` placeholder, but so are statements. However, a statement's value is just `null`.
+ So if several statements are inserted in that placeholder, the last one should somehow return a meaningful value to be inserted. 
+ For instance, +"The sum of 1 and 2 is equal to ${def a = 1; def b = 2; a + b}"+ is supported and works as expected but a good practice is usually to stick to simple expressions inside GString placeholders.
+ 
+
+Commit:
+a01322d3dfd9cad072df9305c27d6c81476dd0c3
+sunlan
+sunlan@apache.org
+2018-06-08 10:36:55 +0800
+GROOVY-8628: Groovydoc fails to parse Java static nested classes with diamond operator(closes #748)
+diff --git a/src/main/antlr2/org/codehaus/groovy/antlr/java/java.g b/src/main/antlr2/org/codehaus/groovy/antlr/java/java.g
+index 1f09715d37..896c40b030 100644
+--- a/src/main/antlr2/org/codehaus/groovy/antlr/java/java.g
++++ b/src/main/antlr2/org/codehaus/groovy/antlr/java/java.g
+@@ -16,6 +16,7 @@
+  *  specific language governing permissions and limitations
+  *  under the License.
+  */
++
+ // Note: Please don't use physical tabs.  Logical tabs for indent are width 4.
+ header {
+ package org.codehaus.groovy.antlr.java;
+@@ -370,10 +371,10 @@ classTypeSpec[boolean addImagNode]  {Token first = LT(1);}
+ 
+ // A non-built in type name, with possible type parameters
+ classOrInterfaceType[boolean addImagNode]  {Token first = LT(1);}
+-	:	IDENT^ (typeArguments|typeArgumentsDiamond)?
++	:	IDENT^ (typeArgumentsOrDiamond)?
+ 		(options{greedy=true;}: // match as many as possible
+ 			DOT^
+-			IDENT (typeArguments)?
++			IDENT (typeArgumentsOrDiamond)?
+ 		)*
+ 		{
+ 			if ( addImagNode ) {
+@@ -402,10 +403,9 @@ wildcardType
+ 		(("extends" | "super")=> typeArgumentBounds)?
+ 	;
+ 
+-typeArgumentsDiamond
+-{Token first = LT(1);}
++typeArgumentsOrDiamond
+     :   LT! GT!
+-    {#typeArgumentsDiamond = #(create(TYPE_ARGUMENTS, "TYPE_ARGUMENTS",first,LT(1)), #typeArgumentsDiamond);}
++    |   typeArguments
+     ;
+ 
+ // Type arguments to a class or interface type
+diff --git a/subprojects/groovy-groovydoc/src/test/groovy/org/codehaus/groovy/tools/groovydoc/GroovyDocToolTest.java b/subprojects/groovy-groovydoc/src/test/groovy/org/codehaus/groovy/tools/groovydoc/GroovyDocToolTest.java
+index 491c964682..bc72fc19af 100644
+--- a/subprojects/groovy-groovydoc/src/test/groovy/org/codehaus/groovy/tools/groovydoc/GroovyDocToolTest.java
++++ b/subprojects/groovy-groovydoc/src/test/groovy/org/codehaus/groovy/tools/groovydoc/GroovyDocToolTest.java
+@@ -333,6 +333,21 @@ public class GroovyDocToolTest extends GroovyTestCase {
+         assertTrue("stringList not found in: \"" + doc + "\"", doc.contains("stringList"));
+     }
+ 
++    public void testJavaStaticNestedClassWithDiamondOperator() throws Exception {
++        List<String> srcList = new ArrayList<String>();
++        String base = "org/codehaus/groovy/tools/groovydoc/testfiles/JavaStaticNestedClassWithDiamond";
++        srcList.add(base + ".java");
++        xmlTool.add(srcList);
++        MockOutputTool output = new MockOutputTool();
++        xmlTool.renderToOutput(output, MOCK_DIR);
++        String doc = output.getText(MOCK_DIR + "/" + base + ".html");
++        assertNotNull("No GroovyDoc found for outer class " + base, doc);
++        assertTrue("Outer class expectedObject not found in: \"" + doc + "\"", doc.contains("expectedObject"));
++        String docNested = output.getText(MOCK_DIR + "/" + base + ".Nested.html");
++        assertNotNull("No GroovyDoc found for nested class " + base, docNested);
++        assertTrue("Nested class comment not found in: \"" + docNested + "\"", docNested.contains("static nested class comment"));
++    }
++
+     public void testVisibilityPublic() throws Exception {
+         Properties props = new Properties();
+         props.put("publicScope", "true");
+diff --git a/subprojects/groovy-groovydoc/src/test/groovy/org/codehaus/groovy/tools/groovydoc/testfiles/JavaStaticNestedClassWithDiamond.java b/subprojects/groovy-groovydoc/src/test/groovy/org/codehaus/groovy/tools/groovydoc/testfiles/JavaStaticNestedClassWithDiamond.java
+new file mode 100644
+index 0000000000..d9ee259fcf
+--- /dev/null
++++ b/subprojects/groovy-groovydoc/src/test/groovy/org/codehaus/groovy/tools/groovydoc/testfiles/JavaStaticNestedClassWithDiamond.java
+@@ -0,0 +1,38 @@
++/*
++ *  Licensed to the Apache Software Foundation (ASF) under one
++ *  or more contributor license agreements.  See the NOTICE file
++ *  distributed with this work for additional information
++ *  regarding copyright ownership.  The ASF licenses this file
++ *  to you under the Apache License, Version 2.0 (the
++ *  "License"); you may not use this file except in compliance
++ *  with the License.  You may obtain a copy of the License at
++ *
++ *    http://www.apache.org/licenses/LICENSE-2.0
++ *
++ *  Unless required by applicable law or agreed to in writing,
++ *  software distributed under the License is distributed on an
++ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
++ *  KIND, either express or implied.  See the License for the
++ *  specific language governing permissions and limitations
++ *  under the License.
++ */
++package org.codehaus.groovy.tools.groovydoc.testfiles;
++
++public class JavaStaticNestedClassWithDiamond<E> {
++
++    JavaStaticNestedClassWithDiamond() {
++    }
++
++    /**
++     * static nested class comment
++     *
++     * @param <E>
++     */
++    public static class Nested<E> extends JavaStaticNestedClassWithDiamond<E> {
++        Nested() {
++        }
++    }
++
++    public JavaStaticNestedClassWithDiamond<Object> expectedObject = new JavaStaticNestedClassWithDiamond.Nested<>();
++
++}
+
+Commit:
+880a1add6fe3a5a52b7707d546cbb90014426740
+Cedric Champeau
+cchampeau@apache.org
+2018-06-07 13:17:40 +0200
+Add opt-in to Gradle build scans
+diff --git a/build.gradle b/build.gradle
+index d1c5ff0ad5..3fb6861f89 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -50,14 +50,13 @@ buildscript {
+ }
+ 
+ plugins {
+-    id 'com.gradle.build-scan' version '1.12.1'
++    id 'com.gradle.build-scan' version '1.13.4'
+     id 'me.champeau.buildscan-recipes' version '0.2.3'
+ }
+ 
+ buildScan {
+     licenseAgreementUrl = 'https://gradle.com/terms-of-service'
+-    licenseAgree = 'yes'
+-    publishAlways()
++    apply from: 'gradle/build-scans.gradle'
+ }
+ 
+ buildScanRecipes {
+diff --git a/gradle/build-scans.gradle b/gradle/build-scans.gradle
+new file mode 100644
+index 0000000000..44edca5f8d
+--- /dev/null
++++ b/gradle/build-scans.gradle
+@@ -0,0 +1,53 @@
++/*
++ *  Licensed to the Apache Software Foundation (ASF) under one
++ *  or more contributor license agreements.  See the NOTICE file
++ *  distributed with this work for additional information
++ *  regarding copyright ownership.  The ASF licenses this file
++ *  to you under the Apache License, Version 2.0 (the
++ *  "License"); you may not use this file except in compliance
++ *  with the License.  You may obtain a copy of the License at
++ *
++ *    http://www.apache.org/licenses/LICENSE-2.0
++ *
++ *  Unless required by applicable law or agreed to in writing,
++ *  software distributed under the License is distributed on an
++ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
++ *  KIND, either express or implied.  See the License for the
++ *  specific language governing permissions and limitations
++ *  under the License.
++ */
++
++def acceptFile = new File(gradle.gradleUserHomeDir, "gradle-scans-license-agree.txt")
++def env = System.getenv()
++boolean isCI = env.CI || env.TRAVIS || env.TEAMCITY_VERSION
++boolean hasAccepted = isCI || env.GRADLE_SCANS_ACCEPT=='yes' || acceptFile.exists() && acceptFile.text.trim() == 'yes'
++boolean hasRefused = env.GRADLE_SCANS_ACCEPT=='no' || acceptFile.exists() && acceptFile.text.trim() == 'no'
++
++buildScan {
++    if (hasAccepted) {
++        licenseAgree = 'yes'
++        publishAlways()
++    } else if (!hasRefused) {
++        gradle.buildFinished {
++            println """
++This build uses Gradle Build Scans to gather statistics, share information about 
++failures, environmental issues, dependencies resolved during the build and more.
++Build scans will be published after each build, if you accept the terms of 
++service, and in particular the privacy policy.
++
++Please read 
++   
++    https://gradle.com/terms-of-service 
++    https://gradle.com/legal/privacy
++
++and then:
++
++  - set the `GRADLE_SCANS_ACCEPT` to `yes`/`no` if you agree with/refuse the TOS
++  - or create the ${acceptFile} file with `yes`/`no` in it if you agree with/refuse
++
++And we'll not bother you again. Note that build scans are only made public if 
++you share the URL at the end of the build.
++"""
++        }
++    }
++}
+\ No newline at end of file
+
+Commit:
+8d730e19a591c29fbbc1bb3e3a4c1731a6a0ed5b
+sunlan
+sunlan@apache.org
+2018-06-07 10:52:56 +0800
+Fix artifact path
+diff --git a/gradle/assemble.gradle b/gradle/assemble.gradle
+index 9d677689c9..eba06b7296 100644
+--- a/gradle/assemble.gradle
++++ b/gradle/assemble.gradle
+@@ -398,7 +398,7 @@ ext.distSpec = copySpec {
+             fileMode = 0755
+             exclude 'groovy.icns'
+         }
+-        from('src/tools/org/codehaus/groovy/tools/groovy.ico')
++        from('subprojects/groovy-docgenerator/src/main/resources/org/apache/groovy/docgenerator/groovy.ico')
+     }
+     into('licenses') {
+         from 'licenses'
+diff --git a/gradle/docs.gradle b/gradle/docs.gradle
+index ebb9e2dacc..c302216f7d 100644
+--- a/gradle/docs.gradle
++++ b/gradle/docs.gradle
+@@ -174,7 +174,8 @@ task docGDK {
+         }
+         copy {
+             into task.destinationDir
+-            from 'src/tools/org/codehaus/groovy/tools/groovy.ico', 'src/tools/org/codehaus/groovy/tools/stylesheet.css'
++            from 'subprojects/groovy-docgenerator/src/main/resources/org/apache/groovy/docgenerator/groovy.ico',
++                    'subprojects/groovy-docgenerator/src/main/resources/org/apache/groovy/docgenerator/stylesheet.css'
+         }
+     }
+ }
+diff --git a/subprojects/groovy-groovydoc/build.gradle b/subprojects/groovy-groovydoc/build.gradle
+index 0f20879137..1aadb9ecff 100644
+--- a/subprojects/groovy-groovydoc/build.gradle
++++ b/subprojects/groovy-groovydoc/build.gradle
+@@ -22,6 +22,7 @@ dependencies {
+     compile project(':groovy-cli-picocli')
+     compile project(':groovy-templates')
+     runtime project(':groovy-dateutil')
++    runtime project(':groovy-docgenerator')
+     testCompile project(':groovy-test')
+     testCompile "org.apache.ant:ant-testutil:$antVersion"
+ }
+diff --git a/subprojects/groovy-groovydoc/src/main/java/org/codehaus/groovy/tools/groovydoc/gstringTemplates/GroovyDocTemplateInfo.java b/subprojects/groovy-groovydoc/src/main/java/org/codehaus/groovy/tools/groovydoc/gstringTemplates/GroovyDocTemplateInfo.java
+index 2b16745a27..7fefef238d 100644
+--- a/subprojects/groovy-groovydoc/src/main/java/org/codehaus/groovy/tools/groovydoc/gstringTemplates/GroovyDocTemplateInfo.java
++++ b/subprojects/groovy-groovydoc/src/main/java/org/codehaus/groovy/tools/groovydoc/gstringTemplates/GroovyDocTemplateInfo.java
+@@ -20,7 +20,7 @@ package org.codehaus.groovy.tools.groovydoc.gstringTemplates;
+ 
+ public class GroovyDocTemplateInfo {
+     private static final String TEMPLATE_BASEDIR = "org/codehaus/groovy/tools/groovydoc/gstringTemplates/";
+-    private static final String DOCGEN_BASEDIR = "org/codehaus/groovy/tools/";
++    private static final String DOCGEN_BASEDIR = "org/apache/groovy/docgenerator/";
+     public static final String[] DEFAULT_DOC_TEMPLATES = new String[]{ // top level templates
+             TEMPLATE_BASEDIR + "topLevel/index.html",
+             TEMPLATE_BASEDIR + "topLevel/overview-frame.html", // needs all package names
+@@ -31,7 +31,7 @@ public class GroovyDocTemplateInfo {
+             TEMPLATE_BASEDIR + "topLevel/deprecated-list.html",
+             TEMPLATE_BASEDIR + "topLevel/stylesheet.css", // copy default one, may override later
+             TEMPLATE_BASEDIR + "topLevel/inherit.gif",
+-            DOCGEN_BASEDIR + "groovy.ico",
++            DOCGEN_BASEDIR   + "groovy.ico",
+     };
+     public static final String[] DEFAULT_PACKAGE_TEMPLATES = new String[]{ // package level templates
+             TEMPLATE_BASEDIR + "packageLevel/package-frame.html",
+
+Commit:
+a680ff3b48c9acb679e25964ec8b358efc69010d
+sunlan
+sunlan@apache.org
+2018-06-07 09:56:17 +0800
+Add openjdk10 build(closes #752)
+diff --git a/.travis.yml b/.travis.yml
+index e7a17d516e..b36837aa90 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -22,26 +22,9 @@ dist: trusty
+ 
+ matrix:
+   include:
+-# Java 10 "Oracle JDK"
+-#    - env: JDK_RELEASE='Oracle JDK 10' EXTRA_GRADLE_ARGS=''
+-#      install: . ./src/install/install-jdk.sh -F 10 -L BCL
+-# Java 10 "OpenJDK"
+-#    - env: JDK_RELEASE='OpenJDK 10' EXTRA_GRADLE_ARGS=''
+-#      install: . ./src/install/install-jdk.sh -F 10 -L GPL
+-# Java 9 "Oracle JDK" (provided by Travis CI)
++    - jdk: openjdk10
+     - jdk: oraclejdk9
+-      env: JDK_RELEASE='Oracle JDK 9' EXTRA_GRADLE_ARGS=''
+-      install: echo "Don't let Travis CI execute './gradlew assemble' by default"
+-# Java 9 "OpenJDK"
+-#    - env: TRAVIS_JDK_VERSION='openjdk9' JDK_RELEASE='OpenJDK 9' EXTRA_GRADLE_ARGS=''
+-#      install: . ./src/install/install-jdk.sh -F 9 -L GPL
+-# Java 8 "Oracle JDK" (provided by Travis CI)
+     - jdk: oraclejdk8
+-      env: JDK_RELEASE='Oracle JDK 8' EXTRA_GRADLE_ARGS=''
+-      install: echo "Don't let Travis CI execute './gradlew assemble' by default"
+-# Java 8 "OpenJDK"
+-#    - env: JDK_RELEASE='OpenJDK 8' EXTRA_GRADLE_ARGS=''
+-#      install: . ./src/install/install-jdk.sh -F 8 -L GPL
+ 
+ before_script:
+   - |
+diff --git a/src/install/install-jdk.sh b/src/install/install-jdk.sh
+deleted file mode 100644
+index 47ba4c3c65..0000000000
+--- a/src/install/install-jdk.sh
++++ /dev/null
+@@ -1,107 +0,0 @@
+-#!/usr/bin/env bash
+-
+-#
+-# Install JDK for Linux
+-#
+-# This script determines the most recent early-access build number,
+-# downloads the JDK archive to the user home directory and extracts
+-# it there.
+-#
+-# Example usage
+-#
+-#   install-jdk.sh                 | install most recent early-access JDK
+-#   install-jdk.sh -W /usr/opt     | install most recent early-access JDK to /usr/opt
+-#   install-jdk.sh -F 9            | install most recent OpenJDK 9
+-#   install-jdk.sh -F 10           | install most recent OpenJDK 10
+-#   install-jdk.sh -F 10 -L BCL    | install most recent OracleJDK 10
+-#
+-# Options
+-#
+-#   -F f | Feature number of the JDK release, [9|10|...]
+-#   -B b | Build number of the JDK release    [?|1|2...]
+-#   -L l | License of the JDK                 [GPL|BCL]
+-#   -W w | Working directory and install path [${HOME}]
+-#
+-# Exported environment variables
+-#
+-#   JAVA_HOME is set to the extracted JDK directory
+-#   PATH is prepended with ${JAVA_HOME}/bin
+-#
+-# (C) 2018 Christian Stein
+-#
+-# https://github.com/sormuras/bach/blob/master/install-jdk.sh
+-#
+-set -e
+-
+-JDK_FEATURE='10'
+-JDK_BUILD='?'
+-JDK_LICENSE='GPL'
+-JDK_WORKSPACE=${HOME}
+-
+-while getopts F:B:L:W: option
+-do
+-  case "${option}" in
+-    F) JDK_FEATURE=${OPTARG};;
+-    B) JDK_BUILD=${OPTARG};;
+-    L) JDK_LICENSE=${OPTARG};;
+-    W) JDK_WORKSPACE=${OPTARG};;
+- esac
+-done
+-
+-#
+-# Other constants
+-#
+-JDK_DOWNLOAD='https://download.java.net/java'
+-JDK_BASENAME='openjdk'
+-if [ "${JDK_LICENSE}" != 'GPL' ]; then
+-  JDK_BASENAME='jdk'
+-fi
+-
+-#
+-# 9
+-#
+-if [ "${JDK_FEATURE}" == '9' ]; then
+-  if [ "${JDK_BUILD}" == '?' ]; then
+-    TMP=$(curl -L jdk.java.net/${JDK_FEATURE})
+-    TMP="${TMP#*<h1>JDK}"                                   # remove everything before the number
+-    TMP="${TMP%%General-Availability Release*}"             # remove everything after the number
+-    JDK_BUILD="$(echo -e "${TMP}" | tr -d '[:space:]')"     # remove all whitespace
+-  fi
+-
+-  JDK_ARCHIVE=${JDK_BASENAME}-${JDK_BUILD}_linux-x64_bin.tar.gz
+-  JDK_URL=${JDK_DOWNLOAD}/GA/jdk${JDK_FEATURE}/${JDK_BUILD}/binaries/${JDK_ARCHIVE}
+-  JDK_HOME=jdk-${JDK_BUILD}
+-fi
+-
+-#
+-# 10
+-#
+-if [ "${JDK_FEATURE}" == '10' ]; then
+-  if [ "${JDK_BUILD}" == '?' ]; then
+-    TMP=$(curl -L jdk.java.net/${JDK_FEATURE})
+-    TMP="${TMP#*Most recent build: jdk-${JDK_FEATURE}+}"    # remove everything before the number
+-    TMP="${TMP%%<*}"                                        # remove everything after the number
+-    JDK_BUILD="$(echo -e "${TMP}" | tr -d '[:space:]')"     # remove all whitespace
+-  fi
+-
+-  JDK_ARCHIVE=${JDK_BASENAME}-${JDK_FEATURE}+${JDK_BUILD}_linux-x64_bin.tar.gz
+-  JDK_URL=${JDK_DOWNLOAD}/jdk${JDK_FEATURE}/archive/${JDK_BUILD}/${JDK_LICENSE}/${JDK_ARCHIVE}
+-  JDK_HOME=jdk-${JDK_FEATURE}
+-fi
+-
+-#
+-# Create any missing intermediate paths, switch to workspace, download, unpack, switch back.
+-#
+-mkdir -p ${JDK_WORKSPACE}
+-cd ${JDK_WORKSPACE}
+-wget ${JDK_URL}
+-tar -xzf ${JDK_ARCHIVE}
+-cd -
+-
+-#
+-# Update environment and test-drive.
+-#
+-export JAVA_HOME=${JDK_WORKSPACE}/${JDK_HOME}
+-export PATH=${JAVA_HOME}/bin:$PATH
+-
+-java --version
+
+Commit:
+334b5df0af1e6f06aeca101136f01201312a0259
+sunlan
+sunlan@apache.org
+2018-06-06 20:00:55 +0800
+GROOVY-8636: Bump asm to 6.2(closes #751)
+diff --git a/build.gradle b/build.gradle
+index ef73861be4..d1c5ff0ad5 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -144,7 +144,7 @@ configurations {
+ 
+ ext {
+     antVersion = '1.10.3'
+-    asmVersion = '6.1.1'
++    asmVersion = '6.2'
+     antlrVersion = '2.7.7'
+     bridgerVersion = '1.1.Final'
+     coberturaVersion = '1.9.4.1'
+
+Commit:
+2b3aeae1ef015d912108a80a05d98dacc6e31922
+sunlan
+sunlan@apache.org
+2018-06-06 10:43:49 +0800
+Bump gradle to 4.8
+diff --git a/gradle.properties b/gradle.properties
+index 5a105f4516..7d13c16cad 100644
+--- a/gradle.properties
++++ b/gradle.properties
+@@ -17,7 +17,7 @@ groovyVersion = 3.0.0-SNAPSHOT
+ # bundle version format: major('.'minor('.'micro('.'qualifier)?)?)? (first 3 only digits)
+ groovyBundleVersion = 3.0.0.SNAPSHOT
+ 
+-gradle_version=4.7
++gradle_version=4.8
+ 
+ groovyJUnit_ms=512m
+ groovyJUnit_mx=1g
+diff --git a/gradle/wrapper/gradle-wrapper.jar b/gradle/wrapper/gradle-wrapper.jar
+index f6b961fd5a..91ca28c8b8 100644
+Binary files a/gradle/wrapper/gradle-wrapper.jar and b/gradle/wrapper/gradle-wrapper.jar differ
+diff --git a/gradle/wrapper/gradle-wrapper.properties b/gradle/wrapper/gradle-wrapper.properties
+index 16d28051c9..d2c45a4b26 100644
+--- a/gradle/wrapper/gradle-wrapper.properties
++++ b/gradle/wrapper/gradle-wrapper.properties
+@@ -1,5 +1,5 @@
+ distributionBase=GRADLE_USER_HOME
+ distributionPath=wrapper/dists
+-distributionUrl=https\://services.gradle.org/distributions/gradle-4.7-bin.zip
++distributionUrl=https\://services.gradle.org/distributions/gradle-4.8-bin.zip
+ zipStoreBase=GRADLE_USER_HOME
+ zipStorePath=wrapper/dists
+
+Commit:
+5bdaf6a0ad912c952bd2f7dc6abaab952bc7ef14
+sunlan
+sunlan@apache.org
+2018-06-06 10:28:17 +0800
+Revert "Refine the rule for missing right parenthesis(closes #746)"
+diff --git a/src/antlr/GroovyParser.g4 b/src/antlr/GroovyParser.g4
+index 17fb6dea01..77867dab2f 100644
+--- a/src/antlr/GroovyParser.g4
++++ b/src/antlr/GroovyParser.g4
+@@ -1211,8 +1211,9 @@ keywords
+ 
+ rparen
+     :   RPAREN
+-    |   r=~RPAREN // !!!Error Alternative
+-        { require(false, "Missing ')'", -$r.text.length()); }
++    |
++        // !!!Error Alternative, impact the performance of parsing
++        { require(false, "Missing ')'"); }
+     ;
+ 
+ nls
+diff --git a/src/test/gls/generics/GenericsTest.groovy b/src/test/gls/generics/GenericsTest.groovy
+index 2c015bb47d..8a68145f4d 100644
+--- a/src/test/gls/generics/GenericsTest.groovy
++++ b/src/test/gls/generics/GenericsTest.groovy
+@@ -327,7 +327,7 @@ class GenericsTest extends GenericsTestBase {
+     void testGenericsDiamondShortcutIllegalPosition() {
+         shouldFailCompilationWithAnyMessage '''
+             List<> list4 = []
+-        ''', ['unexpected token: <', 'Unexpected input: \'List<>\'']
++        ''', ['unexpected token: <', 'Unexpected input: \'<\'']
+     }
+ 
+     void testGenericsInAsType() {
+@@ -411,7 +411,7 @@ import java.util.concurrent.atomic.AtomicInteger
+ 
+             shouldFailCompilationWithMessage """
+                 def m(Class<Integer someParam) {}
+-            """, "Unexpected input: '<'"
++            """, "Unexpected input: 'Class<Integer someParam'"
+ 
+             shouldFailCompilationWithMessage """
+                 abstract class ArrayList1<E extends AbstractList<E> implements List<E> {}
+
+Commit:
+ef35cf4998ca8d1eda5f7a05e08641f5cd00a720
+sunlan
+sunlan@apache.org
+2018-06-06 09:27:49 +0800
+GROOVY-8583:Fail to infer auto-return type from ternary operator(closes #747)
+diff --git a/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingVisitor.java b/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingVisitor.java
+index 61561bbe9c..40fe3ba082 100644
+--- a/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingVisitor.java
++++ b/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingVisitor.java
+@@ -3870,6 +3870,10 @@ public class StaticTypeCheckingVisitor extends ClassCodeVisitorSupport {
+         if (currentProperty != null) {
+             return adjustForTargetType(currentProperty.getType(), type);
+         }
++        MethodNode enclosingMethod = typeCheckingContext.getEnclosingMethod();
++        if (enclosingMethod != null) {
++            return adjustForTargetType(enclosingMethod.getReturnType(), type);
++        }
+         return type;
+     }
+ 
+diff --git a/src/test/groovy/bugs/Groovy7753Bug.groovy b/src/test/groovy/bugs/Groovy7753Bug.groovy
+index a650444821..8134eee756 100644
+--- a/src/test/groovy/bugs/Groovy7753Bug.groovy
++++ b/src/test/groovy/bugs/Groovy7753Bug.groovy
+@@ -18,10 +18,8 @@
+  */
+ package groovy.bugs
+ 
+-import groovy.transform.NotYetImplemented
+-
+ class Groovy7753Bug extends GroovyTestCase {
+-    @NotYetImplemented
++
+     void testGroovy7753() {
+         assertScript '''
+         @groovy.transform.Field
+
+Commit:
+cd466ad9c8576f2cd68f0e925e3c0b190e55f085
+sunlan
+sunlan@apache.org
+2018-06-05 10:00:18 +0800
+Trivial refactoring: change the return type of methods related to enclosing constructor call
+diff --git a/src/main/java/org/codehaus/groovy/transform/stc/TypeCheckingContext.java b/src/main/java/org/codehaus/groovy/transform/stc/TypeCheckingContext.java
+index 3d344f2879..77cb2897e6 100644
+--- a/src/main/java/org/codehaus/groovy/transform/stc/TypeCheckingContext.java
++++ b/src/main/java/org/codehaus/groovy/transform/stc/TypeCheckingContext.java
+@@ -390,7 +390,7 @@ public class TypeCheckingContext {
+      * Pops a constructor call from the enclosing constructor call stack.
+      * @return the popped call
+      */
+-    public Expression popEnclosingConstructorCall() {
++    public ConstructorCallExpression popEnclosingConstructorCall() {
+         return enclosingConstructorCalls.removeFirst();
+     }
+ 
+@@ -399,7 +399,7 @@ public class TypeCheckingContext {
+      * if there's no such element.
+      * @return the enclosing constructor call on top of the stack, or null if no such element.
+      */
+-    public Expression getEnclosingConstructorCall() {
++    public ConstructorCallExpression getEnclosingConstructorCall() {
+         if (enclosingConstructorCalls.isEmpty()) return null;
+         return enclosingConstructorCalls.getFirst();
+     }
+@@ -409,7 +409,7 @@ public class TypeCheckingContext {
+      * element is the top of the stack, that is to say the currently visited constructor call.
+      * @return an immutable list of enclosing constructor calls.
+      */
+-    public List<Expression> getEnclosingConstructorCalls() {
++    public List<ConstructorCallExpression> getEnclosingConstructorCalls() {
+         return Collections.unmodifiableList(enclosingConstructorCalls);
+     }
+ 
+
+Commit:
+effb9d3daae7af65f15c8deafb72d4a74c4b2d50
+sunlan
+sunlan@apache.org
+2018-06-05 09:47:34 +0800
+GROOVY-8629: Groovy STC fails on the nested method call in constructor call(closes #749)
+diff --git a/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingVisitor.java b/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingVisitor.java
+index b032186726..61561bbe9c 100644
+--- a/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingVisitor.java
++++ b/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingVisitor.java
+@@ -708,7 +708,7 @@ public class StaticTypeCheckingVisitor extends ClassCodeVisitorSupport {
+ 
+     @Override
+     public void visitPropertyExpression(final PropertyExpression pexp) {
+-        typeCheckingContext.pushPropertyExpression(pexp);
++        typeCheckingContext.pushEnclosingPropertyExpression(pexp);
+         try {
+             if (visitPropertyExpressionSilent(pexp, pexp)) return;
+ 
+@@ -718,7 +718,7 @@ public class StaticTypeCheckingVisitor extends ClassCodeVisitorSupport {
+                         " for class: " + findCurrentInstanceOfClass(objectExpression, getType(objectExpression)).toString(false), pexp);
+             }
+         } finally {
+-            typeCheckingContext.popPropertyExpression();
++            typeCheckingContext.popEnclosingPropertyExpression();
+         }
+     }
+ 
+@@ -2104,53 +2104,58 @@ public class StaticTypeCheckingVisitor extends ClassCodeVisitorSupport {
+ 
+     @Override
+     public void visitConstructorCallExpression(ConstructorCallExpression call) {
+-        super.visitConstructorCallExpression(call);
+-        if (extension.beforeMethodCall(call)) {
+-            extension.afterMethodCall(call);
+-            return;
+-        }
+-        ClassNode receiver = call.isThisCall() ? typeCheckingContext.getEnclosingClassNode() :
+-                call.isSuperCall() ? typeCheckingContext.getEnclosingClassNode().getSuperClass() : call.getType();
+-        Expression arguments = call.getArguments();
++        typeCheckingContext.pushEnclosingConstructorCall(call);
++        try {
++            super.visitConstructorCallExpression(call);
++            if (extension.beforeMethodCall(call)) {
++                extension.afterMethodCall(call);
++                return;
++            }
++            ClassNode receiver = call.isThisCall() ? typeCheckingContext.getEnclosingClassNode() :
++                    call.isSuperCall() ? typeCheckingContext.getEnclosingClassNode().getSuperClass() : call.getType();
++            Expression arguments = call.getArguments();
+ 
+-        ArgumentListExpression argumentList = InvocationWriter.makeArgumentList(arguments);
++            ArgumentListExpression argumentList = InvocationWriter.makeArgumentList(arguments);
+ 
+-        checkForbiddenSpreadArgument(argumentList);
++            checkForbiddenSpreadArgument(argumentList);
+ 
+-        ClassNode[] args = getArgumentTypes(argumentList);
+-        if (args.length > 0 &&
+-                typeCheckingContext.getEnclosingClosure() != null &&
+-                argumentList.getExpression(0) instanceof VariableExpression &&
+-                ((VariableExpression) argumentList.getExpression(0)).isThisExpression() &&
+-                call.getType() instanceof InnerClassNode &&
+-                call.getType().getOuterClass().equals(args[0]) &&
+-                !call.getType().isStaticClass()) {
+-            args[0] = CLOSURE_TYPE;
+-        }
+-
+-
+-        MethodNode node;
+-        if (looksLikeNamedArgConstructor(receiver, args)
+-                && findMethod(receiver, "<init>", DefaultGroovyMethods.init(args)).size() == 1
+-                && findMethod(receiver, "<init>", args).isEmpty()) {
+-            // bean-style constructor
+-            node = typeCheckMapConstructor(call, receiver, arguments);
+-            if (node != null) {
+-                storeTargetMethod(call, node);
+-                extension.afterMethodCall(call);
+-                return;
++            ClassNode[] args = getArgumentTypes(argumentList);
++            if (args.length > 0 &&
++                    typeCheckingContext.getEnclosingClosure() != null &&
++                    argumentList.getExpression(0) instanceof VariableExpression &&
++                    ((VariableExpression) argumentList.getExpression(0)).isThisExpression() &&
++                    call.getType() instanceof InnerClassNode &&
++                    call.getType().getOuterClass().equals(args[0]) &&
++                    !call.getType().isStaticClass()) {
++                args[0] = CLOSURE_TYPE;
+             }
+-        }
+-        node = findMethodOrFail(call, receiver, "<init>", args);
+-        if (node != null) {
+-            if (looksLikeNamedArgConstructor(receiver, args) && node.getParameters().length + 1 == args.length) {
++
++
++            MethodNode node;
++            if (looksLikeNamedArgConstructor(receiver, args)
++                    && findMethod(receiver, "<init>", DefaultGroovyMethods.init(args)).size() == 1
++                    && findMethod(receiver, "<init>", args).isEmpty()) {
++                // bean-style constructor
+                 node = typeCheckMapConstructor(call, receiver, arguments);
+-            } else {
+-                typeCheckMethodsWithGenericsOrFail(receiver, args, node, call);
++                if (node != null) {
++                    storeTargetMethod(call, node);
++                    extension.afterMethodCall(call);
++                    return;
++                }
++            }
++            node = findMethodOrFail(call, receiver, "<init>", args);
++            if (node != null) {
++                if (looksLikeNamedArgConstructor(receiver, args) && node.getParameters().length + 1 == args.length) {
++                    node = typeCheckMapConstructor(call, receiver, arguments);
++                } else {
++                    typeCheckMethodsWithGenericsOrFail(receiver, args, node, call);
++                }
++                if (node != null) storeTargetMethod(call, node);
+             }
+-            if (node != null) storeTargetMethod(call, node);
++            extension.afterMethodCall(call);
++        } finally {
++            typeCheckingContext.popEnclosingConstructorCall();
+         }
+-        extension.afterMethodCall(call);
+     }
+ 
+     private boolean looksLikeNamedArgConstructor(ClassNode receiver, ClassNode[] args) {
+@@ -3358,12 +3363,17 @@ public class StaticTypeCheckingVisitor extends ClassCodeVisitorSupport {
+ 
+     /**
+      * e.g. c(b(a())),      a() and b() are nested method call, but c() is not
++     *      new C(b(a()))   a() and b() are nested method call
++     *
+      *      a().b().c(),    a() and b() are sandwiched method call, but c() is not
++     *
+      *      a().b().c       a() and b() are sandwiched method call
+      *
+      */
+     private boolean isNestedOrSandwichedMethodCall() {
+-        return typeCheckingContext.getEnclosingMethodCalls().size() > 1 || typeCheckingContext.getPropertyExpressions().size() > 0;
++        return typeCheckingContext.getEnclosingMethodCalls().size() > 1
++                || typeCheckingContext.getEnclosingConstructorCalls().size() > 0
++                || typeCheckingContext.getEnclosingPropertyExpressions().size() > 0;
+     }
+ 
+     /**
+diff --git a/src/main/java/org/codehaus/groovy/transform/stc/TypeCheckingContext.java b/src/main/java/org/codehaus/groovy/transform/stc/TypeCheckingContext.java
+index a6ca78d285..3d344f2879 100644
+--- a/src/main/java/org/codehaus/groovy/transform/stc/TypeCheckingContext.java
++++ b/src/main/java/org/codehaus/groovy/transform/stc/TypeCheckingContext.java
+@@ -23,6 +23,7 @@ import org.codehaus.groovy.ast.MethodNode;
+ import org.codehaus.groovy.ast.Parameter;
+ import org.codehaus.groovy.ast.expr.BinaryExpression;
+ import org.codehaus.groovy.ast.expr.ClosureExpression;
++import org.codehaus.groovy.ast.expr.ConstructorCallExpression;
+ import org.codehaus.groovy.ast.expr.Expression;
+ import org.codehaus.groovy.ast.expr.MethodCallExpression;
+ import org.codehaus.groovy.ast.expr.PropertyExpression;
+@@ -55,9 +56,10 @@ public class TypeCheckingContext {
+     protected final LinkedList<ClassNode> enclosingClassNodes = new LinkedList<ClassNode>();
+     protected final LinkedList<MethodNode> enclosingMethods = new LinkedList<MethodNode>();
+     protected final LinkedList<Expression> enclosingMethodCalls = new LinkedList<Expression>();
++    protected final LinkedList<ConstructorCallExpression> enclosingConstructorCalls = new LinkedList<ConstructorCallExpression>();
+     protected final LinkedList<BlockStatement> enclosingBlocks = new LinkedList<BlockStatement>();
+     protected final LinkedList<ReturnStatement> enclosingReturnStatements = new LinkedList<ReturnStatement>();
+-    protected final LinkedList<PropertyExpression> propertyExpressions = new LinkedList<PropertyExpression>();
++    protected final LinkedList<PropertyExpression> enclosingPropertyExpressions = new LinkedList<PropertyExpression>();
+ 
+ 
+     // used for closure return type inference
+@@ -305,16 +307,16 @@ public class TypeCheckingContext {
+      * Pushes a property expression into the property expression stack.
+      * @param propertyExpression the property expression to be pushed
+      */
+-    public void pushPropertyExpression(PropertyExpression propertyExpression) {
+-        propertyExpressions.addFirst((PropertyExpression) propertyExpression);
++    public void pushEnclosingPropertyExpression(PropertyExpression propertyExpression) {
++        enclosingPropertyExpressions.addFirst(propertyExpression);
+     }
+ 
+     /**
+      * Pops a property expression from the property expression stack.
+      * @return the popped property expression
+      */
+-    public Expression popPropertyExpression() {
+-        return propertyExpressions.removeFirst();
++    public Expression popEnclosingPropertyExpression() {
++        return enclosingPropertyExpressions.removeFirst();
+     }
+ 
+     /**
+@@ -322,9 +324,9 @@ public class TypeCheckingContext {
+      * if there's no such element.
+      * @return the property expression on top of the stack, or null if no such element.
+      */
+-    public Expression getPropertyExpression() {
+-        if (propertyExpressions.isEmpty()) return null;
+-        return propertyExpressions.getFirst();
++    public Expression getEnclosingPropertyExpression() {
++        if (enclosingPropertyExpressions.isEmpty()) return null;
++        return enclosingPropertyExpressions.getFirst();
+     }
+ 
+     /**
+@@ -332,8 +334,8 @@ public class TypeCheckingContext {
+      * element is the top of the stack, that is to say the currently visited property expression.
+      * @return an immutable list of property expressions.
+      */
+-    public List<PropertyExpression> getPropertyExpressions() {
+-        return Collections.unmodifiableList(propertyExpressions);
++    public List<PropertyExpression> getEnclosingPropertyExpressions() {
++        return Collections.unmodifiableList(enclosingPropertyExpressions);
+     }
+ 
+     /**
+@@ -375,6 +377,42 @@ public class TypeCheckingContext {
+         return Collections.unmodifiableList(enclosingMethodCalls);
+     }
+ 
++
++    /**
++     * Pushes a constructor call into the constructor call stack.
++     * @param call the call expression to be pushed
++     */
++    public void pushEnclosingConstructorCall(ConstructorCallExpression call) {
++        enclosingConstructorCalls.addFirst(call);
++    }
++
++    /**
++     * Pops a constructor call from the enclosing constructor call stack.
++     * @return the popped call
++     */
++    public Expression popEnclosingConstructorCall() {
++        return enclosingConstructorCalls.removeFirst();
++    }
++
++    /**
++     * Returns the constructor call which is on the top of the stack, or null
++     * if there's no such element.
++     * @return the enclosing constructor call on top of the stack, or null if no such element.
++     */
++    public Expression getEnclosingConstructorCall() {
++        if (enclosingConstructorCalls.isEmpty()) return null;
++        return enclosingConstructorCalls.getFirst();
++    }
++
++    /**
++     * Returns the current stack of enclosing constructor calls. The first
++     * element is the top of the stack, that is to say the currently visited constructor call.
++     * @return an immutable list of enclosing constructor calls.
++     */
++    public List<Expression> getEnclosingConstructorCalls() {
++        return Collections.unmodifiableList(enclosingConstructorCalls);
++    }
++
+     public List<ErrorCollector> getErrorCollectors() {
+         return Collections.unmodifiableList(errorCollectors);
+     }
+diff --git a/src/test/groovy/bugs/Groovy8629Bug.groovy b/src/test/groovy/bugs/Groovy8629Bug.groovy
+new file mode 100644
+index 0000000000..f4c949d179
+--- /dev/null
++++ b/src/test/groovy/bugs/Groovy8629Bug.groovy
+@@ -0,0 +1,89 @@
++/*
++ *  Licensed to the Apache Software Foundation (ASF) under one
++ *  or more contributor license agreements.  See the NOTICE file
++ *  distributed with this work for additional information
++ *  regarding copyright ownership.  The ASF licenses this file
++ *  to you under the Apache License, Version 2.0 (the
++ *  "License"); you may not use this file except in compliance
++ *  with the License.  You may obtain a copy of the License at
++ *
++ *    http://www.apache.org/licenses/LICENSE-2.0
++ *
++ *  Unless required by applicable law or agreed to in writing,
++ *  software distributed under the License is distributed on an
++ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
++ *  KIND, either express or implied.  See the License for the
++ *  specific language governing permissions and limitations
++ *  under the License.
++ */
++package groovy.bugs
++
++public class Groovy8629Bug extends GroovyTestCase {
++    void testNestedMethodCallInConstructor() {
++        assertScript '''
++        import groovy.transform.CompileStatic
++        
++        /**
++         * A utility class for comparing two maps
++         */
++        @CompileStatic
++        class MapComparison implements Iterable<IntegerPair> {
++            Map<String, Integer> m1
++            Map<String, Integer> m2
++            Set<String> unionKeys = null
++        
++            MapComparison(Map<String, Integer> map1, Map<String, Integer> map2) {
++                this.m1 = map1
++                this.m2 = map2
++            }
++        
++            @Override
++            Iterator<IntegerPair> iterator() {
++                if (unionKeys == null) {
++                    unionKeys = m1.keySet() + m2.keySet()
++                }
++                return new IntegerPairIterator(unionKeys.iterator())
++            }
++        
++            class IntegerPairIterator implements Iterator<IntegerPair> {
++                private Iterator<String> keyIterator
++        
++                IntegerPairIterator(Iterator<String> keyIterator) {
++                    this.keyIterator = keyIterator
++                }
++        
++                @Override
++                boolean hasNext() {
++                    return keyIterator.hasNext()
++                }
++        
++                @Override
++                IntegerPair next() {
++                    String key = keyIterator.next()
++                    IntegerPair comp = new IntegerPair(m1[key], m2[key])
++                    return comp
++                }
++        
++                @Override
++                void remove() {
++                    throw new UnsupportedOperationException()
++                }
++            }
++        
++            static class IntegerPair  {
++                Integer i1;
++                Integer i2;
++        
++                IntegerPair(Integer int1, Integer int2) {
++                    i1 = int1;
++                    i2 = int2;
++                }
++            }
++        }
++        
++        def mc = new MapComparison([:],[:])
++
++        '''
++    }
++
++}
+
+Commit:
+0b776237f64301d74b0610795b8375b544050977
+sunlan
+sunlan@apache.org
+2018-06-05 09:31:59 +0800
+GROOVY-8630: Refine the parameterized type cache(closes #750)
+diff --git a/src/main/java/org/codehaus/groovy/ast/tools/GenericsUtils.java b/src/main/java/org/codehaus/groovy/ast/tools/GenericsUtils.java
+index 3c94f82bcf..933807fe21 100644
+--- a/src/main/java/org/codehaus/groovy/ast/tools/GenericsUtils.java
++++ b/src/main/java/org/codehaus/groovy/ast/tools/GenericsUtils.java
+@@ -36,12 +36,13 @@ import org.codehaus.groovy.ast.stmt.EmptyStatement;
+ import org.codehaus.groovy.control.CompilationUnit;
+ import org.codehaus.groovy.control.ResolveVisitor;
+ import org.codehaus.groovy.control.SourceUnit;
++import org.codehaus.groovy.runtime.memoize.ConcurrentSoftCache;
+ import org.codehaus.groovy.runtime.memoize.EvictableCache;
+-import org.codehaus.groovy.runtime.memoize.StampedCommonCache;
+ import org.codehaus.groovy.syntax.ParserException;
+ import org.codehaus.groovy.syntax.Reduction;
+ 
+ import java.io.StringReader;
++import java.lang.ref.SoftReference;
+ import java.util.ArrayList;
+ import java.util.Collections;
+ import java.util.HashMap;
+@@ -669,7 +670,9 @@ public class GenericsUtils {
+      * If no cached item found, cache and return the result of {@link #findParameterizedType(ClassNode, ClassNode)}
+      */
+     public static ClassNode findParameterizedTypeFromCache(final ClassNode genericsClass, final ClassNode actualType) {
+-        return PARAMETERIZED_TYPE_CACHE.getAndPut(new ParameterizedTypeCacheKey(genericsClass, actualType), key -> findParameterizedType(key.getGenericsClass(), key.getActualType()));
++        SoftReference<ClassNode> sr = PARAMETERIZED_TYPE_CACHE.getAndPut(new ParameterizedTypeCacheKey(genericsClass, actualType), key -> new SoftReference<>(findParameterizedType(key.getGenericsClass(), key.getActualType())));
++
++        return null == sr ? null : sr.get();
+     }
+ 
+     /**
+@@ -737,7 +740,7 @@ public class GenericsUtils {
+         return superClassNodeList;
+     }
+ 
+-    private static final EvictableCache<ParameterizedTypeCacheKey, ClassNode> PARAMETERIZED_TYPE_CACHE = new StampedCommonCache<>(128);
++    private static final EvictableCache<ParameterizedTypeCacheKey, SoftReference<ClassNode>> PARAMETERIZED_TYPE_CACHE = new ConcurrentSoftCache<>(64);
+ 
+     /**
+      * map declaring generics type to actual generics type, e.g. GROOVY-7204:
+
+Commit:
+4210dee3c476b21524022360a688123a27fd70d2
+sunlan
+sunlan@apache.org
+2018-06-04 14:39:20 +0800
+Clarify the type requirement of groovy-all dependency
+diff --git a/src/spec/doc/tools-groovyc.adoc b/src/spec/doc/tools-groovyc.adoc
+index 0b6e884181..ac6f9aa44a 100644
+--- a/src/spec/doc/tools-groovyc.adoc
++++ b/src/spec/doc/tools-groovyc.adoc
+@@ -278,7 +278,8 @@ different to the JRE, or the JUnit runtime.
+         <dependency>
+             <groupId>org.codehaus.groovy</groupId>
+             <artifactId>groovy-all</artifactId>
+-            <version>2.1.6</version>
++            <version>2.5.0</version>
++            <type>pom</type> <!-- required JUST since Groovy 2.5.0 -->
+         </dependency>
+     </dependencies>
+     <build>
+
+Commit:
+038cef5c2aa760ae97264281e201f7bee3b72953
+sunlan
+sunlan@apache.org
+2018-06-03 00:07:03 +0800
+Refine the rule for missing right parenthesis(closes #746)
+diff --git a/src/antlr/GroovyParser.g4 b/src/antlr/GroovyParser.g4
+index 77867dab2f..17fb6dea01 100644
+--- a/src/antlr/GroovyParser.g4
++++ b/src/antlr/GroovyParser.g4
+@@ -1211,9 +1211,8 @@ keywords
+ 
+ rparen
+     :   RPAREN
+-    |
+-        // !!!Error Alternative, impact the performance of parsing
+-        { require(false, "Missing ')'"); }
++    |   r=~RPAREN // !!!Error Alternative
++        { require(false, "Missing ')'", -$r.text.length()); }
+     ;
+ 
+ nls
+diff --git a/src/test/gls/generics/GenericsTest.groovy b/src/test/gls/generics/GenericsTest.groovy
+index 8a68145f4d..2c015bb47d 100644
+--- a/src/test/gls/generics/GenericsTest.groovy
++++ b/src/test/gls/generics/GenericsTest.groovy
+@@ -327,7 +327,7 @@ class GenericsTest extends GenericsTestBase {
+     void testGenericsDiamondShortcutIllegalPosition() {
+         shouldFailCompilationWithAnyMessage '''
+             List<> list4 = []
+-        ''', ['unexpected token: <', 'Unexpected input: \'<\'']
++        ''', ['unexpected token: <', 'Unexpected input: \'List<>\'']
+     }
+ 
+     void testGenericsInAsType() {
+@@ -411,7 +411,7 @@ import java.util.concurrent.atomic.AtomicInteger
+ 
+             shouldFailCompilationWithMessage """
+                 def m(Class<Integer someParam) {}
+-            """, "Unexpected input: 'Class<Integer someParam'"
++            """, "Unexpected input: '<'"
+ 
+             shouldFailCompilationWithMessage """
+                 abstract class ArrayList1<E extends AbstractList<E> implements List<E> {}
+
+Commit:
+3284b552f52c5209537384ce070da59f9724d270
+danielsun1106
+realbluesun@hotmail.com
+2018-06-02 22:02:29 +0800
+Fix the failing build
+diff --git a/subprojects/parser-antlr4/src/test/groovy/org/apache/groovy/parser/antlr4/GroovyParserTest.groovy b/subprojects/parser-antlr4/src/test/groovy/org/apache/groovy/parser/antlr4/GroovyParserTest.groovy
+index 2b1e4be79c..2384b85973 100644
+--- a/subprojects/parser-antlr4/src/test/groovy/org/apache/groovy/parser/antlr4/GroovyParserTest.groovy
++++ b/subprojects/parser-antlr4/src/test/groovy/org/apache/groovy/parser/antlr4/GroovyParserTest.groovy
+@@ -428,6 +428,6 @@ class GroovyParserTest extends GroovyTestCase {
+         doRunAndTestAntlr4('bugs/BUG-GROOVY-8311.groovy')
+         doRunAndTest('bugs/BUG-GROOVY-8426.groovy')
+         doTest('bugs/BUG-GROOVY-8511.groovy');
+-        doRunAndTest('bugs/BUG-GROOVY-8613.groovy')
++        doRunAndTestAntlr4('bugs/BUG-GROOVY-8613.groovy')
+     }
+ }
+diff --git a/subprojects/parser-antlr4/src/test/resources/bugs/BUG-GROOVY-8613.groovy b/subprojects/parser-antlr4/src/test/resources/bugs/BUG-GROOVY-8613.groovy
+index 4e527f2fe8..c7c1f30fe2 100644
+--- a/subprojects/parser-antlr4/src/test/resources/bugs/BUG-GROOVY-8613.groovy
++++ b/subprojects/parser-antlr4/src/test/resources/bugs/BUG-GROOVY-8613.groovy
+@@ -16,39 +16,26 @@
+  *  specific language governing permissions and limitations
+  *  under the License.
+  */
+-package bugs
++@groovy.transform.CompileStatic
++def foo() {
++    def a = 0
++    a ?= 1
++    assert 1 == a
++    def b = 0
++    b ?= "hello"
++    assert 'hello' == b
++}
+ 
+-class Groovy8613Bug extends GroovyTestCase {
+-    void testElvisAssign() {
+-        assertScript '''
+-        @groovy.transform.CompileStatic
+-        def foo() {
+-          def a = 0
+-          a ?= 1
+-          assert 1 == a
+-          def b = 0
+-          b ?= "hello"
+-          assert 'hello' == b
+-        }
+-        
+-        foo()
+-        '''
+-    }
++foo()
+ 
++@groovy.transform.CompileStatic
++def foo2() {
++    def a = 0
++    a = a ?: 1
++    assert 1 == a
++    def b = 0
++    b = b ?: "hello"
++    assert 'hello' == b
++}
+ 
+-    void testElvisOp() {
+-        assertScript '''
+-        @groovy.transform.CompileStatic
+-        def foo() {
+-          def a = 0
+-          a = a ?: 1
+-          assert 1 == a
+-          def b = 0
+-          b = b ?: "hello"
+-          assert 'hello' == b
+-        }
+-        
+-        foo()
+-        '''
+-    }
+-}
+\ No newline at end of file
++foo2()
+
+Commit:
+37f8a8e8b775a5d2232390edf9a3e6627eaff3bd
+danielsun1106
+realbluesun@hotmail.com
+2018-06-02 20:58:35 +0800
+Move the test of GROOVY-8613 to parser-antlr4 sub-project
+diff --git a/subprojects/parser-antlr4/src/test/groovy/org/apache/groovy/parser/antlr4/GroovyParserTest.groovy b/subprojects/parser-antlr4/src/test/groovy/org/apache/groovy/parser/antlr4/GroovyParserTest.groovy
+index 196b3718bb..2b1e4be79c 100644
+--- a/subprojects/parser-antlr4/src/test/groovy/org/apache/groovy/parser/antlr4/GroovyParserTest.groovy
++++ b/subprojects/parser-antlr4/src/test/groovy/org/apache/groovy/parser/antlr4/GroovyParserTest.groovy
+@@ -428,5 +428,6 @@ class GroovyParserTest extends GroovyTestCase {
+         doRunAndTestAntlr4('bugs/BUG-GROOVY-8311.groovy')
+         doRunAndTest('bugs/BUG-GROOVY-8426.groovy')
+         doTest('bugs/BUG-GROOVY-8511.groovy');
++        doRunAndTest('bugs/BUG-GROOVY-8613.groovy')
+     }
+ }
+diff --git a/src/test/groovy/bugs/Groovy8613Bug.groovy b/subprojects/parser-antlr4/src/test/resources/bugs/BUG-GROOVY-8613.groovy
+similarity index 98%
+rename from src/test/groovy/bugs/Groovy8613Bug.groovy
+rename to subprojects/parser-antlr4/src/test/resources/bugs/BUG-GROOVY-8613.groovy
+index 041fdc6cc6..4e527f2fe8 100644
+--- a/src/test/groovy/bugs/Groovy8613Bug.groovy
++++ b/subprojects/parser-antlr4/src/test/resources/bugs/BUG-GROOVY-8613.groovy
+@@ -16,7 +16,7 @@
+  *  specific language governing permissions and limitations
+  *  under the License.
+  */
+-package groovy.bugs
++package bugs
+ 
+ class Groovy8613Bug extends GroovyTestCase {
+     void testElvisAssign() {
+
+Commit:
+d2c215eda57365749d7f7f5877c370b61aea27b3
+danielsun1106
+realbluesun@hotmail.com
+2018-06-02 20:36:29 +0800
+GROOVY-8621 Grape command line tool synopsis improvement version2(closes
+diff --git a/src/main/groovy/org/codehaus/groovy/tools/GrapeMain.groovy b/src/main/groovy/org/codehaus/groovy/tools/GrapeMain.groovy
+index f6c72c2dc9..0ea6b7bcfd 100644
+--- a/src/main/groovy/org/codehaus/groovy/tools/GrapeMain.groovy
++++ b/src/main/groovy/org/codehaus/groovy/tools/GrapeMain.groovy
+@@ -199,15 +199,15 @@ class GrapeMain implements Runnable {
+                     'Prints the file locations of the jars representing the artifcats for the specified module(s) and the respective transitive dependencies.',
+                     '',
+                     'Parameters:',
+-                    '      <group>          Which module group the module comes from. Translates directly',
+-                    '                         to a Maven groupId or an Ivy Organization. Any group',
+-                    '                         matching /groovy[x][\\..*]^/ is reserved and may have',
+-                    '                         special meaning to the groovy endorsed modules.',
+-                    '      <module>         The name of the module to load. Translated directly to a',
+-                    '                         Maven artifactId or an Ivy artifact.',
+-                    '      <version>        The version of the module to use. Either a literal version `1.',
+-                    '                         1-RC3` or an Ivy Range `[2.2.1,)` meaning 2.2.1 or any',
+-                    '                         greater version).'
++                    '      <group>     Which module group the module comes from. Translates directly',
++                    '                    to a Maven groupId or an Ivy Organization. Any group',
++                    '                    matching /groovy[x][\\..*]^/ is reserved and may have',
++                    '                    special meaning to the groovy endorsed modules.',
++                    '      <module>    The name of the module to load. Translated directly to a',
++                    '                    Maven artifactId or an Ivy artifact.',
++                    '      <version>   The version of the module to use. Either a literal version',
++                    '                    `1.1-RC3` or an Ivy Range `[2.2.1,)` meaning 2.2.1 or any',
++                    '                    greater version).'
+     ])
+     private static class Resolve implements Runnable {
+ 
+
+Commit:
+2e9d71ed625623be4d60ff6281c806647c5d3ca4
+sunlan
+sunlan@apache.org
+2018-06-02 02:06:31 +0800
+GROOVY-8613: GCE in elvis assignment evaluation(closes #744)
+diff --git a/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingVisitor.java b/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingVisitor.java
+index fd3fd454a5..b032186726 100644
+--- a/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingVisitor.java
++++ b/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingVisitor.java
+@@ -54,6 +54,7 @@ import org.codehaus.groovy.ast.expr.ClosureListExpression;
+ import org.codehaus.groovy.ast.expr.ConstantExpression;
+ import org.codehaus.groovy.ast.expr.ConstructorCallExpression;
+ import org.codehaus.groovy.ast.expr.DeclarationExpression;
++import org.codehaus.groovy.ast.expr.ElvisOperatorExpression;
+ import org.codehaus.groovy.ast.expr.EmptyExpression;
+ import org.codehaus.groovy.ast.expr.Expression;
+ import org.codehaus.groovy.ast.expr.FieldExpression;
+@@ -786,7 +787,14 @@ public class StaticTypeCheckingVisitor extends ClassCodeVisitorSupport {
+                     && leftExpression instanceof VariableExpression
+                     && leftExpression.getNodeMetaData(StaticTypesMarker.INFERRED_TYPE) == null) {
+                 storeType(leftExpression, lType);
++            } else if (op == ELVIS_EQUAL) {
++                ElvisOperatorExpression elvisOperatorExpression = new ElvisOperatorExpression(leftExpression, rightExpression);
++                elvisOperatorExpression.setSourcePosition(expression);
++                elvisOperatorExpression.visit(this);
++                resultType = getType(elvisOperatorExpression);
++                storeType(leftExpression, resultType);
+             }
++
+             if (resultType == null) {
+                 resultType = lType;
+             }
+diff --git a/src/test/groovy/bugs/Groovy8613Bug.groovy b/src/test/groovy/bugs/Groovy8613Bug.groovy
+new file mode 100644
+index 0000000000..041fdc6cc6
+--- /dev/null
++++ b/src/test/groovy/bugs/Groovy8613Bug.groovy
+@@ -0,0 +1,54 @@
++/*
++ *  Licensed to the Apache Software Foundation (ASF) under one
++ *  or more contributor license agreements.  See the NOTICE file
++ *  distributed with this work for additional information
++ *  regarding copyright ownership.  The ASF licenses this file
++ *  to you under the Apache License, Version 2.0 (the
++ *  "License"); you may not use this file except in compliance
++ *  with the License.  You may obtain a copy of the License at
++ *
++ *    http://www.apache.org/licenses/LICENSE-2.0
++ *
++ *  Unless required by applicable law or agreed to in writing,
++ *  software distributed under the License is distributed on an
++ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
++ *  KIND, either express or implied.  See the License for the
++ *  specific language governing permissions and limitations
++ *  under the License.
++ */
++package groovy.bugs
++
++class Groovy8613Bug extends GroovyTestCase {
++    void testElvisAssign() {
++        assertScript '''
++        @groovy.transform.CompileStatic
++        def foo() {
++          def a = 0
++          a ?= 1
++          assert 1 == a
++          def b = 0
++          b ?= "hello"
++          assert 'hello' == b
++        }
++        
++        foo()
++        '''
++    }
++
++
++    void testElvisOp() {
++        assertScript '''
++        @groovy.transform.CompileStatic
++        def foo() {
++          def a = 0
++          a = a ?: 1
++          assert 1 == a
++          def b = 0
++          b = b ?: "hello"
++          assert 'hello' == b
++        }
++        
++        foo()
++        '''
++    }
++}
+\ No newline at end of file
+
+Commit:
+abbc233e39f9bcf0db532607968b989a2cfa1f18
+sunlan
+sunlan@apache.org
+2018-06-01 23:23:17 +0800
+GROOVY-8621 Grape command line tool synopsis improvement(closes #743)
+diff --git a/src/main/groovy/org/codehaus/groovy/tools/GrapeMain.groovy b/src/main/groovy/org/codehaus/groovy/tools/GrapeMain.groovy
+index b51322dfd4..f6c72c2dc9 100644
+--- a/src/main/groovy/org/codehaus/groovy/tools/GrapeMain.groovy
++++ b/src/main/groovy/org/codehaus/groovy/tools/GrapeMain.groovy
+@@ -194,7 +194,21 @@ class GrapeMain implements Runnable {
+     }
+ 
+     @Command(name = 'resolve', header = 'Enumerates the jars used by a grape',
+-            description = 'Prints the file locations of the jars representing the artifcats for the specified module(s) and the respective transitive dependencies.')
++            customSynopsis = "grape resolve [-adhisv] (<groupId> <artifactId> <version>)+",
++            description = [
++                    'Prints the file locations of the jars representing the artifcats for the specified module(s) and the respective transitive dependencies.',
++                    '',
++                    'Parameters:',
++                    '      <group>          Which module group the module comes from. Translates directly',
++                    '                         to a Maven groupId or an Ivy Organization. Any group',
++                    '                         matching /groovy[x][\\..*]^/ is reserved and may have',
++                    '                         special meaning to the groovy endorsed modules.',
++                    '      <module>         The name of the module to load. Translated directly to a',
++                    '                         Maven artifactId or an Ivy artifact.',
++                    '      <version>        The version of the module to use. Either a literal version `1.',
++                    '                         1-RC3` or an Ivy Range `[2.2.1,)` meaning 2.2.1 or any',
++                    '                         greater version).'
++    ])
+     private static class Resolve implements Runnable {
+ 
+         @Option(names = ['-a', '--ant'], description = 'Express dependencies in a format applicable for an ant script')
+
+Commit:
+54d65654b8248bf8795146e604a14b84d0515ede
+sunlan
+sunlan@apache.org
+2018-06-01 19:40:08 +0800
+GROOVY-8620 Update docs for Grape dependency manager(closes #742)
+diff --git a/src/spec/doc/grape.adoc b/src/spec/doc/grape.adoc
+index f072cb8889..4aef8ea030 100644
+--- a/src/spec/doc/grape.adoc
++++ b/src/spec/doc/grape.adoc
+@@ -321,7 +321,7 @@ Grape added a command line executable `grape' that allows for the
+ inspection and management of the local grape cache.
+ 
+ ------------------------------------------------
+-grape install <groupId> <artifactId> [<version>]
++grape install [-hv] <group> <module> [<version>] [<classifier>]
+ ------------------------------------------------
+ 
+ This installs the specified groovy module or maven artifact. If a
+@@ -336,16 +336,23 @@ Lists locally installed modules (with their full maven name in the case
+ of groovy modules) and versions.
+ 
+ -------------------------------------------------
+-grape resolve (<groupId> <artifactId> <version>)+
++grape resolve [-adhisv] (<groupId> <artifactId> <version>)+
+ -------------------------------------------------
+ 
+-This returns the file locations of the jars representing the artifcats
++This returns the file locations of the jars representing the artifacts
+ for the specified module(s) and the respective transitive dependencies.
+ You may optionally pass in -ant, -dos, or -shell to get the dependencies
+ expressed in a format applicable for an ant script, windows batch file,
+ or unix shell script respectively. -ivy may be passed to see the
+ dependencies expressed in an ivy like format.
+ 
++-------------------------------------------------
++grape uninstall [-hv] <group> <module> <version>
++-------------------------------------------------
++
++This uninstalls a particular grape: it non-transitively removes the
++respective jar file from the grape cache.
++
+ [[Grape-Advancedconfiguration]]
+ === Advanced configuration
+ 
+
+Commit:
+f32ec7ce4809dbb6a494e1364baaf003793293fc
+sunlan
+sunlan@apache.org
+2018-06-01 19:07:13 +0800
+GROOVY-8619 Update docs for Groovy Shell(closes #740)
+diff --git a/subprojects/groovy-groovysh/src/spec/doc/groovysh.adoc b/subprojects/groovy-groovysh/src/spec/doc/groovysh.adoc
+index 6b0c3636e4..b3d00f01e3 100644
+--- a/subprojects/groovy-groovysh/src/spec/doc/groovysh.adoc
++++ b/subprojects/groovy-groovysh/src/spec/doc/groovysh.adoc
+@@ -47,22 +47,26 @@ and other features.
+ [source,groovy]
+ -----------------------------------------------------------------
+ ./bin/groovysh --help
+-usage: groovysh [options] [...]
+-  -C, --color[=FLAG]         Enable or disable use of ANSI colors
+-  -D, --define=NAME=VALUE    Define a system property
+-  -T, --terminal=TYPE        Specify the terminal TYPE to use
+-  -V, --version              Display the version
+-  -classpath                 Specify where to find the class files - must
+-                             be first argument
+-  -cp, --classpath           Aliases for '-classpath'
+-  -d, --debug                Enable debug output
+-  -e, --evaluate=arg         Evaluate option first when starting
+-                             interactive session
+-  -h, --help                 Display this help message
+-  -pa, --parameters          Generate metadata for reflection on method
+-                             parameter names (jdk8+ only)
+-  -q, --quiet                Suppress superfluous output
+-  -v, --verbose              Enable verbose output
++
++Usage: groovysh [options] [...]
++The Groovy Shell, aka groovysh, is a command-line application which allows easy
++access to evaluate Groovy expressions, define classes and run simple
++experiments.
++  -C, --color[=<FLAG>]    Enable or disable use of ANSI colors
++      -cp, -classpath, --classpath
++                          Specify where to find the class files - must be first
++                            argument
++  -d, --debug             Enable debug output
++  -D, --define=<name=value>
++                          Define a system property
++  -e, --evaluate=<CODE>   Evaluate the code first when starting interactive session
++  -h, --help              Display this help message
++      -pa, --parameters   Generate metadata for reflection on method parameter names
++                            (jdk8+ only)
++  -q, --quiet             Suppress superfluous output
++  -T, --terminal=<TYPE>   Specify the terminal TYPE to use
++  -v, --verbose           Enable verbose output
++  -V, --version           Display the version
+ -----------------------------------------------------------------
+ 
+ [[GroovyShell-EvaluatingExpressions]]
+
+Commit:
+37e2686d241f520940b8fce57453d7c531a1ae7b
+sunlan
+sunlan@apache.org
+2018-06-01 19:01:32 +0800
+GROOVY-8618 Update docs for GroovyConsole(closes #741)
+diff --git a/subprojects/groovy-console/src/spec/doc/groovy-console.adoc b/subprojects/groovy-console/src/spec/doc/groovy-console.adoc
+index c55a266b5b..da259b71a9 100644
+--- a/subprojects/groovy-console/src/spec/doc/groovy-console.adoc
++++ b/subprojects/groovy-console/src/spec/doc/groovy-console.adoc
+@@ -53,15 +53,18 @@ The Groovy Console supports several options to control classpath and other featu
+ [source,groovy]
+ -----------------------------------------------------------------
+ ./bin/groovyConsole --help
+-usage: groovyConsole [options] [filename]
+- -classpath         Specify where to find the class files - must be first
+-                    argument
+- -cp,--classpath    Aliases for '-classpath'
+- -h,--help          Display this help message
+- -pa,--parameters   Generate metadata for reflection on method parameter
+-                    names (jdk8+ only)
+- -i,--indy          Enable InvokeDynamic (Indy) compilation for scripts
+- -V,--version       Display the version
++Usage: groovyConsole [options] [filename]
++The Groovy Swing Console allows a user to enter and run Groovy scripts.
++      --configscript=PARAM   A script for tweaking the compiler configuration options
++      -cp, -classpath, --classpath
++                             Specify where to find the class files - must be first
++                               argument
++  -D, --define=<name=value>  Define a system property
++  -h, --help                 Display this help message
++  -i, --indy                 Enable InvokeDynamic (Indy) compilation for scripts
++      -pa, --parameters      Generate metadata for reflection on method parameter
++                               names (jdk8+ only)
++  -V, --version              Display the version
+ -----------------------------------------------------------------
+ 
+ [[GroovyConsole-RunningScripts]]
+
+Commit:
+0cf00e74f8b622e3e9cc852af4207e5d171fdf65
+sunlan
+sunlan@apache.org
+2018-06-01 18:08:56 +0800
+Refine GROOVY-8595: Fix type inference of method call in property expression
+diff --git a/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingVisitor.java b/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingVisitor.java
+index e27c6a9913..fd3fd454a5 100644
+--- a/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingVisitor.java
++++ b/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingVisitor.java
+@@ -707,12 +707,17 @@ public class StaticTypeCheckingVisitor extends ClassCodeVisitorSupport {
+ 
+     @Override
+     public void visitPropertyExpression(final PropertyExpression pexp) {
+-        if (visitPropertyExpressionSilent(pexp, pexp)) return;
++        typeCheckingContext.pushPropertyExpression(pexp);
++        try {
++            if (visitPropertyExpressionSilent(pexp, pexp)) return;
+ 
+-        if (!extension.handleUnresolvedProperty(pexp)) {
+-            Expression objectExpression = pexp.getObjectExpression();
+-            addStaticTypeError("No such property: " + pexp.getPropertyAsString() +
+-                    " for class: " + findCurrentInstanceOfClass(objectExpression, getType(objectExpression)).toString(false), pexp);
++            if (!extension.handleUnresolvedProperty(pexp)) {
++                Expression objectExpression = pexp.getObjectExpression();
++                addStaticTypeError("No such property: " + pexp.getPropertyAsString() +
++                        " for class: " + findCurrentInstanceOfClass(objectExpression, getType(objectExpression)).toString(false), pexp);
++            }
++        } finally {
++            typeCheckingContext.popPropertyExpression();
+         }
+     }
+ 
+@@ -3344,12 +3349,13 @@ public class StaticTypeCheckingVisitor extends ClassCodeVisitorSupport {
+     }
+ 
+     /**
+-     * e.g. a(b()),         b() is nested method call
+-     *      a().b().c(),    a() and b() are sandwiched method call
++     * e.g. c(b(a())),      a() and b() are nested method call, but c() is not
++     *      a().b().c(),    a() and b() are sandwiched method call, but c() is not
++     *      a().b().c       a() and b() are sandwiched method call
+      *
+      */
+     private boolean isNestedOrSandwichedMethodCall() {
+-        return typeCheckingContext.getEnclosingMethodCalls().size() > 1;
++        return typeCheckingContext.getEnclosingMethodCalls().size() > 1 || typeCheckingContext.getPropertyExpressions().size() > 0;
+     }
+ 
+     /**
+diff --git a/src/main/java/org/codehaus/groovy/transform/stc/TypeCheckingContext.java b/src/main/java/org/codehaus/groovy/transform/stc/TypeCheckingContext.java
+index 13588d0896..a6ca78d285 100644
+--- a/src/main/java/org/codehaus/groovy/transform/stc/TypeCheckingContext.java
++++ b/src/main/java/org/codehaus/groovy/transform/stc/TypeCheckingContext.java
+@@ -25,6 +25,7 @@ import org.codehaus.groovy.ast.expr.BinaryExpression;
+ import org.codehaus.groovy.ast.expr.ClosureExpression;
+ import org.codehaus.groovy.ast.expr.Expression;
+ import org.codehaus.groovy.ast.expr.MethodCallExpression;
++import org.codehaus.groovy.ast.expr.PropertyExpression;
+ import org.codehaus.groovy.ast.expr.StaticMethodCallExpression;
+ import org.codehaus.groovy.ast.expr.VariableExpression;
+ import org.codehaus.groovy.ast.stmt.BlockStatement;
+@@ -56,6 +57,7 @@ public class TypeCheckingContext {
+     protected final LinkedList<Expression> enclosingMethodCalls = new LinkedList<Expression>();
+     protected final LinkedList<BlockStatement> enclosingBlocks = new LinkedList<BlockStatement>();
+     protected final LinkedList<ReturnStatement> enclosingReturnStatements = new LinkedList<ReturnStatement>();
++    protected final LinkedList<PropertyExpression> propertyExpressions = new LinkedList<PropertyExpression>();
+ 
+ 
+     // used for closure return type inference
+@@ -298,6 +300,42 @@ public class TypeCheckingContext {
+         temporaryIfBranchTypeInformation.pop();
+     }
+ 
++
++    /**
++     * Pushes a property expression into the property expression stack.
++     * @param propertyExpression the property expression to be pushed
++     */
++    public void pushPropertyExpression(PropertyExpression propertyExpression) {
++        propertyExpressions.addFirst((PropertyExpression) propertyExpression);
++    }
++
++    /**
++     * Pops a property expression from the property expression stack.
++     * @return the popped property expression
++     */
++    public Expression popPropertyExpression() {
++        return propertyExpressions.removeFirst();
++    }
++
++    /**
++     * Returns the property expression which is on the top of the stack, or null
++     * if there's no such element.
++     * @return the property expression on top of the stack, or null if no such element.
++     */
++    public Expression getPropertyExpression() {
++        if (propertyExpressions.isEmpty()) return null;
++        return propertyExpressions.getFirst();
++    }
++
++    /**
++     * Returns the current stack of property expressions. The first
++     * element is the top of the stack, that is to say the currently visited property expression.
++     * @return an immutable list of property expressions.
++     */
++    public List<PropertyExpression> getPropertyExpressions() {
++        return Collections.unmodifiableList(propertyExpressions);
++    }
++
+     /**
+      * Pushes a method call into the method call stack.
+      * @param call the call expression to be pushed, either a {@link MethodCallExpression} or a {@link StaticMethodCallExpression}
+@@ -329,9 +367,9 @@ public class TypeCheckingContext {
+     }
+ 
+     /**
+-     * Returns the current stack of enclosing classes. The first
+-     * element is the top of the stack, that is to say the currently visited class.
+-     * @return an immutable list of class nodes.
++     * Returns the current stack of enclosing method calls. The first
++     * element is the top of the stack, that is to say the currently visited method call.
++     * @return an immutable list of enclosing method calls.
+      */
+     public List<Expression> getEnclosingMethodCalls() {
+         return Collections.unmodifiableList(enclosingMethodCalls);
+diff --git a/src/test/groovy/bugs/Groovy8595Bug.groovy b/src/test/groovy/bugs/Groovy8595Bug.groovy
+index d5776228a8..810558f1dc 100644
+--- a/src/test/groovy/bugs/Groovy8595Bug.groovy
++++ b/src/test/groovy/bugs/Groovy8595Bug.groovy
+@@ -40,4 +40,24 @@ class Groovy8595Bug extends CompilableTestSupport {
+             }
+         '''
+     }
++
++    void testMethodCallInPropertyExpression() {
++        shouldCompile '''
++            @groovy.transform.CompileStatic
++            class Test {
++                List<Foo> foo() {
++                    return []
++                }
++            
++                List<String> bar() {
++                    return foo()*.instanceId
++                }
++            }
++            
++            @groovy.transform.CompileStatic
++            class Foo {
++              String instanceId
++            }
++        '''
++    }
+ }
+
+Commit:
+00ecbae49fd561ef26e1a8bcea0794dd38b22b45
+sunlan
+sunlan@apache.org
+2018-06-01 16:07:57 +0800
+Refine classpath table of groovy console(closes #738)
+diff --git a/subprojects/groovy-console/src/main/groovy/groovy/ui/Console.groovy b/subprojects/groovy-console/src/main/groovy/groovy/ui/Console.groovy
+index a558de6178..8cde2247b8 100644
+--- a/subprojects/groovy-console/src/main/groovy/groovy/ui/Console.groovy
++++ b/subprojects/groovy-console/src/main/groovy/groovy/ui/Console.groovy
+@@ -1077,14 +1077,15 @@ class Console implements CaretListener, HyperlinkListener, ComponentListener, Fo
+             cl = cl.parent
+         }
+ 
+-        List data = urls.unique().collect { url -> [name: new File(url.toURI()).name, path: url.path] }
+-        data.sort { it.name }
++        boolean isWin = isWindows()
++        List data = urls.unique().collect { url -> [name: new File(url.toURI()).name, path: isWin ? url.path.substring(1).replace('/', '\\') : url.path] }
++        data.sort { it.name.toLowerCase() }
+ 
+         JScrollPane scrollPane = swing.scrollPane{
+             table {
+                 tableModel(list : data) {
+-                    propertyColumn(header: 'Name', propertyName: 'name')
+-                    propertyColumn(header:' Path', propertyName: 'path')
++                    propertyColumn(header: 'Name', propertyName: 'name', editable: false)
++                    propertyColumn(header:' Path', propertyName: 'path', editable: false)
+                 }
+             }
+         }
+@@ -1574,6 +1575,13 @@ class Console implements CaretListener, HyperlinkListener, ComponentListener, Fo
+     }
+ 
+     public void focusLost(FocusEvent e) { }
++
++    private static boolean isWindows() {
++        return getOsName().startsWith("windows")
++    }
++    private static String getOsName() {
++        return System.getProperty("os.name").toLowerCase()
++    }
+ }
+ 
+ class GroovyFileFilter extends FileFilter {
+
+Commit:
+a6e5a041f6a8ec2fc487891b9a26420f0f0181b2
+sunlan
+sunlan@apache.org
+2018-06-01 12:52:00 +0800
+Add the missing license header
+diff --git a/src/main/java/org/codehaus/groovy/util/URLStreams.java b/src/main/java/org/codehaus/groovy/util/URLStreams.java
+index e1da48017f..83adbb8b72 100644
+--- a/src/main/java/org/codehaus/groovy/util/URLStreams.java
++++ b/src/main/java/org/codehaus/groovy/util/URLStreams.java
+@@ -1,3 +1,21 @@
++/*
++ *  Licensed to the Apache Software Foundation (ASF) under one
++ *  or more contributor license agreements.  See the NOTICE file
++ *  distributed with this work for additional information
++ *  regarding copyright ownership.  The ASF licenses this file
++ *  to you under the Apache License, Version 2.0 (the
++ *  "License"); you may not use this file except in compliance
++ *  with the License.  You may obtain a copy of the License at
++ *
++ *    http://www.apache.org/licenses/LICENSE-2.0
++ *
++ *  Unless required by applicable law or agreed to in writing,
++ *  software distributed under the License is distributed on an
++ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
++ *  KIND, either express or implied.  See the License for the
++ *  specific language governing permissions and limitations
++ *  under the License.
++ */
+ package org.codehaus.groovy.util;
+ 
+ import java.io.IOException;
+
+Commit:
+3453072a0210990c8c9563557af12de3da4bbf4a
+sunlan
+sunlan@apache.org
+2018-06-01 12:50:23 +0800
+Fix file descriptor leaks in compiler and runtime
+diff --git a/src/main/groovy/groovy/lang/GroovyClassLoader.java b/src/main/groovy/groovy/lang/GroovyClassLoader.java
+index 626ffb04b2..b1e94bdef3 100644
+--- a/src/main/groovy/groovy/lang/GroovyClassLoader.java
++++ b/src/main/groovy/groovy/lang/GroovyClassLoader.java
+@@ -46,6 +46,7 @@ import org.codehaus.groovy.runtime.InvokerHelper;
+ import org.codehaus.groovy.runtime.memoize.EvictableCache;
+ import org.codehaus.groovy.runtime.memoize.StampedCommonCache;
+ import org.codehaus.groovy.runtime.memoize.UnlimitedConcurrentCache;
++import org.codehaus.groovy.util.URLStreams;
+ import org.objectweb.asm.ClassVisitor;
+ import org.objectweb.asm.ClassWriter;
+ import org.objectweb.asm.Opcodes;
+@@ -812,7 +813,7 @@ public class GroovyClassLoader extends URLClassLoader {
+                         // do nothing and fall back to the other version
+                     }
+                 }
+-                return parseClass(new InputStreamReader(source.openStream(), sourceEncoding), name);
++                return parseClass(new InputStreamReader(URLStreams.openUncachedStream(source), sourceEncoding), name);
+             }
+         }
+         return oldClass;
+diff --git a/src/main/java/org/codehaus/groovy/ast/decompiled/AsmDecompiler.java b/src/main/java/org/codehaus/groovy/ast/decompiled/AsmDecompiler.java
+index c128c49b0a..5efb60bcef 100644
+--- a/src/main/java/org/codehaus/groovy/ast/decompiled/AsmDecompiler.java
++++ b/src/main/java/org/codehaus/groovy/ast/decompiled/AsmDecompiler.java
+@@ -20,6 +20,7 @@ package org.codehaus.groovy.ast.decompiled;
+ 
+ import groovy.lang.GroovyRuntimeException;
+ import org.codehaus.groovy.control.CompilerConfiguration;
++import org.codehaus.groovy.util.URLStreams;
+ import org.objectweb.asm.AnnotationVisitor;
+ import org.objectweb.asm.ClassReader;
+ import org.objectweb.asm.ClassVisitor;
+@@ -78,7 +79,7 @@ public abstract class AsmDecompiler {
+         if (stub == null) {
+             DecompilingVisitor visitor = new DecompilingVisitor();
+ 
+-            try (InputStream stream = new BufferedInputStream(url.openStream())) {
++            try (InputStream stream = new BufferedInputStream(URLStreams.openUncachedStream(url))) {
+                 new ClassReader(stream).accept(visitor, ClassReader.SKIP_FRAMES);
+             }
+             stub = visitor.result;
+diff --git a/src/main/java/org/codehaus/groovy/control/SourceExtensionHandler.java b/src/main/java/org/codehaus/groovy/control/SourceExtensionHandler.java
+index 774b12829a..0d85ebe440 100644
+--- a/src/main/java/org/codehaus/groovy/control/SourceExtensionHandler.java
++++ b/src/main/java/org/codehaus/groovy/control/SourceExtensionHandler.java
+@@ -19,6 +19,7 @@
+ package org.codehaus.groovy.control;
+ 
+ import groovy.lang.GroovyRuntimeException;
++import org.codehaus.groovy.util.URLStreams;
+ 
+ import java.io.BufferedReader;
+ import java.io.IOException;
+@@ -45,7 +46,7 @@ public class SourceExtensionHandler {
+                 BufferedReader svcIn = null;
+                 URL service = globalServices.nextElement();
+                 try {
+-                    svcIn = new BufferedReader(new InputStreamReader(service.openStream()));
++                    svcIn = new BufferedReader(new InputStreamReader(URLStreams.openUncachedStream(service)));
+                     String extension = svcIn.readLine();
+                     while (extension != null) {
+                         extension = extension.trim();
+diff --git a/src/main/java/org/codehaus/groovy/control/io/URLReaderSource.java b/src/main/java/org/codehaus/groovy/control/io/URLReaderSource.java
+index 7c925591f9..2af1a91276 100644
+--- a/src/main/java/org/codehaus/groovy/control/io/URLReaderSource.java
++++ b/src/main/java/org/codehaus/groovy/control/io/URLReaderSource.java
+@@ -20,6 +20,7 @@ package org.codehaus.groovy.control.io;
+ 
+ import groovy.lang.GroovyRuntimeException;
+ import org.codehaus.groovy.control.CompilerConfiguration;
++import org.codehaus.groovy.util.URLStreams;
+ 
+ import java.io.IOException;
+ import java.io.InputStreamReader;
+@@ -50,7 +51,7 @@ public class URLReaderSource extends AbstractReaderSource {
+     *  Returns a new Reader on the underlying source object.  
+     */
+     public Reader getReader() throws IOException {
+-       return new InputStreamReader( url.openStream(), configuration.getSourceEncoding() );
++       return new InputStreamReader(URLStreams.openUncachedStream(url), configuration.getSourceEncoding() );
+     }
+ 
+     /**
+diff --git a/src/main/java/org/codehaus/groovy/runtime/m12n/ExtensionModuleScanner.java b/src/main/java/org/codehaus/groovy/runtime/m12n/ExtensionModuleScanner.java
+index 89d5804dfe..596c223989 100644
+--- a/src/main/java/org/codehaus/groovy/runtime/m12n/ExtensionModuleScanner.java
++++ b/src/main/java/org/codehaus/groovy/runtime/m12n/ExtensionModuleScanner.java
+@@ -19,6 +19,7 @@
+ package org.codehaus.groovy.runtime.m12n;
+ 
+ import groovy.lang.GroovyRuntimeException;
++import org.codehaus.groovy.util.URLStreams;
+ 
+ import java.io.IOException;
+ import java.io.InputStream;
+@@ -70,7 +71,7 @@ public class ExtensionModuleScanner {
+         Properties properties = new Properties();
+         InputStream inStream = null;
+         try {
+-            inStream = metadata.openStream();
++            inStream = URLStreams.openUncachedStream(metadata);
+             properties.load(inStream);
+         } catch (IOException e) {
+             throw new GroovyRuntimeException("Unable to load module META-INF descriptor", e);
+diff --git a/src/main/java/org/codehaus/groovy/transform/ASTTransformationVisitor.java b/src/main/java/org/codehaus/groovy/transform/ASTTransformationVisitor.java
+index 77bc3cc98f..150603c910 100644
+--- a/src/main/java/org/codehaus/groovy/transform/ASTTransformationVisitor.java
++++ b/src/main/java/org/codehaus/groovy/transform/ASTTransformationVisitor.java
+@@ -34,6 +34,7 @@ import org.codehaus.groovy.control.Phases;
+ import org.codehaus.groovy.control.SourceUnit;
+ import org.codehaus.groovy.control.messages.SimpleMessage;
+ import org.codehaus.groovy.control.messages.WarningMessage;
++import org.codehaus.groovy.util.URLStreams;
+ 
+ import java.io.BufferedReader;
+ import java.io.IOException;
+@@ -221,7 +222,7 @@ public final class ASTTransformationVisitor extends ClassCodeVisitorSupport {
+                 String className;
+                 BufferedReader svcIn = null;
+                 try {
+-                    svcIn = new BufferedReader(new InputStreamReader(service.openStream(), "UTF-8"));
++                    svcIn = new BufferedReader(new InputStreamReader(URLStreams.openUncachedStream(service), "UTF-8"));
+                     try {
+                         className = svcIn.readLine();
+                     } catch (IOException ioe) {
+diff --git a/src/main/java/org/codehaus/groovy/util/ReleaseInfo.java b/src/main/java/org/codehaus/groovy/util/ReleaseInfo.java
+index 912905ea86..6c214f8d28 100644
+--- a/src/main/java/org/codehaus/groovy/util/ReleaseInfo.java
++++ b/src/main/java/org/codehaus/groovy/util/ReleaseInfo.java
+@@ -53,7 +53,7 @@ public class ReleaseInfo {
+         if (url != null) {
+             InputStream is = null;
+             try {
+-                is = url.openStream();
++                is = URLStreams.openUncachedStream(url);
+                 if (is != null) {
+                     RELEASE_INFO.load(is);
+                 }
+diff --git a/src/main/java/org/codehaus/groovy/util/URLStreams.java b/src/main/java/org/codehaus/groovy/util/URLStreams.java
+new file mode 100644
+index 0000000000..e1da48017f
+--- /dev/null
++++ b/src/main/java/org/codehaus/groovy/util/URLStreams.java
+@@ -0,0 +1,26 @@
++package org.codehaus.groovy.util;
++
++import java.io.IOException;
++import java.io.InputStream;
++import java.net.URL;
++import java.net.URLConnection;
++
++public class URLStreams {
++    private URLStreams() {
++
++    }
++
++    /**
++     * Opens an {@link InputStream} reading from the given URL without
++     * caching the stream. This prevents file descriptor leaks when reading
++     * from file system URLs.
++     *
++     * @param url the URL to connect to
++     * @return an input stream reading from the URL connection
++     */
++    public static InputStream openUncachedStream(URL url) throws IOException {
++        URLConnection urlConnection = url.openConnection();
++        urlConnection.setUseCaches(false);
++        return urlConnection.getInputStream();
++    }
++}
+
+Commit:
+0e62215764126ce86cef4e19e46d85db12c5d2b0
+sunlan
+sunlan@apache.org
+2018-06-01 10:21:54 +0800
+GROOVY-8622 Groovy Console should list its classpath(closes #737)
+diff --git a/subprojects/groovy-console/src/main/groovy/groovy/ui/Console.groovy b/subprojects/groovy-console/src/main/groovy/groovy/ui/Console.groovy
+index a7ff3561c1..a558de6178 100644
+--- a/subprojects/groovy-console/src/main/groovy/groovy/ui/Console.groovy
++++ b/subprojects/groovy-console/src/main/groovy/groovy/ui/Console.groovy
+@@ -1068,6 +1068,35 @@ class Console implements CaretListener, HyperlinkListener, ComponentListener, Fo
+         }
+     }
+ 
++    void listClasspath(EventObject evt = null) {
++        List<URL> urls = []
++
++        ClassLoader cl = shell.classLoader
++        while(cl instanceof URLClassLoader) {
++            cl.getURLs().each { url -> urls << url }
++            cl = cl.parent
++        }
++
++        List data = urls.unique().collect { url -> [name: new File(url.toURI()).name, path: url.path] }
++        data.sort { it.name }
++
++        JScrollPane scrollPane = swing.scrollPane{
++            table {
++                tableModel(list : data) {
++                    propertyColumn(header: 'Name', propertyName: 'name')
++                    propertyColumn(header:' Path', propertyName: 'path')
++                }
++            }
++        }
++
++        def pane = swing.optionPane()
++        pane.message = scrollPane
++        def dialog = pane.createDialog(frame, 'Classpath')
++        dialog.setSize(800, 600)
++        dialog.resizable = true
++        dialog.visible = true
++    }
++
+     void clearContext(EventObject evt = null) {
+         def binding = new Binding()
+         newScript(null, binding)
+diff --git a/subprojects/groovy-console/src/main/groovy/groovy/ui/ConsoleActions.groovy b/subprojects/groovy-console/src/main/groovy/groovy/ui/ConsoleActions.groovy
+index e52363d912..627d52b3db 100644
+--- a/subprojects/groovy-console/src/main/groovy/groovy/ui/ConsoleActions.groovy
++++ b/subprojects/groovy-console/src/main/groovy/groovy/ui/ConsoleActions.groovy
+@@ -224,6 +224,11 @@ addClasspathDir = action(
+     mnemonic: 'D',
+ )
+ 
++listClasspath = action(
++    name: 'List Classpath',
++    closure: controller.&listClasspath
++)
++
+ clearClassloader = action(
+     name: 'Clear Script Context',
+     closure: controller.&clearContext,
+diff --git a/subprojects/groovy-console/src/main/groovy/groovy/ui/view/BasicMenuBar.groovy b/subprojects/groovy-console/src/main/groovy/groovy/ui/view/BasicMenuBar.groovy
+index 6214c04ee3..9246ea1c79 100644
+--- a/subprojects/groovy-console/src/main/groovy/groovy/ui/view/BasicMenuBar.groovy
++++ b/subprojects/groovy-console/src/main/groovy/groovy/ui/view/BasicMenuBar.groovy
+@@ -85,6 +85,7 @@ menuBar {
+         separator()
+         menuItem(addClasspathJar)
+         menuItem(addClasspathDir)
++        menuItem(listClasspath)
+         menuItem(clearClassloader)
+         separator()
+         menuItem(inspectLastAction)
+diff --git a/subprojects/groovy-console/src/main/groovy/groovy/ui/view/MacOSXMenuBar.groovy b/subprojects/groovy-console/src/main/groovy/groovy/ui/view/MacOSXMenuBar.groovy
+index 78e96868fe..1124b47df3 100644
+--- a/subprojects/groovy-console/src/main/groovy/groovy/ui/view/MacOSXMenuBar.groovy
++++ b/subprojects/groovy-console/src/main/groovy/groovy/ui/view/MacOSXMenuBar.groovy
+@@ -125,6 +125,7 @@ menuBar {
+         separator()
+         menuItem(addClasspathJar)
+         menuItem(addClasspathDir)
++        menuItem(listClasspath)
+         menuItem(clearClassloader)
+         separator()
+         menuItem(inspectLastAction, icon:null)
+
+Commit:
+b18f236c4f9ac7632b6477b19a3db3afb9fb21e3
+Paul King
+paulk@asert.com.au
+2018-06-01 04:35:44 +1000
+Avoiding Gradle deprecation warnings about registering invalid task inputs by not adding the checkstyle HTML report generation task in subprojects with no Java source files. (closes #736)
+diff --git a/gradle/quality.gradle b/gradle/quality.gradle
+index d9b13f697a..b05b2461a2 100644
+--- a/gradle/quality.gradle
++++ b/gradle/quality.gradle
+@@ -80,16 +80,16 @@ allprojects {
+                 destination reportFile
+             }
+         }
+-        task("${name}Report") {
+-            def configDir = file("$rootProject.projectDir/config/checkstyle")
+-            def templateFile = 'checkstyle-report.groovy'
+-            def htmlReportFile = file("${buildDir}/reports/checkstyle/${name}.html")
+-            inputs.file file("$configDir/$templateFile")
+-            inputs.file reportFile
+-            outputs.file htmlReportFile
++        if (!source.empty) {
++            task("${name}Report") {
++                def configDir = file("$rootProject.projectDir/config/checkstyle")
++                def templateFile = 'checkstyle-report.groovy'
++                def htmlReportFile = file("${buildDir}/reports/checkstyle/${name}.html")
++                inputs.file file("$configDir/$templateFile")
++                inputs.file reportFile
++                outputs.file htmlReportFile
+ 
+-            doLast {
+-                if (reportFile.exists()) {
++                doLast {
+                     def templateConfiguration = new TemplateConfiguration()
+                     templateConfiguration.with {
+                         autoIndent = true
+@@ -123,8 +123,8 @@ allprojects {
+                     }
+                 }
+             }
++            finalizedBy "${name}Report"
+         }
+-        finalizedBy "${name}Report"
+     }
+ 
+     findbugs {
+
+Commit:
+1280727ed236074b37c91e59b5d93b00e82a947a
+Paul King
+paulk@asert.com.au
+2018-05-31 05:38:54 +1000
+fix path: dateutil => datetime
+diff --git a/gradle/docs.gradle b/gradle/docs.gradle
+index 0809388c41..ebb9e2dacc 100644
+--- a/gradle/docs.gradle
++++ b/gradle/docs.gradle
+@@ -121,8 +121,6 @@ task docProjectVersionInfo(type: Copy) {
+ task docGDK {
+     outputs.cacheIf { true }
+     dependsOn([project(':groovy-groovydoc'), project(':groovy-docgenerator'), project(':groovy-cli-picocli')]*.classes)
+-    // TODO don't hard-code these
+-    dependsOn([project(':groovy-nio'), project(':groovy-sql'), project(':groovy-xml'), project(':groovy-swing')]*.classes)
+     dependsOn docProjectVersionInfo
+     ext.destinationDir = "$buildDir/html/groovy-jdk"
+     inputs.files sourceSets.main.runtimeClasspath + configurations.tools + files(docProjectVersionInfo.destinationDir)
+@@ -156,8 +154,8 @@ task docGDK {
+                     arg(value: 'org.codehaus.groovy.vmplugin.v8.PluginDefaultGroovyMethods')
+                     // TODO don't hard-code these
+                     arg(value: 'subprojects/groovy-dateutil/src/main/java/org/apache/groovy/dateutil/extensions/DateUtilExtensions.java')
+-                    arg(value: 'subprojects/groovy-datetime/src/main/java/org/apache/groovy/dateutil/extensions/DateTimeExtensions.java')
+-                    arg(value: 'subprojects/groovy-datetime/src/main/java/org/apache/groovy/dateutil/extensions/DateTimeStaticExtensions.java')
++                    arg(value: 'subprojects/groovy-datetime/src/main/java/org/apache/groovy/datetime/extensions/DateTimeExtensions.java')
++                    arg(value: 'subprojects/groovy-datetime/src/main/java/org/apache/groovy/datetime/extensions/DateTimeStaticExtensions.java')
+                     arg(value: 'subprojects/groovy-sql/src/main/java/org/apache/groovy/sql/extensions/SqlExtensions.java')
+                     arg(value: 'subprojects/groovy-swing/src/main/java/org/codehaus/groovy/runtime/SwingGroovyMethods.java')
+                     arg(value: 'subprojects/groovy-xml/src/main/java/org/codehaus/groovy/runtime/XmlGroovyMethods.java')
+
+Commit:
+b416bee2f0938884cad4d6e666b3bcd4489b83c2
+sunlan
+sunlan@apache.org
+2018-05-29 12:26:27 +0800
+Trivial refactoring: Use `AtomicInteger` instead of `synchronized`(closes #733)
+diff --git a/src/main/groovy/groovy/lang/GroovyShell.java b/src/main/groovy/groovy/lang/GroovyShell.java
+index f155b30cb8..53bc6e61c7 100644
+--- a/src/main/groovy/groovy/lang/GroovyShell.java
++++ b/src/main/groovy/groovy/lang/GroovyShell.java
+@@ -38,6 +38,7 @@ import java.security.PrivilegedAction;
+ import java.security.PrivilegedActionException;
+ import java.security.PrivilegedExceptionAction;
+ import java.util.List;
++import java.util.concurrent.atomic.AtomicInteger;
+ 
+ import static org.codehaus.groovy.runtime.InvokerHelper.MAIN_METHOD_NAME;
+ 
+@@ -54,7 +55,7 @@ public class GroovyShell extends GroovyObjectSupport {
+     private static final String[] EMPTY_STRING_ARRAY = new String[0];
+ 
+     private final Binding context;
+-    private int counter;
++    private final AtomicInteger counter = new AtomicInteger(0);
+     private final CompilerConfiguration config;
+     private GroovyClassLoader loader;
+ 
+@@ -603,7 +604,7 @@ public class GroovyShell extends GroovyObjectSupport {
+         return parse(in, generateScriptName());
+     }
+ 
+-    protected synchronized String generateScriptName() {
+-        return "Script" + (++counter) + ".groovy";
++    protected String generateScriptName() {
++        return "Script" + counter.incrementAndGet() + ".groovy";
+     }
+ }
+
+Commit:
+07d14aa44a2aa28d64655b828b5a0a7cd83d7ba4
+Paul King
+paulk@asert.com.au
+2018-05-29 07:07:00 +1000
+add @since tag plus minor javadoc changes
+diff --git a/gradle/pomconfigurer.gradle b/gradle/pomconfigurer.gradle
+index 31ea58ac88..33c62d31ed 100644
+--- a/gradle/pomconfigurer.gradle
++++ b/gradle/pomconfigurer.gradle
+@@ -630,6 +630,9 @@ project.ext.pomConfigureClosureWithoutTweaks = {
+             contributor {
+                 name 'Remko Popma'
+             }
++            contributor {
++                name 'mgroovy'
++            }
+         }
+         mailingLists {
+             mailingList {
+diff --git a/src/main/groovy/groovy/lang/Newify.java b/src/main/groovy/groovy/lang/Newify.java
+index 023a0b3a0a..a925bd1bdf 100644
+--- a/src/main/groovy/groovy/lang/Newify.java
++++ b/src/main/groovy/groovy/lang/Newify.java
+@@ -31,7 +31,7 @@ import java.lang.annotation.Target;
+  * method or "Python-style" by just omitting the 'new' keyword.
+  * <p>
+  * WARNING: For the Python style with class-name-matching pattern, the pattern should be chosen as to avoid matching
+- * method names if possible. If following Java/Groovy naming convention, class names (contrary to method names) start
++ * method names if possible. If following Java/Groovy naming conventions, class names (contrary to method names) start
+  * with an uppercase letter. In this case {@code pattern="[A-Z].*"} (see {@link java.util.regex.Pattern} for supported
+  * Java pattern syntax) is the recommended pattern to allow all classes to be created without requiring a new keyword.
+  * Using a pattern that also matches method names (e.g. ".+", ".*" or "[a-zA-Z].*") might negatively impact build
+@@ -77,8 +77,8 @@ import java.lang.annotation.Target;
+  * using meta programming.
+  * <p>
+  * For the "Python-style" conversions you can either specify each class name on which you want them
+- * to apply, or supply a pattern to match class names against. The transformation then works by matching the basename
+- * of the provided classes to any
++ * to apply, or supply a pattern to match class names against. The transformation then works by
++ * matching the basename of the provided classes to any
+  * similarly named instance method calls not specifically bound to an object, i.e. associated
+  * with the 'this' object. In other words <code>Leaf("A")</code> would be transformed to
+  * <code>new Leaf("A")</code> but <code>x.Leaf("A")</code> would not be touched.
+@@ -110,15 +110,15 @@ import java.lang.annotation.Target;
+  * Though it is OK to have different packages in different contexts. Also, there is
+  * no support for turning "Ruby-style" conversions off at the method, constructor or
+  * field level if already turned on at the class level.
+- *
+- * @author Paul King
+- * @author mgroovy
+  */
+ @java.lang.annotation.Documented
+ @Retention(RetentionPolicy.SOURCE)
+ @Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.TYPE, ElementType.FIELD, ElementType.LOCAL_VARIABLE})
+ @GroovyASTTransformationClass("org.codehaus.groovy.transform.NewifyASTTransformation")
+ public @interface Newify {
++    /**
++     * @return one or more classes where "Python-style" constructor notation will be supported
++     */
+     Class<?>[] value() default {};
+ 
+     /**
+@@ -126,5 +126,9 @@ public @interface Newify {
+      */
+     boolean auto() default true;
+ 
++    /**
++     * @since 2.5.0
++     * @return a regex pattern for class names where "Python-style" constructor notation will be supported
++     */
+     String pattern() default "";
+ }
+
+Commit:
+7d5e344543a5e5af53dcd90d2f6c97ba8c5698bd
+sunlan
+sunlan@apache.org
+2018-05-28 19:54:12 +0800
+Refine the usage of `toArray` in `GroovyShell`
+diff --git a/src/main/groovy/groovy/lang/GroovyShell.java b/src/main/groovy/groovy/lang/GroovyShell.java
+index 1ac2fc4290..f155b30cb8 100644
+--- a/src/main/groovy/groovy/lang/GroovyShell.java
++++ b/src/main/groovy/groovy/lang/GroovyShell.java
+@@ -51,6 +51,7 @@ import static org.codehaus.groovy.runtime.InvokerHelper.MAIN_METHOD_NAME;
+ public class GroovyShell extends GroovyObjectSupport {
+ 
+     public static final String DEFAULT_CODE_BASE = "/groovy/shell";
++    private static final String[] EMPTY_STRING_ARRAY = new String[0];
+ 
+     private final Binding context;
+     private int counter;
+@@ -156,8 +157,7 @@ public class GroovyShell extends GroovyObjectSupport {
+      * @param list       the command line arguments to pass in
+      */
+     public Object run(File scriptFile, List list) throws CompilationFailedException, IOException {
+-        String[] args = new String[list.size()];
+-        return run(scriptFile, (String[]) list.toArray(args));
++        return run(scriptFile, (String[]) list.toArray(EMPTY_STRING_ARRAY));
+     }
+ 
+     /**
+@@ -168,9 +168,7 @@ public class GroovyShell extends GroovyObjectSupport {
+      * @param list       the command line arguments to pass in
+      */
+     public Object run(String scriptText, String fileName, List list) throws CompilationFailedException {
+-        String[] args = new String[list.size()];
+-        list.toArray(args);
+-        return run(scriptText, fileName, args);
++        return run(scriptText, fileName, (String[]) list.toArray(EMPTY_STRING_ARRAY));
+     }
+ 
+     /**
+@@ -364,7 +362,7 @@ public class GroovyShell extends GroovyObjectSupport {
+      * @param args      the command line arguments to pass in
+      */
+     public Object run(GroovyCodeSource source, List args) throws CompilationFailedException {
+-        return run(source, ((String[]) args.toArray(new String[0])));
++        return run(source, ((String[]) args.toArray(EMPTY_STRING_ARRAY)));
+     }
+ 
+     /**
+@@ -385,7 +383,7 @@ public class GroovyShell extends GroovyObjectSupport {
+      * @param args      the command line arguments to pass in
+      */
+     public Object run(URI source, List args) throws CompilationFailedException, IOException {
+-        return run(new GroovyCodeSource(source), ((String[]) args.toArray(new String[0])));
++        return run(new GroovyCodeSource(source), ((String[]) args.toArray(EMPTY_STRING_ARRAY)));
+     }
+ 
+     /**
+@@ -406,7 +404,7 @@ public class GroovyShell extends GroovyObjectSupport {
+      * @param list     the command line arguments to pass in
+      */
+     public Object run(final Reader in, final String fileName, List list) throws CompilationFailedException {
+-        return run(in, fileName, (String[]) list.toArray(new String[0]));
++        return run(in, fileName, (String[]) list.toArray(EMPTY_STRING_ARRAY));
+     }
+ 
+     /**
+
+Commit:
+a577b37f8500734b84c2824237eca1e5888c1627
+sunlan
+sunlan@apache.org
+2018-05-28 18:54:05 +0800
+GROOVY-8609: Fails to compile when upper bound has generics(closes #730)
+diff --git a/src/main/java/org/codehaus/groovy/ast/tools/GenericsUtils.java b/src/main/java/org/codehaus/groovy/ast/tools/GenericsUtils.java
+index 606cf632c5..3c94f82bcf 100644
+--- a/src/main/java/org/codehaus/groovy/ast/tools/GenericsUtils.java
++++ b/src/main/java/org/codehaus/groovy/ast/tools/GenericsUtils.java
+@@ -163,7 +163,10 @@ public class GenericsUtils {
+         GenericsType[] parameterized = node.getGenericsTypes();
+         if (parameterized == null || parameterized.length == 0) return;
+         GenericsType[] redirectGenericsTypes = node.redirect().getGenericsTypes();
+-        if (redirectGenericsTypes == null) redirectGenericsTypes = parameterized;
++        if (redirectGenericsTypes == null ||
++                (node.isGenericsPlaceHolder() && redirectGenericsTypes.length != parameterized.length) /* GROOVY-8609 */ ) {
++            redirectGenericsTypes = parameterized;
++        }
+         if (redirectGenericsTypes.length != parameterized.length) {
+             throw new GroovyBugError("Expected earlier checking to detect generics parameter arity mismatch" +
+                     "\nExpected: " + node.getName() + toGenericTypesString(redirectGenericsTypes) +
+diff --git a/src/test/groovy/bugs/Groovy8609Bug.groovy b/src/test/groovy/bugs/Groovy8609Bug.groovy
+new file mode 100644
+index 0000000000..bfc021fe85
+--- /dev/null
++++ b/src/test/groovy/bugs/Groovy8609Bug.groovy
+@@ -0,0 +1,145 @@
++/*
++ *  Licensed to the Apache Software Foundation (ASF) under one
++ *  or more contributor license agreements.  See the NOTICE file
++ *  distributed with this work for additional information
++ *  regarding copyright ownership.  The ASF licenses this file
++ *  to you under the Apache License, Version 2.0 (the
++ *  "License"); you may not use this file except in compliance
++ *  with the License.  You may obtain a copy of the License at
++ *
++ *    http://www.apache.org/licenses/LICENSE-2.0
++ *
++ *  Unless required by applicable law or agreed to in writing,
++ *  software distributed under the License is distributed on an
++ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
++ *  KIND, either express or implied.  See the License for the
++ *  specific language governing permissions and limitations
++ *  under the License.
++ */
++package groovy.bugs
++
++import gls.CompilableTestSupport
++
++class Groovy8609Bug extends CompilableTestSupport {
++    void testUpperBoundWithGenerics() {
++        assertScript '''
++        @groovy.transform.CompileStatic
++        public class A<T extends List<E>, E extends Map<String, Integer>> {
++            E getFirstRecord(T recordList) {
++                return recordList.get(0)
++            }
++            
++            static void main(args) {
++                def list = new ArrayList<HashMap<String, Integer>>()
++                def record = new HashMap<String, Integer>()
++                list.add(record)
++                def a = new A<ArrayList<HashMap<String, Integer>>, HashMap<String, Integer>>()
++                assert record.is(a.getFirstRecord(list))
++            }
++        }
++        '''
++    }
++
++    void testUpperBoundWithoutGenerics() {
++        assertScript '''
++        @groovy.transform.CompileStatic
++        public class A<T extends List<E>, E extends Map> {
++            E getFirstRecord(T recordList) {
++                return recordList.get(0);
++            }
++            
++            static void main(args) {
++                def list = new ArrayList<HashMap<String, Integer>>()
++                def record = new HashMap<String, Integer>()
++                list.add(record)
++                def a = new A<ArrayList<HashMap<String, Integer>>, HashMap<String, Integer>>()
++                assert record.is(a.getFirstRecord(list))
++            }
++        }
++        '''
++    }
++
++    void testNoUpperBound() {
++        assertScript '''
++        @groovy.transform.CompileStatic
++        public class A<T extends List<E>, E> {
++            E getFirstRecord(T recordList) {
++                return recordList.get(0);
++            }
++            
++            static void main(args) {
++                def list = new ArrayList<HashMap<String, Integer>>()
++                def record = new HashMap<String, Integer>()
++                list.add(record)
++                def a = new A<ArrayList<HashMap<String, Integer>>, HashMap<String, Integer>>()
++                assert record.is(a.getFirstRecord(list))
++            }
++        }
++        '''
++    }
++
++    void testUpperBoundWithGenericsThroughWrongType() {
++        def errMsg = shouldFail '''
++        @groovy.transform.CompileStatic
++        public class A<T extends List<E>, E extends Map<String, Integer>> {
++            E getFirstRecord(T recordList) {
++                return recordList.get(0)
++            }
++            
++            static void main(args) {
++                def list = new ArrayList<TreeMap<String, Integer>>()
++                def record = new TreeMap<String, Integer>()
++                list.add(record)
++                def a = new A<ArrayList<HashMap<String, Integer>>, HashMap<String, Integer>>()
++                assert record.is(a.getFirstRecord(list))
++            }
++        }
++        '''
++
++        assert errMsg.contains('[Static type checking] - Cannot call A <ArrayList, HashMap>#getFirstRecord(T) with arguments [java.util.ArrayList <TreeMap>]')
++    }
++
++    void testUpperBoundWithGenericsThroughWrongType2() {
++        def errMsg = shouldFail '''
++        @groovy.transform.CompileStatic
++        public class A<T extends List<E>, E extends Map<String, Integer>> {
++            E getFirstRecord(T recordList) {
++                return recordList.get(0)
++            }
++            
++            static void main(args) {
++                def list = new ArrayList<HashMap<String, Long>>()
++                def record = new HashMap<String, Long>()
++                list.add(record)
++                def a = new A<ArrayList<HashMap<String, Integer>>, HashMap<String, Integer>>()
++                assert record.is(a.getFirstRecord(list))
++            }
++        }
++        '''
++
++        // TODO we should print generics details, e.g. [Static type checking] - Cannot call A <ArrayList, HashMap<String, Integer>>#getFirstRecord(T) with arguments [java.util.ArrayList <HashMap<String, Long>>]
++        assert errMsg.contains('[Static type checking] - Cannot call A <ArrayList, HashMap>#getFirstRecord(T) with arguments [java.util.ArrayList <HashMap>]')
++    }
++
++    void testUpperBoundWithGenericsThroughWrongType3() {
++        def errMsg = shouldFail '''
++        @groovy.transform.CompileStatic
++        public class A<T extends List<E>, E extends Map<String, Integer>> {
++            E getFirstRecord(T recordList) {
++                return recordList.get(0)
++            }
++            
++            static void main(args) {
++                def list = new ArrayList<HashMap<StringBuffer, Integer>>()
++                def record = new HashMap<StringBuffer, Integer>()
++                list.add(record)
++                def a = new A<ArrayList<HashMap<String, Integer>>, HashMap<String, Integer>>()
++                assert record.is(a.getFirstRecord(list))
++            }
++        }
++        '''
++
++        // TODO we should print generics details, e.g. [Static type checking] - Cannot call A <ArrayList, HashMap<String, Integer>>#getFirstRecord(T) with arguments [java.util.ArrayList <HashMap<StringBuffer, Integer>>]
++        assert errMsg.contains('[Static type checking] - Cannot call A <ArrayList, HashMap>#getFirstRecord(T) with arguments [java.util.ArrayList <HashMap>]')
++    }
++}
+
+Commit:
+72f60418af4ec9a800f1327ee8d95042c71bcc4c
+sunlan
+sunlan@apache.org
+2018-05-28 15:58:34 +0800
+Added one missing word(closes #731)
+diff --git a/src/spec/doc/core-object-orientation.adoc b/src/spec/doc/core-object-orientation.adoc
+index 7177c8648d..bfc950ca56 100644
+--- a/src/spec/doc/core-object-orientation.adoc
++++ b/src/spec/doc/core-object-orientation.adoc
+@@ -421,7 +421,7 @@ include::{projectdir}/src/spec/test/objectorientation/MethodsTest.groovy[tags=ch
+ [[fields]]
+ ==== Fields
+ 
+-A field is a member of a class or a trait which:
++A field is a member of a class or a trait which has:
+ 
+ * a mandatory _access modifier_ (`public`, `protected`, or `private`)
+ * one or more optional _modifiers_ (`static`, `final`, `synchronized`)
+
+Commit:
+968da9edc79ca5b0545118d9a671af65b57bbd78
+sunlan
+sunlan@apache.org
+2018-05-28 08:23:03 +0800
+Minor refactoring: move generics helper methods to `GenericsUtils`
+diff --git a/src/main/java/org/codehaus/groovy/ast/tools/GeneralUtils.java b/src/main/java/org/codehaus/groovy/ast/tools/GeneralUtils.java
+index c0082bf75e..0fa8063ec6 100644
+--- a/src/main/java/org/codehaus/groovy/ast/tools/GeneralUtils.java
++++ b/src/main/java/org/codehaus/groovy/ast/tools/GeneralUtils.java
+@@ -24,7 +24,6 @@ import org.codehaus.groovy.ast.AnnotationNode;
+ import org.codehaus.groovy.ast.ClassHelper;
+ import org.codehaus.groovy.ast.ClassNode;
+ import org.codehaus.groovy.ast.FieldNode;
+-import org.codehaus.groovy.ast.GenericsType;
+ import org.codehaus.groovy.ast.MethodNode;
+ import org.codehaus.groovy.ast.PackageNode;
+ import org.codehaus.groovy.ast.Parameter;
+@@ -69,7 +68,6 @@ import org.codehaus.groovy.transform.AbstractASTTransformation;
+ import java.lang.reflect.Modifier;
+ import java.util.ArrayList;
+ import java.util.Collections;
+-import java.util.LinkedHashMap;
+ import java.util.LinkedHashSet;
+ import java.util.List;
+ import java.util.Map;
+@@ -879,53 +877,4 @@ public class GeneralUtils {
+                         firstPackage != null && secondPackage != null && firstPackage.getName().equals(secondPackage.getName()));
+     }
+ 
+-    /**
+-     * map declaring generics type to actual generics type, e.g. GROOVY-7204:
+-     * declaring generics types:      T,      S extends Serializable
+-     * actual generics types   : String,      Long
+-     *
+-     * the result map is [
+-     *  T: String,
+-     *  S: Long
+-     * ]
+-     *
+-     * The resolved types can not help us to choose methods correctly if the argument is a string:  T: Object, S: Serializable
+-     * so we need actual types:  T: String, S: Long
+-     */
+-    public static Map<GenericsType, GenericsType> makeDeclaringAndActualGenericsTypeMap(ClassNode declaringClass, ClassNode actualReceiver) {
+-        ClassNode parameterizedType = GenericsUtils.findParameterizedTypeFromCache(declaringClass, actualReceiver);
+-
+-        if (null == parameterizedType) {
+-            return Collections.emptyMap();
+-        }
+-
+-        GenericsType[] declaringGenericsTypes = declaringClass.getGenericsTypes();
+-        GenericsType[] actualGenericsTypes = parameterizedType.getGenericsTypes();
+-
+-        Map<GenericsType, GenericsType> result = new LinkedHashMap<>();
+-        for (int i = 0, n = declaringGenericsTypes.length; i < n; i++) {
+-            result.put(declaringGenericsTypes[i], actualGenericsTypes[i]);
+-        }
+-
+-        return result;
+-    }
+-
+-    /**
+-     * Get the actual type according to the placeholder name
+-     *
+-     * @param placeholderName the placeholder name, e.g. T, E
+-     * @param genericsPlaceholderAndTypeMap the result of {@link #makeDeclaringAndActualGenericsTypeMap(ClassNode, ClassNode}
+-     * @return the actual type
+-     */
+-    public static ClassNode findActualTypeByGenericsPlaceholderName(String placeholderName, Map<GenericsType, GenericsType> genericsPlaceholderAndTypeMap) {
+-        for (Map.Entry<GenericsType, GenericsType> entry : genericsPlaceholderAndTypeMap.entrySet()) {
+-            GenericsType declaringGenericsType = entry.getKey();
+-
+-            if (placeholderName.equals(declaringGenericsType.getName())) {
+-                return entry.getValue().getType().redirect();
+-            }
+-        }
+-
+-        return null;
+-    }
+ }
+diff --git a/src/main/java/org/codehaus/groovy/ast/tools/GenericsUtils.java b/src/main/java/org/codehaus/groovy/ast/tools/GenericsUtils.java
+index 3d99e53b5c..606cf632c5 100644
+--- a/src/main/java/org/codehaus/groovy/ast/tools/GenericsUtils.java
++++ b/src/main/java/org/codehaus/groovy/ast/tools/GenericsUtils.java
+@@ -45,6 +45,7 @@ import java.io.StringReader;
+ import java.util.ArrayList;
+ import java.util.Collections;
+ import java.util.HashMap;
++import java.util.LinkedHashMap;
+ import java.util.LinkedList;
+ import java.util.List;
+ import java.util.Map;
+@@ -734,6 +735,57 @@ public class GenericsUtils {
+     }
+ 
+     private static final EvictableCache<ParameterizedTypeCacheKey, ClassNode> PARAMETERIZED_TYPE_CACHE = new StampedCommonCache<>(128);
++
++    /**
++     * map declaring generics type to actual generics type, e.g. GROOVY-7204:
++     * declaring generics types:      T,      S extends Serializable
++     * actual generics types   : String,      Long
++     *
++     * the result map is [
++     *  T: String,
++     *  S: Long
++     * ]
++     *
++     * The resolved types can not help us to choose methods correctly if the argument is a string:  T: Object, S: Serializable
++     * so we need actual types:  T: String, S: Long
++     */
++    public static Map<GenericsType, GenericsType> makeDeclaringAndActualGenericsTypeMap(ClassNode declaringClass, ClassNode actualReceiver) {
++        ClassNode parameterizedType = findParameterizedTypeFromCache(declaringClass, actualReceiver);
++
++        if (null == parameterizedType) {
++            return Collections.emptyMap();
++        }
++
++        GenericsType[] declaringGenericsTypes = declaringClass.getGenericsTypes();
++        GenericsType[] actualGenericsTypes = parameterizedType.getGenericsTypes();
++
++        Map<GenericsType, GenericsType> result = new LinkedHashMap<>();
++        for (int i = 0, n = declaringGenericsTypes.length; i < n; i++) {
++            result.put(declaringGenericsTypes[i], actualGenericsTypes[i]);
++        }
++
++        return result;
++    }
++
++    /**
++     * Get the actual type according to the placeholder name
++     *
++     * @param placeholderName the placeholder name, e.g. T, E
++     * @param genericsPlaceholderAndTypeMap the result of {@link #makeDeclaringAndActualGenericsTypeMap(ClassNode, ClassNode}
++     * @return the actual type
++     */
++    public static ClassNode findActualTypeByGenericsPlaceholderName(String placeholderName, Map<GenericsType, GenericsType> genericsPlaceholderAndTypeMap) {
++        for (Map.Entry<GenericsType, GenericsType> entry : genericsPlaceholderAndTypeMap.entrySet()) {
++            GenericsType declaringGenericsType = entry.getKey();
++
++            if (placeholderName.equals(declaringGenericsType.getName())) {
++                return entry.getValue().getType().redirect();
++            }
++        }
++
++        return null;
++    }
++
+     private static class ParameterizedTypeCacheKey {
+         private ClassNode genericsClass;
+         private ClassNode actualType;
+diff --git a/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingSupport.java b/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingSupport.java
+index c5ee2fe28d..a195ed733f 100644
+--- a/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingSupport.java
++++ b/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingSupport.java
+@@ -36,7 +36,6 @@ import org.codehaus.groovy.ast.expr.ListExpression;
+ import org.codehaus.groovy.ast.expr.MapExpression;
+ import org.codehaus.groovy.ast.expr.VariableExpression;
+ import org.codehaus.groovy.ast.stmt.ReturnStatement;
+-import org.codehaus.groovy.ast.tools.GeneralUtils;
+ import org.codehaus.groovy.ast.tools.GenericsUtils;
+ import org.codehaus.groovy.ast.tools.ParameterUtils;
+ import org.codehaus.groovy.ast.tools.WideningCategories;
+@@ -1100,7 +1099,7 @@ public abstract class StaticTypeCheckingSupport {
+                 Person p = foo(b)
+              */
+ 
+-            Map<GenericsType, GenericsType> declaringAndActualGenericsTypeMap = GeneralUtils.makeDeclaringAndActualGenericsTypeMap(declaringClassForDistance, actualReceiverForDistance);
++            Map<GenericsType, GenericsType> declaringAndActualGenericsTypeMap = GenericsUtils.makeDeclaringAndActualGenericsTypeMap(declaringClassForDistance, actualReceiverForDistance);
+             Parameter[] params = makeRawTypes(safeNode.getParameters(), declaringAndActualGenericsTypeMap);
+             int dist = measureParametersAndArgumentsDistance(params, safeArgs);
+             if (dist >= 0) {
+@@ -1197,7 +1196,7 @@ public abstract class StaticTypeCheckingSupport {
+         for (int i = 0; i < params.length; i++) {
+             Parameter oldP = params[i];
+ 
+-            ClassNode actualType = GeneralUtils.findActualTypeByGenericsPlaceholderName(oldP.getType().getUnresolvedName(), genericsPlaceholderAndTypeMap);
++            ClassNode actualType = GenericsUtils.findActualTypeByGenericsPlaceholderName(oldP.getType().getUnresolvedName(), genericsPlaceholderAndTypeMap);
+             Parameter newP = new Parameter(makeRawType(null == actualType ? oldP.getType() : actualType), oldP.getName());
+             newParam[i] = newP;
+         }
+diff --git a/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingVisitor.java b/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingVisitor.java
+index 6300deb380..e27c6a9913 100644
+--- a/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingVisitor.java
++++ b/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingVisitor.java
+@@ -169,9 +169,9 @@ import static org.codehaus.groovy.ast.tools.GeneralUtils.args;
+ import static org.codehaus.groovy.ast.tools.GeneralUtils.binX;
+ import static org.codehaus.groovy.ast.tools.GeneralUtils.callX;
+ import static org.codehaus.groovy.ast.tools.GeneralUtils.castX;
+-import static org.codehaus.groovy.ast.tools.GeneralUtils.findActualTypeByGenericsPlaceholderName;
+-import static org.codehaus.groovy.ast.tools.GeneralUtils.makeDeclaringAndActualGenericsTypeMap;
+ import static org.codehaus.groovy.ast.tools.GeneralUtils.varX;
++import static org.codehaus.groovy.ast.tools.GenericsUtils.findActualTypeByGenericsPlaceholderName;
++import static org.codehaus.groovy.ast.tools.GenericsUtils.makeDeclaringAndActualGenericsTypeMap;
+ import static org.codehaus.groovy.ast.tools.GenericsUtils.toGenericTypesString;
+ import static org.codehaus.groovy.ast.tools.WideningCategories.LowestUpperBoundClassNode;
+ import static org.codehaus.groovy.ast.tools.WideningCategories.isBigDecCategory;
+
+Commit:
+72e530db3bb87644cc989039c31381e7f6ab68dc
+John Wagenleitner
+jwagenleitner@apache.org
+2018-05-27 13:09:46 -0700
+GROOVY-8610: STC NPE using DGM collect on Iterator (closes #729)
+diff --git a/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java b/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java
+index 1429102eb5..659a3976ed 100644
+--- a/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java
++++ b/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java
+@@ -3499,7 +3499,7 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
+      * @return a List of the transformed values
+      * @since 2.5.0
+      */
+-    public static <S,T> List<T> collect(Iterator<S> self, @ClosureParams(FirstParam.Component.class) Closure<T> transform) {
++    public static <S,T> List<T> collect(Iterator<S> self, @ClosureParams(FirstParam.FirstGenericType.class) Closure<T> transform) {
+         return (List<T>) collect(self, new ArrayList<T>(), transform);
+     }
+ 
+diff --git a/src/test/groovy/transform/stc/ClosureParamTypeInferenceSTCTest.groovy b/src/test/groovy/transform/stc/ClosureParamTypeInferenceSTCTest.groovy
+index 493802eedf..0e7f2965d4 100644
+--- a/src/test/groovy/transform/stc/ClosureParamTypeInferenceSTCTest.groovy
++++ b/src/test/groovy/transform/stc/ClosureParamTypeInferenceSTCTest.groovy
+@@ -231,6 +231,13 @@ def items = []
+         '''
+     }
+ 
++    void testDGM_collectOnIterator() {
++        assertScript '''
++            Iterator<String> itr = ['foo', 'bar', 'baz'].iterator()
++            assert itr.collect { it.startsWith('ba') } == [false, true, true]
++        '''
++    }
++
+     void testInferenceOnNonExtensionMethod() {
+         assertScript '''import groovy.transform.stc.ClosureParams
+             import groovy.transform.stc.FirstParam

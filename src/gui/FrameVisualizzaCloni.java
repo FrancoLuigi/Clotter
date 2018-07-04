@@ -8,8 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -25,7 +25,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 import baseClass.Clone;
-import baseClass.Commit;
 import management.Controller;
 import management.ForcedListSelectionModel;
 import management.GestoreDB;
@@ -38,7 +37,7 @@ public class FrameVisualizzaCloni {
 		frame.setForeground(Color.BLACK);
 		frame.setResizable(false);
 
-		frame.setSize(1150, 350);
+		frame.setSize(950, 350);
 		frame.setLocationRelativeTo(null);
 		frame.setTitle("Clo_tter v1.0");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -49,32 +48,31 @@ public class FrameVisualizzaCloni {
 			e.printStackTrace();
 		}
 
-		String col[] = { "id Clone", "file", "id Class", "startLine", "endLine", "id Commit", "id Committer" };
+		String col[] = { "id Clone", "file", "id Class", "startLine", "endLine"};
 
 		controller = Controller.getInstance();
 		g = GestoreDB.getInstance();
 
-		clones = g.readAssociationsClonesCommits();
+		clones = g.readClones();
 
-		JLabel lblNewLabel = new JLabel("Cloni individuati nel progetto: "+ clones.size());
+		JLabel lblNewLabel = new JLabel("Cloni individuati nel progetto: " + clones.size());
 		lblNewLabel.setBounds(100, 50, 500, 500);
 		frame.getContentPane().add(lblNewLabel);
 
-		Object[][] data = new Object[clones.size()][7];
+		Object[][] data = new Object[clones.size()][5];
 
 		int row = 0;
 
-		for (Clone c : clones) {
-			for (Commit co : c.getCommits().values()) {
+		for (Clone c : clones.values()) {
+			
 				data[row][0] = Integer.parseInt(c.getPcid());
 				data[row][1] = c.getFile();
 				data[row][2] = Integer.parseInt(c.getClassid());
 				data[row][3] = c.getStartLine();
 				data[row][4] = c.getEndLine();
-				data[row][5] = co.getId();
-				data[row][6] = Math.abs(co.getCommitter().getEmail());
+			
 				row++;
-			}
+			
 		}
 
 		DefaultTableModel model = new DefaultTableModel(data, col);
@@ -117,26 +115,17 @@ public class FrameVisualizzaCloni {
 
 		
 
-		sorter.setComparator(6, new Comparator<Integer>() {
-
-			@Override
-			public int compare(Integer name1, Integer name2) {
-				return name1.compareTo(name2);
-			}
-		});
-
 		table.setShowVerticalLines(true);
 		table.setShowHorizontalLines(true);
 		table.setGridColor(new Color(209, 209, 209));
 
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		table.getColumnModel().getColumn(1).setPreferredWidth(400);
-		table.getColumnModel().getColumn(5).setPreferredWidth(300);
-		table.getColumnModel().getColumn(6).setPreferredWidth(100);
+		table.getColumnModel().getColumn(1).setPreferredWidth(550);
+		
 		table.setSelectionModel(new ForcedListSelectionModel());
 
 		JScrollPane pane = new JScrollPane(table);
-		pane.setPreferredSize(new Dimension(1120, 200));
+		pane.setPreferredSize(new Dimension(900, 200));
 
 		frame.getContentPane().add(pane);
 
@@ -163,7 +152,7 @@ public class FrameVisualizzaCloni {
 
 	private Controller controller;
 	private JFrame frame;
-	private ArrayList<Clone> clones;
+	private HashMap<String, Clone> clones;
 	private GestoreDB g;
 
 }

@@ -20,29 +20,37 @@ public class GestoreAssociation {
 		HashMap<String, Association> associations = new HashMap<String, Association>();
 
 		for (Commit c : commits.values()) {
+			
 			for (Change ch : c.getChanges().values()) {
 
 				for (Range r : ch.getRanges()) {
 
 					for (Clone cl : clones.values()) {
+					
+						if (cl.getVersion().equalsIgnoreCase(c.getVersion())) {
+							
+							if (r.getRiga() <= cl.getStartLine() && (r.getRiga() + r.getIntervallo()) >= cl.getEndLine()
+									&& (r.getChange().getFile().equals(cl.getFile()))) {
+								
+								// System.out.println(r);
+								// System.out.println(cl);
+								// System.out.println(r.getRiga());
+								// System.out.println(r.getRiga()+r.getIntervallo()+"-"+cl.getEndLine());
 
-						if (r.getRiga() <= cl.getStartLine() && (r.getRiga() + r.getIntervallo()) >= cl.getEndLine()
-								&& (r.getChange().getFile().equals(cl.getFile()))) {
-							// System.out.println(r);
-							// System.out.println(cl);
-							// System.out.println(r.getRiga());
-							// System.out.println(r.getRiga()+r.getIntervallo()+"-"+cl.getEndLine());
+								Association a = new Association(cl.getPcid(), c.getId(), cl.getVersion());
 
-							Association a = new Association(cl.getPcid(), c.getId());
+								associations.put(cl.getPcid() + c.getId() + c.getVersion(), a);
+								// System.out.println(cl.getPcid()+c.getId());
+								// System.out.println("---");
+							}
 
-							associations.put(cl.getPcid() + c.getId(), a);
-							// System.out.println(cl.getPcid()+c.getId());
-							// System.out.println("---");
-						}
+							if (cl.getStartLine() <= r.getRiga() && cl.getEndLine() >= r.getRiga() + r.getIntervallo()
+									&& r.getChange().getFile().equals(cl.getFile())) {
 
-						if (cl.getStartLine() <= r.getRiga() && cl.getEndLine() >= r.getRiga() + r.getIntervallo()
-								&& r.getChange().getFile().equals(cl.getFile())) {
+								Association a = new Association(cl.getPcid(), c.getId(), c.getVersion());
 
+							associations.put(cl.getPcid() + c.getId() + cl.getVersion(), a);
+							}
 						}
 					}
 				}

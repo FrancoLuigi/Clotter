@@ -67,9 +67,9 @@ public class GestoreDB {
 		
 
 			String sql3 = "CREATE TABLE IF NOT EXISTS committers (" + "  nome varchar(50) NOT NULL, "
-					+ "  email int(50) NOT NULL, " +
+					+ "  email varchar(50) NOT NULL, " +
 
-					"  PRIMARY KEY (email)" +
+					"  PRIMARY KEY (email, nome)" +
 
 					") ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
@@ -92,9 +92,9 @@ public class GestoreDB {
 			
 
 			String sql3 = "CREATE TABLE IF NOT EXISTS associations (" + "  idClone varchar(15) NOT NULL, "
-					+ "  idCommit varchar(50) NOT NULL, " +
+					+ "  idCommit varchar(50) NOT NULL, "+ "  version varchar(50) NOT NULL, "  +
 
-					"  PRIMARY KEY (idclone,idcommit)" +
+					"  PRIMARY KEY (idclone,idcommit,version)" +
 
 					") ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
@@ -143,9 +143,9 @@ public class GestoreDB {
 	
 
 			String sql3 = "CREATE TABLE IF NOT EXISTS  commits (" + "  id varchar(50) NOT NULL, "
-					+ "  email int(50) NOT NULL, " + "  data DATETIME NOT NULL," + " descrizione varchar(100)," + "  version int(50) NOT NULL, " +
+					+ "  email  varchar(50) NOT NULL, " + "  data DATETIME NOT NULL," + " descrizione varchar(100)," + "  version varchar(50) NOT NULL, " +
 
-					"  PRIMARY KEY (id)," + " FOREIGN KEY (email) REFERENCES committers(email)"
+					"  PRIMARY KEY (id,version)," + " FOREIGN KEY (email) REFERENCES committers(email)"
 					+ " ON DELETE NO ACTION ON UPDATE NO ACTION" + ") ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
 			myStmt.executeUpdate(sql1);
@@ -195,9 +195,9 @@ public class GestoreDB {
 			String sql3 = "CREATE TABLE IF NOT EXISTS clones ("
 					+ "  file varchar(250)CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, "
 					+ "  startline int(15) NOT NULL, " + "  endline int(15) NOT NULL," + "  pcid varchar(15),"
-					+ "  classid varchar(15)," + "  version int(50) NOT NULL, " +
+					+ "  classid varchar(15)," + "  version varchar(50) NOT NULL, " +
 
-					"  PRIMARY KEY (pcid)," + " FOREIGN KEY (file) REFERENCES files(file),"
+					"  PRIMARY KEY (pcid,version)," + " FOREIGN KEY (file) REFERENCES files(file),"
 					+ " FOREIGN KEY (classid) REFERENCES classclone(id)" + ") ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
 			myStmt.executeUpdate(sql1);
@@ -220,8 +220,9 @@ public class GestoreDB {
 		
 			String sql3 = "CREATE TABLE IF NOT EXISTS classclone (" + "  id varchar(15) NOT NULL, "
 					+ "  clones int(15) NOT NULL, " + "  righe int(15) NOT NULL," + "  similarity int(15)," +
+					 "  version varchar(50) NOT NULL, "+
 
-					"  PRIMARY KEY (id)" +
+					"  PRIMARY KEY (id,version)" +
 
 					") ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
@@ -348,6 +349,7 @@ public class GestoreDB {
 		try {
 			Statement myStmt = connection.createStatement();
 
+		
 
 			for (Clone c : clones.values()) {
 
@@ -376,9 +378,10 @@ public class GestoreDB {
 
 			for (ClassClone c : classClone.values()) {
 
-				String sql = "insert ignore into classclone " + " (id, clones,righe,similarity)" + " values ('"
+	
+				String sql = "insert ignore into classclone " + " (id, clones,righe,similarity,version)" + " values ('"
 						+ c.getId() + "', '" + c.getClones() + "', '" + c.getLines() + "', '" + c.getSimilarity()
-						+ "')";
+						+ "', '" + c.getVersion() + "')";
 
 				myStmt.executeUpdate(sql);
 			}
@@ -435,7 +438,7 @@ public class GestoreDB {
 		System.err.println("Changes saved");
 	}
 
-	public void insertCommitters(HashMap<Integer, Committer> committers) {
+	public void insertCommitters(HashMap<String, Committer> committers) {
 		try {
 			Statement myStmt = connection.createStatement();
 
@@ -462,8 +465,8 @@ public class GestoreDB {
 
 			for (Association a : associations.values()) {
 
-				String sql = "insert ignore into associations " + " (idclone, idcommit)" + " values ('" + a.getIdClone()
-						+ "', '" + a.getIdCommit() + "')";
+				String sql = "insert ignore into associations " + " (idclone, idcommit,version)" + " values ('" + a.getIdClone()
+						+ "', '" + a.getIdCommit() + "', '" + a.getVersion() + "')"; 
 
 				myStmt.executeUpdate(sql);
 			}
@@ -495,7 +498,7 @@ public class GestoreDB {
 				if ((myRs.getString("id")) != null) {
 
 					cl = new Clone(myRs.getString("file"), myRs.getInt("startLine"), myRs.getInt("endLine"),
-							myRs.getString("pcid"), myRs.getString("classid"), myRs.getInt("version"));
+							myRs.getString("pcid"), myRs.getString("classid"), myRs.getString("version"));
 
 					clones.put(cl.getPcid(), cl);
 				} else
@@ -526,9 +529,9 @@ public class GestoreDB {
 			while (myRs.next()) {
 				if ((myRs.getString("idClone")) != null) {
 
-					committer = new Committer(myRs.getString("nome"), myRs.getInt("email"));
+					committer = new Committer(myRs.getString("nome"), myRs.getString("email"));
 					c = new Commit(myRs.getString("id"), sd.parse(myRs.getString("data")),
-							myRs.getString("descrizione"),  myRs.getInt("version"),committer, null);
+							myRs.getString("descrizione"),  myRs.getString("version"),committer, null);
 
 					
 					commits.put(c.getId(), c);
@@ -544,11 +547,11 @@ public class GestoreDB {
 		return commits;
 	}
 
-	public HashMap<Integer, Committer> readAssociationsCommitters() {
+	public HashMap<String, Committer> readAssociationsCommitters() {
 
 		Committer committer;
 
-		HashMap<Integer, Committer> committers = new HashMap<Integer, Committer>();
+		HashMap<String, Committer> committers = new HashMap<String, Committer>();
 		try {
 			Statement myStmt = connection.createStatement();
 			ResultSet myRs = myStmt.executeQuery(
@@ -559,9 +562,9 @@ public class GestoreDB {
 			while (myRs.next()) {
 				if ((myRs.getString("id")) != null) {
 
-					committer = new Committer(myRs.getString("nome"), myRs.getInt("email"));
+					committer = new Committer(myRs.getString("nome"), myRs.getString("email"));
 
-					committers.put(committer.getEmail(), committer);
+					committers.put(committer.getEmail()+committer.getNome(), committer);
 
 				} else
 					System.out.println("---------- Errore nella lettura dei cloni" + myRs.getRow());
@@ -592,10 +595,10 @@ public class GestoreDB {
 				if ((myRs.getString("id")) != null) {
 
 					c = new Clone(myRs.getString("file"), myRs.getInt("startLine"), myRs.getInt("endLine"),
-							myRs.getString("pcid"), myRs.getString("classid"), myRs.getInt("version"));
-					committer = new Committer(myRs.getString("nome"), myRs.getInt("email"));
+							myRs.getString("pcid"), myRs.getString("classid"), myRs.getString("version"));
+					committer = new Committer(myRs.getString("nome"), myRs.getString("email"));
 					co = new Commit(myRs.getString("id"), sd.parse(myRs.getString("data")),
-							myRs.getString("descrizione"), myRs.getInt("version"), committer, null);
+							myRs.getString("descrizione"), myRs.getString("version"), committer, null);
 
 					
 				
@@ -633,8 +636,8 @@ public class GestoreDB {
 				if ((myRs.getString("email")) != null) {
 
 					c = new Clone(myRs.getString("file"), myRs.getInt("startLine"), myRs.getInt("endLine"),
-							myRs.getString("pcid"), myRs.getString("classid"), myRs.getInt("version"));
-					committer = new Committer(myRs.getString("nome"), myRs.getInt("email"));
+							myRs.getString("pcid"), myRs.getString("classid"), myRs.getString("version"));
+					committer = new Committer(myRs.getString("nome"), myRs.getString("email"));
 					committer.addClone(c);
 				
 					
@@ -670,7 +673,7 @@ public class GestoreDB {
 				if ((myRs.getString("id")) != null) {
 
 					c = new Clone(myRs.getString("file"), myRs.getInt("startLine"), myRs.getInt("endLine"),
-							myRs.getString("pcid"), myRs.getString("classid"), myRs.getInt("version"));
+							myRs.getString("pcid"), myRs.getString("classid"), myRs.getString("version"));
 
 					clones.put(c.getPcid(), c);
 				} else
@@ -699,7 +702,7 @@ public class GestoreDB {
 				if ((myRs.getString("pcid")) != null) {
 
 					c = new Clone(myRs.getString("file"), myRs.getInt("startLine"), myRs.getInt("endLine"),
-							myRs.getString("pcid"), myRs.getString("classid"), myRs.getInt("version"));
+							myRs.getString("pcid"), myRs.getString("classid"), myRs.getString("version"));
 
 					clones.put(c.getPcid(), c);
 				} else
@@ -728,7 +731,7 @@ public class GestoreDB {
 				if ((myRs.getString("id")) != null) {
 
 					c = new ClassClone(myRs.getString("id"), myRs.getInt("clones"), myRs.getInt("righe"),
-							myRs.getInt("similarity"));
+							myRs.getInt("similarity"), myRs.getString("version"));
 
 					classclones.put(c.getId(), c);
 				} else
@@ -756,11 +759,11 @@ public class GestoreDB {
 
 			while (myRs.next()) {
 				if ((myRs.getString("id")) != null) {
-					committer = new Committer(myRs.getString("nome"), myRs.getInt("email"));
+					committer = new Committer(myRs.getString("nome"), myRs.getString("email"));
 
 					SimpleDateFormat sd = new SimpleDateFormat("yyy-MM-dd HH:mm:ss");
 					c = new Commit(myRs.getString("id"), sd.parse(myRs.getString("data")),
-							myRs.getString("descrizione"),  myRs.getInt("version"),committer, null);
+							myRs.getString("descrizione"),  myRs.getString("version"),committer, null);
 
 					
 					commits.put(c.getId(), c);
@@ -776,12 +779,12 @@ public class GestoreDB {
 	
 	
 	
-	public HashMap<Integer, Committer> readCommitters() {
+	public HashMap<String, Committer> readCommitters() {
 
 		
 
 		Committer committer;
-		HashMap<Integer, Committer> committers = new HashMap<Integer, Committer>();
+		HashMap<String, Committer> committers = new HashMap<String, Committer>();
 		try {
 			Statement myStmt = connection.createStatement();
 			ResultSet myRs = myStmt.executeQuery(
@@ -791,11 +794,11 @@ public class GestoreDB {
 
 			while (myRs.next()) {
 				if ((myRs.getString("email")) != null) {
-					committer = new Committer(myRs.getString("nome"), myRs.getInt("email"));
+					committer = new Committer(myRs.getString("nome"), myRs.getString("email"));
 
 					
 					
-					committers.put(committer.getEmail(), committer);
+					committers.put(committer.getEmail()+committer.getNome(), committer);
 				} else
 					System.out.println("---------- Errore nella lettura dei committers" + myRs.getRow());
 			}
@@ -815,7 +818,7 @@ public class GestoreDB {
 
 			while (myRs.next()) {
 				if ((myRs.getString("idClone")) != null) {
-					a = new Association(myRs.getString("idClone"), myRs.getString("idCommit"));
+					a = new Association(myRs.getString("idClone"), myRs.getString("idCommit"), myRs.getString("version"));
 					associations.add(a);
 				}
 			}

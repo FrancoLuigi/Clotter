@@ -1,0 +1,1825 @@
+Commit:
+f1eb3e8dd71f131923c285bf1b3d995c2a2710b1
+bwelling
+bwelling@c76caeb1-94fd-44dd-870f-0c9d92034fc1
+2015-02-15 22:55:07 +0000
+update version numbers
+diff --git a/Makefile b/Makefile
+index e1e2b7a..b4ee7b4 100644
+--- a/Makefile
++++ b/Makefile
+@@ -5,7 +5,7 @@ JAR = jar cf
+ SUNAPIDOC = http://java.sun.com/j2se/1.4/docs/api
+ JAVADOC=javadoc -classpath . -d doc -windowtitle "dnsjava documentation" -link ${SUNAPIDOC}
+ 
+-VERSION = 2.1.6
++VERSION = 2.1.7
+ 
+ DNSSRC = org/xbill/DNS/*.java \
+ 	 org/xbill/DNS/utils/*.java
+diff --git a/build.xml b/build.xml
+index b21860f..16a20b6 100644
+--- a/build.xml
++++ b/build.xml
+@@ -5,7 +5,7 @@
+     <property name="dist_dir" value="${basedir}"/>
+     <property name="tests_dir" value="${basedir}/tests"/>
+     <property name="reports_dir" value="${basedir}/reports"/>
+-    <property name="version" value="2.1.6"/>
++    <property name="version" value="2.1.7"/>
+     <property name="jarname" value="dnsjava-${version}.jar"/>
+     <property name="zipname" value="dnsjava-${version}.zip"/>
+     <property name="targzname" value="dnsjava-${version}.tar.gz"/>
+
+Commit:
+9d22f606ada3559a0cf3750d20aa691770d95a39
+bwelling
+bwelling@c76caeb1-94fd-44dd-870f-0c9d92034fc1
+2015-02-15 22:52:55 +0000
+Add release marker.
+diff --git a/Changelog b/Changelog
+index 6f673b5..72486c3 100644
+--- a/Changelog
++++ b/Changelog
+@@ -1,3 +1,6 @@
++2/15/2015
++	- 2.1.7 released
++
+ 2/14/2015
+ 	- Attempt to deal with Java's poor handling of IPv4-mapped IPv6
+ 	  addresses. (reported by Keshav Badruka <keshav.badruka@gmail.com>)
+
+Commit:
+ad2b645b068bd8dede50f3723b2c29f6ea4a4a54
+bwelling
+bwelling@c76caeb1-94fd-44dd-870f-0c9d92034fc1
+2015-02-15 01:01:49 +0000
+- Attempt to deal with Java's poor handling of IPv4-mapped IPv6   addresses. (reported by Keshav Badruka <keshav.badruka@gmail.com>)
+diff --git a/Changelog b/Changelog
+index 0aade91..6f673b5 100644
+--- a/Changelog
++++ b/Changelog
+@@ -1,3 +1,7 @@
++2/14/2015
++	- Attempt to deal with Java's poor handling of IPv4-mapped IPv6
++	  addresses. (reported by Keshav Badruka <keshav.badruka@gmail.com>)
++
+ 12/23/2014
+ 	- Add an interface for logging sent/received packets.
+ 	  (based on a patch from Damian Minkov <damencho@users.sf.net>)
+diff --git a/org/xbill/DNS/AAAARecord.java b/org/xbill/DNS/AAAARecord.java
+index e3de8b9..20ed912 100644
+--- a/org/xbill/DNS/AAAARecord.java
++++ b/org/xbill/DNS/AAAARecord.java
+@@ -15,7 +15,7 @@ public class AAAARecord extends Record {
+ 
+ private static final long serialVersionUID = -4588601512069748050L;
+ 
+-private InetAddress address;
++private byte [] address;
+ 
+ AAAARecord() {}
+ 
+@@ -33,38 +33,58 @@ AAAARecord(Name name, int dclass, long ttl, InetAddress address) {
+ 	super(name, Type.AAAA, dclass, ttl);
+ 	if (Address.familyOf(address) != Address.IPv6)
+ 		throw new IllegalArgumentException("invalid IPv6 address");
+-	this.address = address;
++	this.address = address.getAddress();
+ }
+ 
+ void
+ rrFromWire(DNSInput in) throws IOException {
+-	if (name == null)
+-		address = InetAddress.getByAddress(in.readByteArray(16));
+-	else
+-		address = InetAddress.getByAddress(name.toString(),
+-						   in.readByteArray(16));
++	address = in.readByteArray(16);
+ }
+ 
+ void
+ rdataFromString(Tokenizer st, Name origin) throws IOException {
+-	address = st.getAddress(Address.IPv6);
++	address = st.getAddressBytes(Address.IPv6);
+ }
+ 
+ /** Converts rdata to a String */
+ String
+ rrToString() {
+-	return address.getHostAddress();
++	InetAddress addr;
++	try {
++		addr = InetAddress.getByAddress(null, address);
++	} catch (UnknownHostException e) {
++		return null;
++	}
++	if (addr.getAddress().length == 4) {
++		// Deal with Java's broken handling of mapped IPv4 addresses.
++		StringBuffer sb = new StringBuffer("0:0:0:0:0:ffff:");
++		int high = ((address[12] & 0xFF) << 8) + (address[13] & 0xFF);
++		int low = ((address[14] & 0xFF) << 8) + (address[15] & 0xFF);
++		sb.append(Integer.toHexString(high));
++		sb.append(':');
++		sb.append(Integer.toHexString(low));
++		return sb.toString();
++	}
++	return addr.getHostAddress();
+ }
+ 
+ /** Returns the address */
+ public InetAddress
+ getAddress() {
+-	return address;
++	try {
++		if (name == null)
++			return InetAddress.getByAddress(address);
++		else
++			return InetAddress.getByAddress(name.toString(),
++							address);
++	} catch (UnknownHostException e) {
++		return null;
++	}
+ }
+ 
+ void
+ rrToWire(DNSOutput out, Compression c, boolean canonical) {
+-	out.writeByteArray(address.getAddress());
++	out.writeByteArray(address);
+ }
+ 
+ }
+diff --git a/org/xbill/DNS/ARecord.java b/org/xbill/DNS/ARecord.java
+index 150f9f7..63d1730 100644
+--- a/org/xbill/DNS/ARecord.java
++++ b/org/xbill/DNS/ARecord.java
+@@ -61,8 +61,7 @@ rrFromWire(DNSInput in) throws IOException {
+ 
+ void
+ rdataFromString(Tokenizer st, Name origin) throws IOException {
+-	InetAddress address = st.getAddress(Address.IPv4);
+-	addr = fromArray(address.getAddress());
++	addr = fromArray(st.getAddressBytes(Address.IPv4));
+ }
+ 
+ /** Converts rdata to a String */
+diff --git a/org/xbill/DNS/Tokenizer.java b/org/xbill/DNS/Tokenizer.java
+index bc637ab..9328eb8 100644
+--- a/org/xbill/DNS/Tokenizer.java
++++ b/org/xbill/DNS/Tokenizer.java
+@@ -522,6 +522,25 @@ getName(Name origin) throws IOException {
+ 	}
+ }
+ 
++/**
++ * Gets the next token from a tokenizer and converts it to a byte array
++ * containing an IP address.
++ * @param family The address family.
++ * @return The next token in the stream, as an byte array representing an IP
++ * address.
++ * @throws TextParseException The input was invalid or not a valid address.
++ * @throws IOException An I/O error occurred.
++ * @see Address
++ */
++public byte []
++getAddressBytes(int family) throws IOException {
++	String next = _getIdentifier("an address");
++	byte [] bytes = Address.toByteArray(next, family);
++	if (bytes == null)
++		throw exception("Invalid address: " + next);
++	return bytes;
++}
++
+ /**
+  * Gets the next token from a tokenizer and converts it to an IP Address.
+  * @param family The address family.
+
+Commit:
+93fcaba07fdb3e96566bb70e42709118853d5fb0
+bwelling
+bwelling@c76caeb1-94fd-44dd-870f-0c9d92034fc1
+2014-12-23 19:06:57 +0000
+Add a few basic TSIG tests.
+diff --git a/tests/org/xbill/DNS/TSIGTest.java b/tests/org/xbill/DNS/TSIGTest.java
+new file mode 100644
+index 0000000..cf59e55
+--- /dev/null
++++ b/tests/org/xbill/DNS/TSIGTest.java
+@@ -0,0 +1,79 @@
++package org.xbill.DNS;
++
++import java.io.IOException;
++import junit.framework.TestCase;
++
++public class TSIGTest extends TestCase
++{
++    public void test_TSIG_query() throws TextParseException, IOException
++    {
++	TSIG key = new TSIG(TSIG.HMAC_SHA256, "example.", "12345678");
++
++	Name qname = Name.fromString("www.example.");
++	Record rec = Record.newRecord(qname, Type.A, DClass.IN);
++	Message msg = Message.newQuery(rec);
++	msg.setTSIG(key, Rcode.NOERROR, null);
++	byte [] bytes = msg.toWire(512);
++	assertEquals(bytes[11], 1);
++
++	Message parsed = new Message(bytes);
++	int result = key.verify(parsed, bytes, null);
++	assertEquals(result, Rcode.NOERROR);
++	assertTrue(parsed.isSigned());
++    }
++
++    public void test_TSIG_response() throws TextParseException, IOException
++    {
++	TSIG key = new TSIG(TSIG.HMAC_SHA256, "example.", "12345678");
++
++	Name qname = Name.fromString("www.example.");
++	Record question = Record.newRecord(qname, Type.A, DClass.IN);
++	Message query = Message.newQuery(question);
++	query.setTSIG(key, Rcode.NOERROR, null);
++	byte [] qbytes = query.toWire();
++	Message qparsed = new Message(qbytes);
++
++	Message response = new Message(query.getHeader().getID());
++	response.setTSIG(key, Rcode.NOERROR, qparsed.getTSIG());
++	response.getHeader().setFlag(Flags.QR);
++	response.addRecord(question, Section.QUESTION);
++	Record answer = Record.fromString(qname, Type.A, DClass.IN, 300,
++					  "1.2.3.4", null);
++	response.addRecord(answer, Section.ANSWER);
++	byte [] bytes = response.toWire(512);
++
++	Message parsed = new Message(bytes);
++	int result = key.verify(parsed, bytes, qparsed.getTSIG());
++	assertEquals(result, Rcode.NOERROR);
++	assertTrue(parsed.isSigned());
++    }
++
++    public void test_TSIG_truncated() throws TextParseException, IOException
++    {
++	TSIG key = new TSIG(TSIG.HMAC_SHA256, "example.", "12345678");
++
++	Name qname = Name.fromString("www.example.");
++	Record question = Record.newRecord(qname, Type.A, DClass.IN);
++	Message query = Message.newQuery(question);
++	query.setTSIG(key, Rcode.NOERROR, null);
++	byte [] qbytes = query.toWire();
++        Message qparsed = new Message(qbytes);
++
++	Message response = new Message(query.getHeader().getID());
++	response.setTSIG(key, Rcode.NOERROR, qparsed.getTSIG());
++	response.getHeader().setFlag(Flags.QR);
++	response.addRecord(question, Section.QUESTION);
++	for (int i = 0; i < 40; i++) {
++		Record answer = Record.fromString(qname, Type.TXT, DClass.IN,
++						  300, "foo" + i, null);
++		response.addRecord(answer, Section.ANSWER);
++	}
++	byte [] bytes = response.toWire(512);
++
++	Message parsed = new Message(bytes);
++	assertTrue(parsed.getHeader().getFlag(Flags.TC));
++	int result = key.verify(parsed, bytes, qparsed.getTSIG());
++	assertEquals(result, Rcode.NOERROR);
++	assertTrue(parsed.isSigned());
++    }
++}
+
+Commit:
+fb414addcb4b16fe827e26a9c377ba1db767c0c0
+bwelling
+bwelling@c76caeb1-94fd-44dd-870f-0c9d92034fc1
+2014-12-23 19:06:36 +0000
+Update test to reflect bug fix.
+diff --git a/tests/org/xbill/DNS/RRsetTest.java b/tests/org/xbill/DNS/RRsetTest.java
+index 1d6f7cf..3d2a2f4 100644
+--- a/tests/org/xbill/DNS/RRsetTest.java
++++ b/tests/org/xbill/DNS/RRsetTest.java
+@@ -90,8 +90,7 @@ public class RRsetTest extends TestCase
+ 	try {m_rs.first();fail("IllegalStateException not thrown");}
+ 	catch( IllegalStateException e ){}
+ 
+-	try {m_rs.toString();fail("IllegalStateException not thrown");}
+-	catch( IllegalStateException e ){}
++	assertEquals("{empty}", m_rs.toString());
+ 
+ 	Iterator itr = m_rs.rrs();
+ 	assertNotNull(itr);
+
+Commit:
+740be0fdb17960e544cb0c9e7482ea50a2d29911
+bwelling
+bwelling@c76caeb1-94fd-44dd-870f-0c9d92034fc1
+2014-12-23 18:48:23 +0000
+Make SimpleResolver.getAddress() public, as it should have been. (pointed out by James Barwick <jdb1029@users.sf.net>)
+diff --git a/org/xbill/DNS/SimpleResolver.java b/org/xbill/DNS/SimpleResolver.java
+index 7436133..7916797 100644
+--- a/org/xbill/DNS/SimpleResolver.java
++++ b/org/xbill/DNS/SimpleResolver.java
+@@ -73,7 +73,7 @@ SimpleResolver() throws UnknownHostException {
+  * Messages sent using this SimpleResolver will be sent to this address.
+  * @return The destination address associated with this SimpleResolver.
+  */
+-InetSocketAddress
++public InetSocketAddress
+ getAddress() {
+ 	return address;
+ }
+
+Commit:
+771b687f46339d352fb97caa099ec97b5ff0d1df
+bwelling
+bwelling@c76caeb1-94fd-44dd-870f-0c9d92034fc1
+2014-12-23 18:43:20 +0000
+Add support for the URI record. (patch from Anthony Kirby <anthonykirby@users.sf.net>)
+diff --git a/Changelog b/Changelog
+index bb1e3e6..0aade91 100644
+--- a/Changelog
++++ b/Changelog
+@@ -1,6 +1,8 @@
+ 12/23/2014
+ 	- Add an interface for logging sent/received packets.
+ 	  (based on a patch from Damian Minkov <damencho@users.sf.net>)
++	- Add support for the URI record.
++	  (patch from Anthony Kirby <anthonykirby@users.sf.net>)
+ 
+ 12/22/2014
+ 	- Fix message truncation to preserve the OPT record.
+diff --git a/org/xbill/DNS/Type.java b/org/xbill/DNS/Type.java
+index df84e83..d2d79af 100644
+--- a/org/xbill/DNS/Type.java
++++ b/org/xbill/DNS/Type.java
+@@ -189,6 +189,11 @@ public static final int MAILA		= 254;
+ /** Matches any type */
+ public static final int ANY		= 255;
+ 
++/** URI
++ * @see see http://tools.ietf.org/html/draft-faltstrom-uri-09
++ */
++public static final int URI		= 256;
++
+ /** DNSSEC Lookaside Validation, RFC 4431 . */
+ public static final int DLV		= 32769;
+ 
+@@ -283,6 +288,7 @@ static {
+ 	types.add(MAILB, "MAILB");
+ 	types.add(MAILA, "MAILA");
+ 	types.add(ANY, "ANY");
++	types.add(URI, "URI", new URIRecord());
+ 	types.add(DLV, "DLV", new DLVRecord());
+ }
+ 
+diff --git a/org/xbill/DNS/URIRecord.java b/org/xbill/DNS/URIRecord.java
+new file mode 100644
+index 0000000..f7fc0fd
+--- /dev/null
++++ b/org/xbill/DNS/URIRecord.java
+@@ -0,0 +1,108 @@
++// Implemented by Anthony Kirby (anthony@anthony.org)
++// based on SRVRecord.java Copyright (c) 1999-2004 Brian Wellington
++
++package org.xbill.DNS;
++
++import java.io.*;
++
++/**
++ * Uniform Resource Identifier (URI) DNS Resource Record
++ *
++ * @author Anthony Kirby
++ * @see <a href="http://tools.ietf.org/html/draft-faltstrom-uri">http://tools.ietf.org/html/draft-faltstrom-uri</a> 
++ */
++
++public class URIRecord extends Record {
++
++private static final long serialVersionUID = 7955422413971804232L;
++
++private int priority, weight;
++private byte[] target;
++
++URIRecord() {
++	target = new byte[]{};
++}
++
++Record
++getObject() {
++	return new URIRecord();
++}
++
++/**
++ * Creates a URI Record from the given data
++ * @param priority The priority of this URI.  Records with lower priority
++ * are preferred.
++ * @param weight The weight, used to select between records at the same
++ * priority.
++ * @param target The host/port running the service
++ */
++public
++URIRecord(Name name, int dclass, long ttl, int priority,
++	  int weight, String target)
++{
++	super(name, Type.URI, dclass, ttl);
++	this.priority = checkU16("priority", priority);
++	this.weight = checkU16("weight", weight);
++	try {
++		this.target = byteArrayFromString(target);
++	}
++	catch (TextParseException e) {
++		throw new IllegalArgumentException(e.getMessage());
++	}
++}
++
++void
++rrFromWire(DNSInput in) throws IOException {
++	priority = in.readU16();
++	weight = in.readU16();
++	target = in.readCountedString();
++}
++
++void
++rdataFromString(Tokenizer st, Name origin) throws IOException {
++	priority = st.getUInt16();
++	weight = st.getUInt16();
++	try {
++		target = byteArrayFromString(st.getString());
++	}
++	catch (TextParseException e) {
++		throw st.exception(e.getMessage());
++	}
++}
++
++/** Converts rdata to a String */
++String
++rrToString() {
++	StringBuffer sb = new StringBuffer();
++	sb.append(priority + " ");
++	sb.append(weight + " ");
++	sb.append(byteArrayToString(target, true));
++	return sb.toString();
++}
++
++/** Returns the priority */
++public int
++getPriority() {
++	return priority;
++}
++
++/** Returns the weight */
++public int
++getWeight() {
++	return weight;
++}
++
++/** Returns the target URI */
++public String
++getTarget() {
++	return byteArrayToString(target, false);
++}
++
++void
++rrToWire(DNSOutput out, Compression c, boolean canonical) {
++	out.writeU16(priority);
++	out.writeU16(weight);
++	out.writeCountedString(target);
++}
++
++}
+diff --git a/tests/org/xbill/DNS/URIRecordTest.java b/tests/org/xbill/DNS/URIRecordTest.java
+new file mode 100644
+index 0000000..0461864
+--- /dev/null
++++ b/tests/org/xbill/DNS/URIRecordTest.java
+@@ -0,0 +1,126 @@
++package org.xbill.DNS;
++
++import java.io.IOException;
++import java.util.Arrays;
++
++import	junit.framework.TestCase;
++
++public class URIRecordTest extends TestCase
++{
++    public void test_ctor_0arg()
++    {
++	URIRecord r = new URIRecord();
++	assertNull(r.getName());
++	assertEquals(0, r.getType());
++	assertEquals(0, r.getDClass());
++	assertEquals(0, r.getTTL());
++	assertEquals(0, r.getPriority());
++	assertEquals(0, r.getWeight());
++	assertTrue("".equals(r.getTarget()));
++    }
++    
++    public void test_getObject()
++    {
++	URIRecord dr = new URIRecord();
++	Record r = dr.getObject();
++	assertTrue(r instanceof URIRecord);
++    }
++    
++    public void test_ctor_6arg() throws TextParseException
++    {
++	Name n = Name.fromString("my.name.");
++	String target = ("http://foo");
++
++	URIRecord r = new URIRecord(n, DClass.IN, 0xABCDEL, 42, 69, target);
++	assertEquals(n, r.getName());
++	assertEquals(Type.URI, r.getType());
++	assertEquals(DClass.IN, r.getDClass());
++	assertEquals(0xABCDEL, r.getTTL());
++	assertEquals(42, r.getPriority());
++	assertEquals(69, r.getWeight());
++	assertEquals(target, r.getTarget());
++    }
++    
++    public void test_rdataFromString() throws IOException
++    {
++	Tokenizer t = new Tokenizer(0xABCD + " " + 0xEF01 + " " + "\"http://foo:1234/bar?baz=bum\"");
++
++	URIRecord r = new URIRecord();
++	r.rdataFromString(t, null);
++	assertEquals(0xABCD, r.getPriority());
++	assertEquals(0xEF01, r.getWeight());
++	assertEquals("http://foo:1234/bar?baz=bum", r.getTarget());
++    }
++    
++    public void test_rdataToWire() throws TextParseException
++    {
++	Name n = Name.fromString("my.name.");
++	String target = ("http://foo");
++	byte[] exp = new byte[] { 
++			(byte)0xbe, (byte)0xef, (byte)0xde, (byte)0xad, 
++			(byte)0xa,
++			(byte)0x68, (byte)0x74, (byte)0x74, (byte)0x70, (byte)0x3a, 
++			(byte)0x2f, (byte)0x2f, (byte)0x66, (byte)0x6f, (byte)0x6f };
++    
++	URIRecord r = new URIRecord(n, DClass.IN, 0xABCDEL, 0xbeef, 0xdead, target);
++	DNSOutput out = new DNSOutput();
++	r.rrToWire(out, null, true);
++	assertTrue(Arrays.equals(exp, out.toByteArray()));
++    }
++    
++    public void test_rrFromWire() throws IOException
++    {
++   	byte[] raw= new byte[] { 
++    			(byte)0xbe, (byte)0xef, (byte)0xde, (byte)0xad, 
++    			(byte)0xa,
++    			(byte)0x68, (byte)0x74, (byte)0x74, (byte)0x70, (byte)0x3a, 
++    			(byte)0x2f, (byte)0x2f, (byte)0x66, (byte)0x6f, (byte)0x6f };
++	DNSInput in = new DNSInput(raw);
++
++	URIRecord r = new URIRecord();
++	r.rrFromWire(in);
++	assertEquals(0xBEEF, r.getPriority());
++	assertEquals(0xDEAD, r.getWeight());
++	assertEquals("http://foo", r.getTarget());
++    }
++    
++	public void test_toobig_priority() throws TextParseException
++	{
++	    try {
++		new URIRecord(Name.fromString("the.name"), DClass.IN, 0x1234,
++			     0x10000, 42, "http://foo");
++		fail("IllegalArgumentException not thrown");
++	    }
++	    catch(IllegalArgumentException e){}
++	}
++	public void test_toosmall_priority() throws TextParseException
++	{
++	    try {
++		new URIRecord(Name.fromString("the.name"), DClass.IN, 0x1234,
++			     -1, 42, "http://foo");
++		fail("IllegalArgumentException not thrown");
++	    }
++	    catch(IllegalArgumentException e){}
++	}
++
++	public void test_toobig_weight() throws TextParseException
++	{
++	    try {
++		new URIRecord(Name.fromString("the.name"), DClass.IN, 0x1234,
++			     42, 0x10000, "http://foo");
++		fail("IllegalArgumentException not thrown");
++	    }
++	    catch(IllegalArgumentException e){}
++	}
++	public void test_toosmall_weight() throws TextParseException
++	{
++	    try {
++		new URIRecord(Name.fromString("the.name"), DClass.IN, 0x1234,
++			     42, -1, "http://foo");
++		fail("IllegalArgumentException not thrown");
++	    }
++	    catch(IllegalArgumentException e){}
++	}
++
++}
++    
+
+Commit:
+7ff975a92a51247dabc54c9a7d7752a6f68044cc
+bwelling
+bwelling@c76caeb1-94fd-44dd-870f-0c9d92034fc1
+2014-12-23 18:37:06 +0000
+org.xbill.DNS.TypeTest::test_string() assumes that RR type 256 doesn't exist, although this code is allocated by IANA to the URI record. This prevents addition of code to handle the URI record (patch from Anthony Kirby <anthonykirby@users.sf.net>)
+diff --git a/tests/org/xbill/DNS/TypeTest.java b/tests/org/xbill/DNS/TypeTest.java
+index 8083b40..a348ab4 100644
+--- a/tests/org/xbill/DNS/TypeTest.java
++++ b/tests/org/xbill/DNS/TypeTest.java
+@@ -44,7 +44,7 @@ public class TypeTest extends TestCase
+ 	assertEquals("CNAME", Type.string(Type.CNAME));
+ 
+ 	// one that doesn't exist
+-	assertTrue(Type.string(256).startsWith("TYPE"));
++	assertTrue(Type.string(65535).startsWith("TYPE"));
+ 
+ 	try {
+ 	    Type.string(-1);
+
+Commit:
+500a2f4dbad6c6a74d2f7c81aec9771e948a297f
+bwelling
+bwelling@c76caeb1-94fd-44dd-870f-0c9d92034fc1
+2014-12-23 18:24:51 +0000
+- Add an interface for logging sent/received packets.   (based on a patch from Damian Minkov <damencho@users.sf.net>)
+diff --git a/Changelog b/Changelog
+index 71bc8e2..bb1e3e6 100644
+--- a/Changelog
++++ b/Changelog
+@@ -1,4 +1,8 @@
+ 12/23/2014
++	- Add an interface for logging sent/received packets.
++	  (based on a patch from Damian Minkov <damencho@users.sf.net>)
++
++12/22/2014
+ 	- Fix message truncation to preserve the OPT record.
+ 	  (based on a patch from Klaus Malorny <Klaus.Malorny@knipp.de>)
+ 	- Properly deal with short DSA and ECDSA keys.  (original patch from
+diff --git a/org/xbill/DNS/Client.java b/org/xbill/DNS/Client.java
+index 2eef44f..238b99b 100644
+--- a/org/xbill/DNS/Client.java
++++ b/org/xbill/DNS/Client.java
+@@ -12,6 +12,11 @@ class Client {
+ protected long endTime;
+ protected SelectionKey key;
+ 
++/**
++ * Packet logger, if available.
++ */
++private static PacketLogger packetLogger = null;
++
+ protected
+ Client(SelectableChannel channel, long endTime) throws IOException {
+ 	boolean done = false;
+@@ -44,9 +49,13 @@ blockUntil(SelectionKey key, long endTime) throws IOException {
+ }
+ 
+ static protected void
+-verboseLog(String prefix, byte [] data) {
++verboseLog(String prefix, SocketAddress local, SocketAddress remote,
++           byte [] data)
++{
+ 	if (Options.check("verbosemsg"))
+ 		System.err.println(hexdump.dump(prefix, data));
++	if (packetLogger != null)
++		packetLogger.log(prefix, local, remote, data);
+ }
+ 
+ void
+@@ -55,4 +64,9 @@ cleanup() throws IOException {
+ 	key.channel().close();
+ }
+ 
++static void setPacketLogger(PacketLogger logger)
++{
++    packetLogger = logger;
++}
++
+ }
+diff --git a/org/xbill/DNS/Lookup.java b/org/xbill/DNS/Lookup.java
+index 0beba59..8478790 100644
+--- a/org/xbill/DNS/Lookup.java
++++ b/org/xbill/DNS/Lookup.java
+@@ -179,6 +179,16 @@ setDefaultSearchPath(String [] domains) throws TextParseException {
+ 	defaultSearchPath = newdomains;
+ }
+ 
++/**
++ * Sets a custom logger that will be used to log the send and received packets.
++ * @param logger
++ */
++public static synchronized void
++setPacketLogger(PacketLogger logger)
++{
++    Client.setPacketLogger(logger);
++}
++
+ private final void
+ reset() {
+ 	iterations = 0;
+diff --git a/org/xbill/DNS/PacketLogger.java b/org/xbill/DNS/PacketLogger.java
+new file mode 100644
+index 0000000..6e89293
+--- /dev/null
++++ b/org/xbill/DNS/PacketLogger.java
+@@ -0,0 +1,12 @@
++package org.xbill.DNS;
++
++import java.net.*;
++
++/**
++ * Custom logger that can log all the packets that were send or received.
++ * @author Damian Minkov
++ */
++public interface PacketLogger {
++    public void log(String prefix, SocketAddress local, SocketAddress remote,
++                    byte [] data);
++}
+diff --git a/org/xbill/DNS/TCPClient.java b/org/xbill/DNS/TCPClient.java
+index 1f17d72..efd8cbe 100644
+--- a/org/xbill/DNS/TCPClient.java
++++ b/org/xbill/DNS/TCPClient.java
+@@ -41,7 +41,8 @@ connect(SocketAddress addr) throws IOException {
+ void
+ send(byte [] data) throws IOException {
+ 	SocketChannel channel = (SocketChannel) key.channel();
+-	verboseLog("TCP write", data);
++	verboseLog("TCP write", channel.socket().getLocalSocketAddress(),
++		   channel.socket().getRemoteSocketAddress(), data);
+ 	byte [] lengthArray = new byte[2];
+ 	lengthArray[0] = (byte)(data.length >>> 8);
+ 	lengthArray[1] = (byte)(data.length & 0xFF);
+@@ -103,7 +104,9 @@ recv() throws IOException {
+ 	byte [] buf = _recv(2);
+ 	int length = ((buf[0] & 0xFF) << 8) + (buf[1] & 0xFF);
+ 	byte [] data = _recv(length);
+-	verboseLog("TCP read", data);
++	SocketChannel channel = (SocketChannel) key.channel();
++	verboseLog("TCP read", channel.socket().getLocalSocketAddress(),
++		   channel.socket().getRemoteSocketAddress(), data);
+ 	return data;
+ }
+ 
+diff --git a/org/xbill/DNS/UDPClient.java b/org/xbill/DNS/UDPClient.java
+index e752ce4..90ebccb 100644
+--- a/org/xbill/DNS/UDPClient.java
++++ b/org/xbill/DNS/UDPClient.java
+@@ -110,7 +110,8 @@ connect(SocketAddress addr) throws IOException {
+ void
+ send(byte [] data) throws IOException {
+ 	DatagramChannel channel = (DatagramChannel) key.channel();
+-	verboseLog("UDP write", data);
++	verboseLog("UDP write", channel.socket().getLocalSocketAddress(),
++		   channel.socket().getRemoteSocketAddress(), data);
+ 	channel.write(ByteBuffer.wrap(data));
+ }
+ 
+@@ -133,7 +134,8 @@ recv(int max) throws IOException {
+ 	int len = (int) ret;
+ 	byte [] data = new byte[len];
+ 	System.arraycopy(temp, 0, data, 0, len);
+-	verboseLog("UDP read", data);
++	verboseLog("UDP read", channel.socket().getLocalSocketAddress(),
++		   channel.socket().getRemoteSocketAddress(), data);
+ 	return data;
+ }
+ 
+
+Commit:
+9d5ca707e62ad3156dceca077313233f63b2e839
+bwelling
+bwelling@c76caeb1-94fd-44dd-870f-0c9d92034fc1
+2014-12-22 21:10:09 +0000
+- Printing an empty RRset would incorrectly throw an exception.
+diff --git a/Changelog b/Changelog
+index dd50583..71bc8e2 100644
+--- a/Changelog
++++ b/Changelog
+@@ -10,6 +10,7 @@
+ 	- Change the OPTRecord equals() method to check TTL, since the TTL
+ 	  field holds relevant information.  (based on a patch from
+ 	  Dr. Christian Möller <cmoeller@users.sourceforge.net>)
++	- Printing an empty RRset would incorrectly throw an exception.
+ 
+ 10/14/2013
+ 	- 2.1.6 released
+diff --git a/org/xbill/DNS/RRset.java b/org/xbill/DNS/RRset.java
+index fa1a6ad..bcc388a 100644
+--- a/org/xbill/DNS/RRset.java
++++ b/org/xbill/DNS/RRset.java
+@@ -238,7 +238,7 @@ iteratorToString(Iterator it) {
+ /** Converts the RRset to a String */
+ public String
+ toString() {
+-	if (rrs == null)
++	if (rrs.size() == 0)
+ 		return ("{empty}");
+ 	StringBuffer sb = new StringBuffer();
+ 	sb.append("{ ");
+
+Commit:
+cc179576aee85ed1f13c7e2087a0ed9268261891
+bwelling
+bwelling@c76caeb1-94fd-44dd-870f-0c9d92034fc1
+2014-12-22 21:03:34 +0000
+- Change the OPTRecord equals() method to check TTL, since the TTL   field holds relevant information.  (based on a patch from   Dr. Christian M?ller <cmoeller@users.sourceforge.net>)
+diff --git a/Changelog b/Changelog
+index 163bfd7..dd50583 100644
+--- a/Changelog
++++ b/Changelog
+@@ -7,6 +7,9 @@
+ 	  external cryptography provider, such as BouncyCastle.
+ 	  (original patch from Marcos Sanz <sanz@denic.de>, with some
+ 	  local modifications)
++	- Change the OPTRecord equals() method to check TTL, since the TTL
++	  field holds relevant information.  (based on a patch from
++	  Dr. Christian Möller <cmoeller@users.sourceforge.net>)
+ 
+ 10/14/2013
+ 	- 2.1.6 released
+diff --git a/org/xbill/DNS/OPTRecord.java b/org/xbill/DNS/OPTRecord.java
+index 47fef2f..cedbb39 100644
+--- a/org/xbill/DNS/OPTRecord.java
++++ b/org/xbill/DNS/OPTRecord.java
+@@ -188,4 +188,16 @@ getOptions(int code) {
+ 	return list;
+ }
+ 
++/**
++ * Determines if two OPTRecords are identical.  This compares the name, type,
++ * class, and rdata (with names canonicalized).  Additionally, because TTLs
++ * are relevant for OPT records, the TTLs are compared.
++ * @param arg The record to compare to
++ * @return true if the records are equal, false otherwise.
++ */
++public boolean
++equals(final Object arg) {
++	return super.equals(arg) && ttl == ((OPTRecord) arg).ttl;
++}
++
+ }
+diff --git a/tests/org/xbill/DNS/OPTRecordTest.java b/tests/org/xbill/DNS/OPTRecordTest.java
+new file mode 100644
+index 0000000..802be39
+--- /dev/null
++++ b/tests/org/xbill/DNS/OPTRecordTest.java
+@@ -0,0 +1,37 @@
++package org.xbill.DNS;
++
++import junit.framework.TestCase;
++
++public class OPTRecordTest extends TestCase {
++
++	private static final int DEFAULT_EDNS_RCODE = 0;
++	private static final int DEFAULT_EDNS_VERSION = 0;
++	private static final int DEFAULT_PAYLOAD_SIZE = 1024;
++
++	public void testForNoEqualityWithDifferentEDNS_Versions() {
++		final OPTRecord optRecordOne = new OPTRecord(DEFAULT_PAYLOAD_SIZE, DEFAULT_EDNS_RCODE, 0);
++		final OPTRecord optRecordTwo = new OPTRecord(DEFAULT_PAYLOAD_SIZE, DEFAULT_EDNS_RCODE, 1);
++		assertNotEqual(optRecordOne, optRecordTwo);
++	}
++
++	public void testForNoEqualityWithDifferentEDNS_RCodes() {
++		final OPTRecord optRecordOne = new OPTRecord(DEFAULT_PAYLOAD_SIZE, 0, DEFAULT_EDNS_VERSION);
++		final OPTRecord optRecordTwo = new OPTRecord(DEFAULT_PAYLOAD_SIZE, 1, DEFAULT_EDNS_VERSION);
++		assertNotEqual(optRecordOne, optRecordTwo);
++	}
++
++	public void testForEquality() {
++		final OPTRecord optRecordOne = new OPTRecord(DEFAULT_PAYLOAD_SIZE, DEFAULT_EDNS_RCODE, DEFAULT_EDNS_VERSION);
++		final OPTRecord optRecordTwo = new OPTRecord(DEFAULT_PAYLOAD_SIZE, DEFAULT_EDNS_RCODE, DEFAULT_EDNS_VERSION);
++		assertEquals(optRecordOne, optRecordTwo);
++		assertEquals(optRecordTwo, optRecordOne);
++	}
++
++	private void assertNotEqual(final OPTRecord optRecordOne, final OPTRecord optRecordTwo) {
++		assertTrue("Expecting no equality of " + optRecordOne + " compared to " + optRecordTwo,
++		    !optRecordOne.equals(optRecordTwo));
++		assertTrue("Expecting no equality of " + optRecordTwo + " compared to " + optRecordOne,
++		    !optRecordTwo.equals(optRecordOne));
++	}
++
++}
+
+Commit:
+3e6847fde4a9d2b0fef1305ba0417b8d48368ed7
+bwelling
+bwelling@c76caeb1-94fd-44dd-870f-0c9d92034fc1
+2014-12-22 20:51:21 +0000
+- Add support for GOST (RFC 5933) to DNSSEC.  Using GOST requires an   external cryptography provider, such as BouncyCastle.   (original patch from Marcos Sanz <sanz@denic.de>, with some   local modifications)
+diff --git a/Changelog b/Changelog
+index 85769f5..163bfd7 100644
+--- a/Changelog
++++ b/Changelog
+@@ -3,6 +3,10 @@
+ 	  (based on a patch from Klaus Malorny <Klaus.Malorny@knipp.de>)
+ 	- Properly deal with short DSA and ECDSA keys.  (original patch from
+ 	  Marcos Sanz <sanz@denic.de>, with some local modifications)
++	- Add support for GOST (RFC 5933) to DNSSEC.  Using GOST requires an
++	  external cryptography provider, such as BouncyCastle.
++	  (original patch from Marcos Sanz <sanz@denic.de>, with some
++	  local modifications)
+ 
+ 10/14/2013
+ 	- 2.1.6 released
+diff --git a/org/xbill/DNS/DNSSEC.java b/org/xbill/DNS/DNSSEC.java
+index 61e7730..23b764f 100644
+--- a/org/xbill/DNS/DNSSEC.java
++++ b/org/xbill/DNS/DNSSEC.java
+@@ -49,6 +49,12 @@ public static class Algorithm {
+ 	/** RSA/SHA512 public key */
+ 	public static final int RSASHA512 = 10;
+ 
++	/** GOST R 34.10-2001.
++	  * This requires an external cryptography provider,
++	  * such as BouncyCastle.
++	  */
++	public static final int ECC_GOST = 12;
++
+ 	/** ECDSA Curve P-256 with SHA-256 public key **/
+ 	public static final int ECDSAP256SHA256 = 13;
+ 
+@@ -79,6 +85,7 @@ public static class Algorithm {
+ 		algs.add(RSA_NSEC3_SHA1, "RSA-NSEC3-SHA1");
+ 		algs.add(RSASHA256, "RSASHA256");
+ 		algs.add(RSASHA512, "RSASHA512");
++		algs.add(ECC_GOST, "ECC-GOST");
+ 		algs.add(ECDSAP256SHA256, "ECDSAP256SHA256");
+ 		algs.add(ECDSAP384SHA384, "ECDSAP384SHA384");
+ 		algs.add(INDIRECT, "INDIRECT");
+@@ -351,6 +358,23 @@ trimByteArray(byte [] array) {
+ 	}
+ }
+ 
++private static void
++reverseByteArray(byte [] array) {
++	for (int i = 0; i < array.length / 2; i++) {
++		int j = array.length - i - 1;
++		byte tmp = array[i];
++		array[i] = array[j];
++		array[j] = tmp;
++	}
++}
++
++private static BigInteger
++readBigIntegerLittleEndian(DNSInput in, int len) throws IOException {
++	byte [] b = in.readByteArray(len);
++	reverseByteArray(b);
++	return new BigInteger(1, b);
++}
++
+ private static void
+ writeBigInteger(DNSOutput out, BigInteger val) {
+ 	byte [] b = trimByteArray(val.toByteArray());
+@@ -360,7 +384,7 @@ writeBigInteger(DNSOutput out, BigInteger val) {
+ private static void
+ writePaddedBigInteger(DNSOutput out, BigInteger val, int len) {
+ 	byte [] b = trimByteArray(val.toByteArray());
+-       
++
+ 	if (b.length > len)
+ 		throw new IllegalArgumentException();
+ 
+@@ -372,6 +396,22 @@ writePaddedBigInteger(DNSOutput out, BigInteger val, int len) {
+ 	out.writeByteArray(b);
+ }
+ 
++private static void
++writePaddedBigIntegerLittleEndian(DNSOutput out, BigInteger val, int len) {
++	byte [] b = trimByteArray(val.toByteArray());
++
++	if (b.length > len)
++		throw new IllegalArgumentException();
++
++	reverseByteArray(b);
++	out.writeByteArray(b);
++
++	if (b.length < len) {
++		byte [] pad = new byte[len - b.length];
++		out.writeByteArray(pad);
++	}
++}
++
+ private static PublicKey
+ toRSAPublicKey(KEYBase r) throws IOException, GeneralSecurityException {
+ 	DNSInput in = new DNSInput(r.getKey());
+@@ -425,6 +465,15 @@ private static class ECKeyInfo {
+ 	}
+ }
+ 
++// RFC 4357 Section 11.4
++private static final ECKeyInfo GOST = new ECKeyInfo(32,
++	"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFD97",
++	"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFD94",
++	"A6",
++	"1",
++	"8D91E471E0989CDA27DF505A453F2B7635294F2DDF23E3B122ACC99C9E9F1E14",
++	"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF6C611070995AD10045841B09B761B893");
++
+ // RFC 5114 Section 2.6
+ private static final ECKeyInfo ECDSA_P256 = new ECKeyInfo(32,
+ 	"FFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF",
+@@ -443,6 +492,20 @@ private static final ECKeyInfo ECDSA_P384 = new ECKeyInfo(48,
+ 	"3617DE4A96262C6F5D9E98BF9292DC29F8F41DBD289A147CE9DA3113B5F0B8C00A60B1CE1D7E819D7A431D7C90EA0E5F",
+ 	"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC7634D81F4372DDF581A0DB248B0A77AECEC196ACCC52973");
+ 
++private static PublicKey
++toECGOSTPublicKey(KEYBase r, ECKeyInfo keyinfo) throws IOException,
++	GeneralSecurityException, MalformedKeyException
++{
++	DNSInput in = new DNSInput(r.getKey());
++
++	BigInteger x = readBigIntegerLittleEndian(in, keyinfo.length);
++	BigInteger y = readBigIntegerLittleEndian(in, keyinfo.length);
++	ECPoint q = new ECPoint(x, y);
++
++	KeyFactory factory = KeyFactory.getInstance("ECGOST3410");
++	return factory.generatePublic(new ECPublicKeySpec(q, keyinfo.spec));
++}
++
+ private static PublicKey
+ toECDSAPublicKey(KEYBase r, ECKeyInfo keyinfo) throws IOException,
+ 	GeneralSecurityException, MalformedKeyException
+@@ -473,6 +536,8 @@ toPublicKey(KEYBase r) throws DNSSECException {
+ 		case Algorithm.DSA:
+ 		case Algorithm.DSA_NSEC3_SHA1:
+ 			return toDSAPublicKey(r);
++		case Algorithm.ECC_GOST:
++			return toECGOSTPublicKey(r, GOST);
+ 		case Algorithm.ECDSAP256SHA256:
+ 			return toECDSAPublicKey(r, ECDSA_P256);
+ 		case Algorithm.ECDSAP384SHA384:
+@@ -526,6 +591,19 @@ fromDSAPublicKey(DSAPublicKey key) {
+ 	return out.toByteArray();
+ }
+ 
++private static byte []
++fromECGOSTPublicKey(ECPublicKey key, ECKeyInfo keyinfo) {
++	DNSOutput out = new DNSOutput();
++
++	BigInteger x = key.getW().getAffineX();
++	BigInteger y = key.getW().getAffineY();
++
++	writePaddedBigIntegerLittleEndian(out, x, keyinfo.length);
++	writePaddedBigIntegerLittleEndian(out, y, keyinfo.length);
++
++	return out.toByteArray();
++}
++
+ private static byte []
+ fromECDSAPublicKey(ECPublicKey key, ECKeyInfo keyinfo) {
+ 	DNSOutput out = new DNSOutput();
+@@ -543,7 +621,6 @@ fromECDSAPublicKey(ECPublicKey key, ECKeyInfo keyinfo) {
+ static byte []
+ fromPublicKey(PublicKey key, int alg) throws DNSSECException
+ {
+-
+ 	switch (alg) {
+ 	case Algorithm.RSAMD5:
+ 	case Algorithm.RSASHA1:
+@@ -558,6 +635,10 @@ fromPublicKey(PublicKey key, int alg) throws DNSSECException
+ 		if (! (key instanceof DSAPublicKey))
+ 			throw new IncompatibleKeyException();
+ 		return fromDSAPublicKey((DSAPublicKey) key);
++	case Algorithm.ECC_GOST:
++		if (! (key instanceof ECPublicKey))
++			throw new IncompatibleKeyException();
++		return fromECGOSTPublicKey((ECPublicKey) key, GOST);
+ 	case Algorithm.ECDSAP256SHA256:
+ 		if (! (key instanceof ECPublicKey))
+ 			throw new IncompatibleKeyException();
+@@ -591,6 +672,8 @@ algString(int alg) throws UnsupportedAlgorithmException {
+ 		return "SHA256withRSA";
+ 	case Algorithm.RSASHA512:
+ 		return "SHA512withRSA";
++	case Algorithm.ECC_GOST:
++		return "GOST3411withECGOST3410";
+ 	case Algorithm.ECDSAP256SHA256:
+ 		return "SHA256withECDSA";
+ 	case Algorithm.ECDSAP384SHA384:
+@@ -682,6 +765,16 @@ DSASignaturetoDNS(byte [] signature, int t) throws IOException {
+ 	return out.toByteArray();
+ }
+ 
++private static byte []
++ECGOSTSignaturefromDNS(byte [] signature, ECKeyInfo keyinfo)
++	throws DNSSECException, IOException
++{
++	if (signature.length != keyinfo.length * 2)
++		throw new SignatureVerificationException();
++	// Wire format is equal to the engine input
++	return signature;
++}
++
+ private static byte []
+ ECDSASignaturefromDNS(byte [] signature, ECKeyInfo keyinfo)
+ 	throws DNSSECException, IOException
+@@ -771,6 +864,10 @@ throws DNSSECException
+ 	} else if (key instanceof ECPublicKey) {
+ 		try {
+ 			switch (alg) {
++			case Algorithm.ECC_GOST:
++				signature = ECGOSTSignaturefromDNS(signature,
++								   GOST);
++				break;
+ 			case Algorithm.ECDSAP256SHA256:
+ 				signature = ECDSASignaturefromDNS(signature,
+ 								  ECDSA_P256);
+@@ -870,6 +967,9 @@ sign(PrivateKey privkey, PublicKey pubkey, int alg, byte [] data,
+ 	} else if (pubkey instanceof ECPublicKey) {
+ 		try {
+ 			switch (alg) {
++			case Algorithm.ECC_GOST:
++				// Wire format is equal to the engine output
++				break;
+ 			case Algorithm.ECDSAP256SHA256:
+ 				signature = ECDSASignaturetoDNS(signature,
+ 								ECDSA_P256);
+@@ -906,6 +1006,7 @@ checkAlgorithm(PrivateKey key, int alg) throws UnsupportedAlgorithmException
+ 		if (! (key instanceof DSAPrivateKey))
+ 			throw new IncompatibleKeyException();
+ 		break;
++	case Algorithm.ECC_GOST:
+ 	case Algorithm.ECDSAP256SHA256:
+ 	case Algorithm.ECDSAP384SHA384:
+ 		if (! (key instanceof ECPrivateKey))
+@@ -1045,6 +1146,9 @@ generateDSDigest(DNSKEYRecord key, int digestid)
+ 		case DSRecord.Digest.SHA256:
+ 			digest = MessageDigest.getInstance("sha-256");
+ 			break;
++		case DSRecord.Digest.GOST3411:
++			digest = MessageDigest.getInstance("GOST3411");
++			break;
+ 		case DSRecord.Digest.SHA384:
+ 			digest = MessageDigest.getInstance("sha-384");
+ 			break;
+diff --git a/org/xbill/DNS/DSRecord.java b/org/xbill/DNS/DSRecord.java
+index 4c1ebce..646eec7 100644
+--- a/org/xbill/DNS/DSRecord.java
++++ b/org/xbill/DNS/DSRecord.java
+@@ -25,12 +25,16 @@ public static class Digest {
+ 	/** SHA-256 */
+ 	public static final int SHA256 = 2;
+ 
++	/** GOST R 34.11-94 */
++	public static final int GOST3411 = 3;
++	
+ 	/** SHA-384 */
+ 	public static final int SHA384 = 4;
+ }
+ 
+ public static final int SHA1_DIGEST_ID = Digest.SHA1;
+ public static final int SHA256_DIGEST_ID = Digest.SHA256;
++public static final int GOST3411_DIGEST_ID = Digest.GOST3411;
+ public static final int SHA384_DIGEST_ID = Digest.SHA384;
+ 
+ private static final long serialVersionUID = -9001819329700081493L;
+
+Commit:
+9ca4d3e92251f8e0d6224db044768ca75b879800
+bwelling
+bwelling@c76caeb1-94fd-44dd-870f-0c9d92034fc1
+2014-12-22 20:06:39 +0000
+- Properly deal with short DSA and ECDSA keys.  (original patch from   Marcos Sanz <sanz@denic.de>, with some local modifications)
+diff --git a/Changelog b/Changelog
+index 9eb109b..85769f5 100644
+--- a/Changelog
++++ b/Changelog
+@@ -1,6 +1,8 @@
+ 12/23/2014
+ 	- Fix message truncation to preserve the OPT record.
+ 	  (based on a patch from Klaus Malorny <Klaus.Malorny@knipp.de>)
++	- Properly deal with short DSA and ECDSA keys.  (original patch from
++	  Marcos Sanz <sanz@denic.de>, with some local modifications)
+ 
+ 10/14/2013
+ 	- 2.1.6 released
+diff --git a/org/xbill/DNS/DNSSEC.java b/org/xbill/DNS/DNSSEC.java
+index 8f18362..61e7730 100644
+--- a/org/xbill/DNS/DNSSEC.java
++++ b/org/xbill/DNS/DNSSEC.java
+@@ -340,13 +340,36 @@ readBigInteger(DNSInput in) {
+ 	return new BigInteger(1, b);
+ }
+ 
++private static byte []
++trimByteArray(byte [] array) {
++	if (array[0] == 0) {
++		byte trimmedArray[] = new byte[array.length - 1];
++		System.arraycopy(array, 1, trimmedArray, 0, array.length - 1);
++		return trimmedArray;
++	} else {
++		return array;
++	}
++}
++
+ private static void
+ writeBigInteger(DNSOutput out, BigInteger val) {
+-	byte [] b = val.toByteArray();
+-	if (b[0] == 0)
+-		out.writeByteArray(b, 1, b.length - 1);
+-	else
+-		out.writeByteArray(b);
++	byte [] b = trimByteArray(val.toByteArray());
++	out.writeByteArray(b);
++}
++
++private static void
++writePaddedBigInteger(DNSOutput out, BigInteger val, int len) {
++	byte [] b = trimByteArray(val.toByteArray());
++       
++	if (b.length > len)
++		throw new IllegalArgumentException();
++
++	if (b.length < len) {
++		byte [] pad = new byte[len - b.length];
++		out.writeByteArray(pad);
++	}
++
++	out.writeByteArray(b);
+ }
+ 
+ private static PublicKey
+@@ -497,21 +520,21 @@ fromDSAPublicKey(DSAPublicKey key) {
+ 	out.writeU8(t);
+ 	writeBigInteger(out, q);
+ 	writeBigInteger(out, p);
+-	writeBigInteger(out, g);
+-	writeBigInteger(out, y);
++	writePaddedBigInteger(out, g, 8 * t + 64);
++	writePaddedBigInteger(out, y, 8 * t + 64);
+ 
+ 	return out.toByteArray();
+ }
+ 
+ private static byte []
+-fromECDSAPublicKey(ECPublicKey key) {
++fromECDSAPublicKey(ECPublicKey key, ECKeyInfo keyinfo) {
+ 	DNSOutput out = new DNSOutput();
+ 
+ 	BigInteger x = key.getW().getAffineX();
+ 	BigInteger y = key.getW().getAffineY();
+ 
+-	writeBigInteger(out, x);
+-	writeBigInteger(out, y);
++	writePaddedBigInteger(out, x, keyinfo.length);
++	writePaddedBigInteger(out, y, keyinfo.length);
+ 
+ 	return out.toByteArray();
+ }
+@@ -536,10 +559,13 @@ fromPublicKey(PublicKey key, int alg) throws DNSSECException
+ 			throw new IncompatibleKeyException();
+ 		return fromDSAPublicKey((DSAPublicKey) key);
+ 	case Algorithm.ECDSAP256SHA256:
++		if (! (key instanceof ECPublicKey))
++			throw new IncompatibleKeyException();
++		return fromECDSAPublicKey((ECPublicKey) key, ECDSA_P256);
+ 	case Algorithm.ECDSAP384SHA384:
+ 		if (! (key instanceof ECPublicKey))
+ 			throw new IncompatibleKeyException();
+-		return fromECDSAPublicKey((ECPublicKey) key);
++		return fromECDSAPublicKey((ECPublicKey) key, ECDSA_P384);
+ 	default:
+ 		throw new UnsupportedAlgorithmException(alg);
+ 	}
+
+Commit:
+29b72d7649c7d4d1a591ea716306b9e6a90a0e8a
+bwelling
+bwelling@c76caeb1-94fd-44dd-870f-0c9d92034fc1
+2014-12-22 19:51:25 +0000
+- Fix message truncation to preserve the OPT record.   (based on a patch from Klaus Malorny <Klaus.Malorny@knipp.de>)
+diff --git a/Changelog b/Changelog
+index 0ba253a..9eb109b 100644
+--- a/Changelog
++++ b/Changelog
+@@ -1,3 +1,7 @@
++12/23/2014
++	- Fix message truncation to preserve the OPT record.
++	  (based on a patch from Klaus Malorny <Klaus.Malorny@knipp.de>)
++
+ 10/14/2013
+ 	- 2.1.6 released
+ 	- Address.getByName() and Address.getAllByName() had incomplete IPv6
+diff --git a/org/xbill/DNS/Header.java b/org/xbill/DNS/Header.java
+index 2a44d08..0b99712 100644
+--- a/org/xbill/DNS/Header.java
++++ b/org/xbill/DNS/Header.java
+@@ -93,6 +93,17 @@ checkFlag(int bit) {
+ 		throw new IllegalArgumentException("invalid flag bit " + bit);
+ }
+ 
++static int
++setFlag(int flags, int bit, boolean value) {
++	checkFlag(bit);
++
++	// bits are indexed from left to right
++	if (value)
++		return flags |= (1 << (15 - bit));
++	else
++		return flags &= ~(1 << (15 - bit));
++}
++
+ /**
+  * Sets a flag to the supplied value
+  * @see Flags
+@@ -100,8 +111,7 @@ checkFlag(int bit) {
+ public void
+ setFlag(int bit) {
+ 	checkFlag(bit);
+-	// bits are indexed from left to right
+-	flags |= (1 << (15 - bit));
++	flags = setFlag(flags, bit, true);
+ }
+ 
+ /**
+@@ -111,8 +121,7 @@ setFlag(int bit) {
+ public void
+ unsetFlag(int bit) {
+ 	checkFlag(bit);
+-	// bits are indexed from left to right
+-	flags &= ~(1 << (15 - bit));
++	flags = setFlag(flags, bit, false);
+ }
+ 
+ /**
+@@ -237,6 +246,11 @@ getCount(int field) {
+ 	return counts[field];
+ }
+ 
++int
++getFlagsByte() {
++	return flags;
++}
++
+ /** Converts the header's flags into a String */
+ public String
+ printFlags() {
+diff --git a/org/xbill/DNS/Message.java b/org/xbill/DNS/Message.java
+index fe0c3c9..879b68f 100644
+--- a/org/xbill/DNS/Message.java
++++ b/org/xbill/DNS/Message.java
+@@ -405,10 +405,16 @@ sectionToWire(DNSOutput out, int section, Compression c,
+ 	int n = sections[section].size();
+ 	int pos = out.current();
+ 	int rendered = 0;
++	int skipped = 0;
+ 	Record lastrec = null;
+ 
+ 	for (int i = 0; i < n; i++) {
+ 		Record rec = (Record)sections[section].get(i);
++		if (section == Section.ADDITIONAL && rec instanceof OPTRecord) {
++			skipped++;
++			continue;
++		}
++
+ 		if (lastrec != null && !sameSet(rec, lastrec)) {
+ 			pos = out.current();
+ 			rendered = i;
+@@ -417,10 +423,10 @@ sectionToWire(DNSOutput out, int section, Compression c,
+ 		rec.toWire(out, section, c);
+ 		if (out.current() > maxLength) {
+ 			out.jump(pos);
+-			return n - rendered;
++			return n - rendered + skipped;
+ 		}
+ 	}
+-	return 0;
++	return skipped;
+ }
+ 
+ /* Returns true if the message could be rendered. */
+@@ -435,45 +441,52 @@ toWire(DNSOutput out, int maxLength) {
+ 	if (tsigkey != null)
+ 		tempMaxLength -= tsigkey.recordLength();
+ 
++	OPTRecord opt = getOPT();
++	byte [] optBytes = null;
++        if (opt != null) {
++		optBytes = opt.toWire(Section.ADDITIONAL);
++		tempMaxLength -= optBytes.length;
++	}
++
+ 	int startpos = out.current();
+ 	header.toWire(out);
+ 	Compression c = new Compression();
++	int flags = header.getFlagsByte();
++	int additionalCount = 0;
+ 	for (int i = 0; i < 4; i++) {
+ 		int skipped;
+ 		if (sections[i] == null)
+ 			continue;
+ 		skipped = sectionToWire(out, i, c, tempMaxLength);
+-		if (skipped != 0) {
+-			if (newheader == null)
+-				newheader = (Header) header.clone();
+-			if (i != Section.ADDITIONAL)
+-				newheader.setFlag(Flags.TC);
+-			int count = newheader.getCount(i);
+-			newheader.setCount(i, count - skipped);
+-			for (int j = i + 1; j < 4; j++)
+-				newheader.setCount(j, 0);
+-
+-			out.save();
+-			out.jump(startpos);
+-			newheader.toWire(out);
+-			out.restore();
++		if (skipped != 0 && i != Section.ADDITIONAL) {
++			flags = Header.setFlag(flags, Flags.TC, true);
++			out.writeU16At(header.getCount(i) - skipped,
++				       startpos + 4 + 2 * i);
++			for (int j = i + 1; j < Section.ADDITIONAL; j++)
++				out.writeU16At(0, startpos + 4 + 2 * j);
+ 			break;
+ 		}
++		if (i == Section.ADDITIONAL)
++			additionalCount = header.getCount(i) - skipped;
+ 	}
+ 
++	if (optBytes != null) {
++		out.writeByteArray(optBytes);
++		additionalCount++;
++	}
++
++	if (flags != header.getFlagsByte())
++		out.writeU16At(flags, startpos + 2);
++
++	if (additionalCount != header.getCount(Section.ADDITIONAL))
++		out.writeU16At(additionalCount, startpos + 10);
++
+ 	if (tsigkey != null) {
+ 		TSIGRecord tsigrec = tsigkey.generate(this, out.toByteArray(),
+ 						      tsigerror, querytsig);
+ 
+-		if (newheader == null)
+-			newheader = (Header) header.clone();
+ 		tsigrec.toWire(out, Section.ADDITIONAL, c);
+-		newheader.incCount(Section.ADDITIONAL);
+-
+-		out.save();
+-		out.jump(startpos);
+-		newheader.toWire(out);
+-		out.restore();
++		out.writeU16At(additionalCount + 1, startpos + 10);
+ 	}
+ 
+ 	return true;
+
+Commit:
+8ccc69621359e26e63e46f84ef232ffdea6ea518
+bwelling
+bwelling@c76caeb1-94fd-44dd-870f-0c9d92034fc1
+2014-12-22 19:47:32 +0000
+Fix typo.
+diff --git a/examples.html b/examples.html
+index 2eae2fa..5db5851 100644
+--- a/examples.html
++++ b/examples.html
+@@ -24,7 +24,7 @@ InetAddress addr = Address.getByName("www.dnsjava.org");
+ Record [] records = new Lookup("gmail.com", Type.MX).run();
+ for (int i = 0; i &lt; records.length; i++) {
+ 	MXRecord mx = (MXRecord) records[i];
+-	System.out.println("Host " + mx.getTarget() + " has preference ", mx.getPriority());
++	System.out.println("Host " + mx.getTarget() + " has preference " + mx.getPriority());
+ }
+ </code></pre>
+ 
+
+Commit:
+088a49ed433ba4c11f5aa4f76c748acde6b6ac6f
+bwelling
+bwelling@c76caeb1-94fd-44dd-870f-0c9d92034fc1
+2014-08-15 20:23:19 +0000
+update IP addresses in tests
+diff --git a/tests/org/xbill/DNS/AddressTest.java b/tests/org/xbill/DNS/AddressTest.java
+index 451b262..323463d 100644
+--- a/tests/org/xbill/DNS/AddressTest.java
++++ b/tests/org/xbill/DNS/AddressTest.java
+@@ -277,7 +277,7 @@ public class AddressTest extends TestCase
+ 
+ 	out = Address.getByName("serl.cs.colorado.edu");
+ 	assertEquals("epic.cs.colorado.edu", out.getCanonicalHostName());
+-	assertEquals("128.138.201.71", out.getHostAddress());
++	assertEquals("128.138.72.229", out.getHostAddress());
+     }
+ 
+     public void test_getByName_invalid() throws UnknownHostException
+@@ -305,7 +305,7 @@ public class AddressTest extends TestCase
+ 	out = Address.getAllByName("serl.cs.colorado.edu");
+ 	assertEquals(1, out.length);
+ 	assertEquals("epic.cs.colorado.edu", out[0].getCanonicalHostName());
+-	assertEquals("128.138.201.71", out[0].getHostAddress());
++	assertEquals("128.138.72.229", out[0].getHostAddress());
+ 
+ 	out = Address.getAllByName("cnn.com");
+ 	assertTrue(out.length > 1);
+
+Commit:
+2747adbc2a028d3d165698c852e671d674833e99
+bwelling
+bwelling@c76caeb1-94fd-44dd-870f-0c9d92034fc1
+2014-05-15 22:30:29 +0000
+Fix potential null pointer dereference in finalize().
+diff --git a/org/xbill/DNS/Master.java b/org/xbill/DNS/Master.java
+index c795a9c..30d3834 100644
+--- a/org/xbill/DNS/Master.java
++++ b/org/xbill/DNS/Master.java
+@@ -421,7 +421,8 @@ generators() {
+ 
+ protected void
+ finalize() {
+-	st.close();
++	if (st != null)
++		st.close();
+ }
+ 
+ }
+
+Commit:
+23bdb2bfcfec16666301020f8d3ef1f90af12955
+Noa Resare
+noa@spotify.com
+2014-02-23 15:50:14 +0100
+Updated pom.xml
+diff --git a/pom.xml b/pom.xml
+index 841af9c..f375225 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -17,15 +17,16 @@
+     <url>http://www.dnsjava.org</url>
+     <licenses>
+         <license>
+-            <name>BSD license</name>
+-            <url>http://dnsjava.org/dnsjava-current/README</url>
++            <name>BSD 2-Clause license</name>
++            <url>http://opensource.org/licenses/BSD-2-Clause</url>
+             <distribution>repo</distribution>
+         </license>
+     </licenses>
+     <scm>
+-        <connection>scm:svn:https://svn.code.sf.net/p/dnsjava/code/trunk/k</connection>
+-        <developerConnection>scm:svn:https://svn.code.sf.net/p/dnsjava/code/trunk/</developerConnection>
+-        <url>http://sourceforge.net/p/dnsjava/code/HEAD/tree/</url>
++        <connection>scm:git:https://github.com/dnsjava/dnsjava</connection>
++        <developerConnection>scm:git:git@github.com:dnsjava/dnsjava</developerConnection>
++        <url>https://github.com/dnsjava/dnsjava</url>
++        <tag>v2.1.6</tag>
+     </scm>
+     <developers>
+         <developer>
+@@ -174,7 +175,8 @@
+             <groupId>junit</groupId>
+             <artifactId>junit</artifactId>
+             <version>3.8.2</version>
++            <scope>test</scope>
+         </dependency>
+     </dependencies>
+ 
+-</project>
+\ No newline at end of file
++</project>
+
+Commit:
+552402b5e9e3481a6cb193872659dc955bda16a4
+Noa Resare
+noa@spotify.com
+2014-02-23 15:45:29 +0100
+Initial version of pom.xml from OSSRH-1305
+diff --git a/README.md b/README.md
+index 53e9618..7e08fb9 100644
+--- a/README.md
++++ b/README.md
+@@ -1,4 +1,4 @@
+-# A github dnsjava mirror
++# A dnsjava mirror hosted at github
+ 
+ This repository contains a github mirror of the dnsjava svn repository
+ located at http://sourceforge.net/p/dnsjava/code/HEAD/tree/
+@@ -32,7 +32,6 @@ by doing issuing the following command:
+ `git svn clone --stdlayout http://svn.code.sf.net/p/dnsjava/code`
+ 
+ I then manually pushed the master branch onto the branch `upstream`
+-and copied the pom.xml file
+-http://repo1.maven.org/maven2/org/dnsjava/dnsjava/2.0.6/dnsjava-2.0.6.pom
++and copied the pom.xml file from
++https://issues.sonatype.org/browse/OSSRH-1305
+ with some updates to the master branch. 
+-
+diff --git a/pom.xml b/pom.xml
+new file mode 100644
+index 0000000..841af9c
+--- /dev/null
++++ b/pom.xml
+@@ -0,0 +1,180 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project
++    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
++    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
++    <parent>
++        <groupId>org.sonatype.oss</groupId>
++        <artifactId>oss-parent</artifactId>
++        <version>7</version>
++    </parent>
++
++    <modelVersion>4.0.0</modelVersion>
++    <groupId>dnsjava</groupId>
++    <artifactId>dnsjava</artifactId>
++    <version>2.1.6</version>
++    <name>dnsjava</name>
++    <description>dnsjava is an implementation of DNS in Java. It supports all defined record types (including the DNSSEC types), and unknown types. It can be used for queries, zone transfers, and dynamic updates. It includes a cache which can be used by clients, and a minimal implementation of a server. It supports TSIG authenticated messages, partial DNSSEC verification, and EDNS0. </description>
++    <url>http://www.dnsjava.org</url>
++    <licenses>
++        <license>
++            <name>BSD license</name>
++            <url>http://dnsjava.org/dnsjava-current/README</url>
++            <distribution>repo</distribution>
++        </license>
++    </licenses>
++    <scm>
++        <connection>scm:svn:https://svn.code.sf.net/p/dnsjava/code/trunk/k</connection>
++        <developerConnection>scm:svn:https://svn.code.sf.net/p/dnsjava/code/trunk/</developerConnection>
++        <url>http://sourceforge.net/p/dnsjava/code/HEAD/tree/</url>
++    </scm>
++    <developers>
++        <developer>
++            <id>bwelling</id>
++            <name>Brian Wellington</name>
++        </developer>
++    </developers>
++
++    <properties>
++        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
++        <target.jdk>1.4</target.jdk>
++    </properties>
++
++    <build>
++        <sourceDirectory>./</sourceDirectory>
++        <testSourceDirectory>./tests</testSourceDirectory>
++        <resources>
++            <resource>
++                <directory>org/xbill/DNS/spi/</directory>
++                <targetPath>META-INF</targetPath>
++                <includes>
++                    <include>services/</include>
++                </includes>
++            </resource>
++        </resources>
++
++        <plugins>
++        
++        <plugin>
++        <groupId>org.apache.maven.plugins</groupId>
++        <artifactId>maven-gpg-plugin</artifactId>
++        <version>1.4</version>
++        <executions>
++          <execution>
++            <id>sign-artifacts</id>
++            <phase>verify</phase>
++            <goals>
++              <goal>sign</goal>
++            </goals>
++          </execution>
++        </executions>
++      </plugin>
++            <plugin>
++                <groupId>org.apache.maven.plugins</groupId>
++                <artifactId>maven-compiler-plugin</artifactId>
++                <version>3.0</version>
++                <configuration>
++                    <source>${target.jdk}</source>
++                    <target>${target.jdk}</target>
++                    <encoding>iso8859-1</encoding>
++                    <testExcludes>
++                        <!-- Exclude unit tests with external dependencies -->
++                        <exclude>**/DNSSECWithLunaProviderTest.java</exclude>
++                    </testExcludes>
++                    <includes>
++                        <include>*.java</include>
++                        <include>org/**/*.java</include>
++                    </includes>
++                    <excludes>
++                        <exclude>org/xbill/DNS/tests/**</exclude>
++                    </excludes>
++                </configuration>
++            </plugin>
++
++            <plugin>
++                <groupId>org.apache.maven.plugins</groupId>
++                <artifactId>maven-source-plugin</artifactId>
++                <version>2.2.1</version>
++                <configuration>
++                    <includes>
++                        <include>*.java</include>
++                        <include>org/**/*.java</include>
++                    </includes>
++                    <excludes>
++                        <exclude>org/xbill/DNS/tests/</exclude>
++                    </excludes>
++                </configuration>
++                <executions>
++                    <execution>
++                        <id>attach-sources</id>
++                        <goals>
++                            <goal>jar-no-fork</goal>
++                        </goals>
++                    </execution>
++                </executions>
++            </plugin>
++
++            <plugin>
++                <artifactId>maven-jar-plugin</artifactId>
++                <version>2.4</version>
++                <configuration>
++                    <archive>
++                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
++                        <manifestEntries>
++                            <Bundle-RequiredExecutionEnvironment>J2SE-1.4</Bundle-RequiredExecutionEnvironment>
++                        </manifestEntries>
++                    </archive>
++                </configuration>
++            </plugin>
++
++            <plugin>
++                <groupId>org.apache.felix</groupId>
++                <artifactId>maven-bundle-plugin</artifactId>
++                <version>2.4.0</version>
++                <configuration>
++                    <instructions>
++                        <Export-Package>org.xbill.DNS;uses:="org.xbill.DNS.util",org.xbill.DNS.spi;uses:="org.xbill.DNS,sun.net.spi.nameservice",org.xbill.DNS.utils,org.xbill.DNS.windows</Export-Package>
++                    </instructions>
++                </configuration>
++                <executions>
++                    <execution>
++                        <id>bundle-manifest</id>
++                        <phase>process-classes</phase>
++                        <goals>
++                            <goal>manifest</goal>
++                        </goals>
++                    </execution>
++                </executions>
++            </plugin>
++
++            <plugin>
++                <groupId>org.apache.maven.plugins</groupId>
++                <artifactId>maven-javadoc-plugin</artifactId>
++                <version>2.7</version>
++                <configuration>
++                    <excludePackageNames>*.tests.*</excludePackageNames>
++                    <sourcepath>./org</sourcepath>
++                    <debug>true</debug>
++                    <windowtitle>dnsjava documentation</windowtitle>
++                    <footer></footer>
++                </configuration>
++                <executions>
++                    <execution>
++                        <id>attach-javadocs</id>
++                        <goals>
++                            <goal>jar</goal>
++                        </goals>
++                    </execution>
++                </executions>
++            </plugin>
++        </plugins>
++    </build>
++
++    <dependencies>
++        <dependency>
++            <groupId>junit</groupId>
++            <artifactId>junit</artifactId>
++            <version>3.8.2</version>
++        </dependency>
++    </dependencies>
++
++</project>
+\ No newline at end of file
+
+Commit:
+b85912d4adaa7c037b7a84ec3446453eacbecc55
+Noa Resare
+noa@spotify.com
+2014-02-23 15:40:01 +0100
+Fix test case (depends on specific IP assignments in the real world)
+diff --git a/tests/org/xbill/DNS/AddressTest.java b/tests/org/xbill/DNS/AddressTest.java
+index 451b262..323463d 100644
+--- a/tests/org/xbill/DNS/AddressTest.java
++++ b/tests/org/xbill/DNS/AddressTest.java
+@@ -277,7 +277,7 @@ public class AddressTest extends TestCase
+ 
+ 	out = Address.getByName("serl.cs.colorado.edu");
+ 	assertEquals("epic.cs.colorado.edu", out.getCanonicalHostName());
+-	assertEquals("128.138.201.71", out.getHostAddress());
++	assertEquals("128.138.72.229", out.getHostAddress());
+     }
+ 
+     public void test_getByName_invalid() throws UnknownHostException
+@@ -305,7 +305,7 @@ public class AddressTest extends TestCase
+ 	out = Address.getAllByName("serl.cs.colorado.edu");
+ 	assertEquals(1, out.length);
+ 	assertEquals("epic.cs.colorado.edu", out[0].getCanonicalHostName());
+-	assertEquals("128.138.201.71", out[0].getHostAddress());
++	assertEquals("128.138.72.229", out[0].getHostAddress());
+ 
+ 	out = Address.getAllByName("cnn.com");
+ 	assertTrue(out.length > 1);

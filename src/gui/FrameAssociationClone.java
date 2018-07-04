@@ -97,7 +97,7 @@ public class FrameAssociationClone {
 			data[row][1] = sd.format(c.getData());
 			data[row][2] = c.getDescrizione();
 			data[row][3] = c.getCommitter().getNome();
-			data[row][4] = Math.abs(c.getCommitter().getEmail());
+			data[row][4] = Integer.parseInt(c.getCommitter().getEmail());
 			row++;
 		}
 

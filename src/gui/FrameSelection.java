@@ -38,7 +38,7 @@ import management.Controller;
 import management.ForcedListSelectionModel;
 import management.GestoreDB;
 
-public class FrameSelection implements Comparator<Object> {
+public class FrameSelection {
 	private JFrame frame;
 
 	public static void main(String[] args) {
@@ -104,7 +104,7 @@ public class FrameSelection implements Comparator<Object> {
 		int row = 0;
 
 		for (Committer c : committers.values()) {
-			data[row][0] = c.getEmail();
+			data[row][0] = Integer.parseInt(c.getEmail());
 			data[row][1] = c.getNome();
 
 			row++;
@@ -153,7 +153,7 @@ public class FrameSelection implements Comparator<Object> {
 					committers = g.readAssociationsCommitters();
 					Object[][] data = new Object[committers.size()][2];
 					for (Committer c : committers.values()) {
-						data[row][0] = Math.abs(c.getEmail());
+						data[row][0] =c.getEmail();
 						data[row][1] = c.getNome();
 
 						row++;
@@ -412,27 +412,10 @@ public class FrameSelection implements Comparator<Object> {
 
 	private Controller controller;
 	private GestoreDB g;
-	private HashMap<Integer, Committer> committers;
+	private HashMap<String, Committer> committers;
 	private HashMap<String, Clone> clones;
 	private JButton button;
 
-	@Override
-	public int compare(Object arg0, Object arg1) {
-		System.out.println("ciccio");
-		if (arg0.toString().compareTo(arg1.toString()) > 0)
-			return 1;
-		else
-			return 0;
-	}
-
-	/*
-	 * @Override public int compare(String source, String target) {
-	 * 
-	 * 
-	 * if(source.compareTo(target)>0) return 1; else return 0; }
-	 * 
-	 * 
-	 * 
-	 */
+	
 
 }

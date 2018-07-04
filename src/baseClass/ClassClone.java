@@ -2,13 +2,25 @@ package baseClass;
 
 public class ClassClone {
 
-	public ClassClone(String id, int clones, int lines, int similarity) {
+	public ClassClone(String id, int clones, int lines, int similarity, String version) {
 		this.id = id;
 		this.clones = clones;
 		this.lines = lines;
 		this.similarity = similarity;
+		this.version=version;
 
 	}
+
+	
+	public String getVersion() {
+		return version;
+	}
+
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+
 
 	public String getId() {
 		return id;
@@ -42,6 +54,6 @@ public class ClassClone {
 		this.similarity = similarity;
 	}
 
-	private String id;
+	private String id, version;
 	private int clones, lines, similarity;
 }

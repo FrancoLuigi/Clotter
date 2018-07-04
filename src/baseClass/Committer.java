@@ -8,11 +8,15 @@ public class Committer {
 		return "Nome: " + nome + ", Email: " + email;
 	}
 
-	public Committer(String nome, int email) {
+	public Committer(String nome, String email) {
 		this.nome = nome;
 		this.email = email;
-		clones = new HashMap<String, Clone>();
 
+		clones = new HashMap<String, Clone>();
+	}
+
+	public void addClone(Clone c) {
+		clones.put(c.getPcid(), c);
 	}
 
 	public HashMap<String, Clone> getClones() {
@@ -23,10 +27,6 @@ public class Committer {
 		this.clones = clones;
 	}
 
-	public void addClone(Clone c) {
-		clones.put(c.getPcid(), c);
-	}
-
 	public String getNome() {
 		return nome;
 	}
@@ -35,15 +35,16 @@ public class Committer {
 		this.nome = nome;
 	}
 
-	public int getEmail() {
+	public String getEmail() {
 		return email;
 	}
 
-	public void setEmail(int email) {
+	public void setEmail(String email) {
 		this.email = email;
 	}
 
 	private String nome;
-	private int email;
+	private String email;
 	private HashMap<String, Clone> clones;
+
 }

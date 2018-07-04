@@ -10,10 +10,10 @@ import baseClass.File1;
 import baseClass.Range;
 
 public class GestoreCommits {
-	public GestoreCommits(Scanner sc, int version) {
+	public GestoreCommits(Scanner sc, String version) {
 		commits = new HashMap<String, Commit>();
 		files = new HashMap<String, File1>();
-		committers = new HashMap<Integer, Committer>();
+		committers = new HashMap<String, Committer>();
 		changes = new HashMap<String, Change>();
 		ranges = new HashMap<String, Range>();
 
@@ -21,13 +21,14 @@ public class GestoreCommits {
 
 		while (c != null) {
 	
+		
 			if (!c.getChanges().isEmpty()) {
 				
-			
+		
 				c.setVersion(version);
 				commits.put(c.getId(), c);
 
-				committers.put(c.getCommitter().getEmail(), c.getCommitter());
+				committers.put(c.getCommitter().getEmail()+c.getCommitter().getNome(), c.getCommitter());
 
 				for (Change change : c.getChanges().values()) {
 
@@ -69,15 +70,13 @@ public class GestoreCommits {
 		this.ranges = ranges;
 	}
 
-	public HashMap<Integer, Committer> getCommitters() {
+	
+
+	public HashMap<String, Committer> getCommitters() {
 		return committers;
 	}
 
-	public HashMap<Integer, Committer> getCommitter() {
-		return committers;
-	}
-
-	public void setCommitters(HashMap<Integer, Committer> committers) {
+	public void setCommitters(HashMap<String, Committer> committers) {
 		this.committers = committers;
 	}
 
@@ -153,7 +152,7 @@ public class GestoreCommits {
 
 	private HashMap<String, Commit> commits;
 	private HashMap<String, File1> files;
-	private HashMap<Integer, Committer> committers;
+	private HashMap<String, Committer> committers;
 	private HashMap<String, Change> changes;
 	private HashMap<String, Range> ranges;
 

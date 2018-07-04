@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class Clone {
 
-	public Clone(String file, int startLine, int endLine, String pcid, String classid, int version) {
+	public Clone(String file, int startLine, int endLine, String pcid, String classid, String version) {
 		this.file = file;
 		this.startLine = startLine;
 		this.endLine = endLine;
@@ -75,17 +75,17 @@ public class Clone {
 	}
 	
 
-	public int getVersion() {
+	public String getVersion() {
 		return version;
 	}
 
-	public void setVersion(int version) {
+	public void setVersion(String version) {
 		this.version = version;
 	}
 
 
-	private String file, pcid, classid;
-	private int startLine, endLine, version;
+	private String file, pcid, classid, version;
+	private int startLine, endLine;
 	private HashMap<String, Commit> commits;
 
 }

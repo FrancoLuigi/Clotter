@@ -1,0 +1,718 @@
+<clones>
+<systeminfo processor="nicad3" system="Groovy-3.0.0" granularity="functions" threshold="20%" minlines="10" maxlines="30"/>
+<cloneinfo npcs="18240" npairs="2738"/>
+<runinfo ncompares="1919116" cputime="2111374"/>
+<classinfo nclasses="102"/>
+
+<class classid="1" nclones="2" nlines="13" similarity="92">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-nio/src/main/java/org/codehaus/groovy/runtime/WritablePath.java" startline="60" endline="77" pcid="3"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/WritableFile.java" startline="44" endline="62" pcid="10187"></source>
+</class>
+
+<class classid="2" nclones="2" nlines="13" similarity="84">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-xml/src/main/java/groovy/util/slurpersupport/FilteredAttributes.java" startline="46" endline="59" pcid="164"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-xml/src/main/java/groovy/util/slurpersupport/FilteredNodeChildren.java" startline="49" endline="61" pcid="171"></source>
+</class>
+
+<class classid="3" nclones="3" nlines="16" similarity="87">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-xml/src/main/java/groovy/util/slurpersupport/Attribute.java" startline="113" endline="133" pcid="251"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-xml/src/main/java/groovy/util/slurpersupport/NodeChild.java" startline="102" endline="122" pcid="294"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-xml/src/main/java/groovy/util/slurpersupport/NodeChild.java" startline="124" endline="144" pcid="298"></source>
+</class>
+
+<class classid="4" nclones="2" nlines="11" similarity="81">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-xml/src/main/java/groovy/xml/SAXBuilder.java" startline="94" endline="106" pcid="559"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-xml/src/main/java/groovy/xml/SAXBuilder.java" startline="108" endline="120" pcid="560"></source>
+</class>
+
+<class classid="5" nclones="2" nlines="11" similarity="100">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-ant/src/main/java/org/codehaus/groovy/ant/UberCompileTask.java" startline="139" endline="151" pcid="1169"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-ant/src/main/java/org/codehaus/groovy/ant/CompileTaskSupport.java" startline="125" endline="137" pcid="1251"></source>
+</class>
+
+<class classid="6" nclones="2" nlines="12" similarity="91">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-swing/src/main/java/org/codehaus/groovy/runtime/SwingGroovyMethods.java" startline="253" endline="269" pcid="1976"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-swing/src/main/java/org/codehaus/groovy/runtime/SwingGroovyMethods.java" startline="365" endline="381" pcid="1987"></source>
+</class>
+
+<class classid="7" nclones="2" nlines="19" similarity="84">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-swing/src/main/java/org/codehaus/groovy/runtime/SwingGroovyMethods.java" startline="428" endline="450" pcid="1994"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-swing/src/main/java/org/codehaus/groovy/runtime/SwingGroovyMethods.java" startline="514" endline="536" pcid="2001"></source>
+</class>
+
+<class classid="8" nclones="2" nlines="10" similarity="80">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-console/src/main/groovy/groovy/ui/text/TextUndoManager.java" startline="84" endline="97" pcid="2171"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-console/src/main/groovy/groovy/ui/text/TextUndoManager.java" startline="99" endline="113" pcid="2172"></source>
+</class>
+
+<class classid="9" nclones="2" nlines="17" similarity="94">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-json/src/main/java/groovy/json/JsonSlurperClassic.java" startline="132" endline="148" pcid="2244"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-json/src/main/java/org/apache/groovy/json/internal/BaseJsonParser.java" startline="150" endline="166" pcid="2693"></source>
+</class>
+
+<class classid="10" nclones="4" nlines="17" similarity="82">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-json/src/main/java/groovy/json/JsonSlurperClassic.java" startline="185" endline="201" pcid="2248"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-json/src/main/java/groovy/json/JsonSlurper.java" startline="462" endline="478" pcid="2428"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-json/src/main/java/groovy/json/JsonSlurperClassic.java" startline="241" endline="257" pcid="2252"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-json/src/main/java/groovy/json/JsonSlurper.java" startline="406" endline="422" pcid="2424"></source>
+</class>
+
+<class classid="11" nclones="2" nlines="11" similarity="90">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-json/src/main/java/org/apache/groovy/json/internal/LazyValueMap.java" startline="120" endline="130" pcid="2450"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-json/src/main/java/org/apache/groovy/json/internal/ValueList.java" startline="97" endline="107" pcid="2637"></source>
+</class>
+
+<class classid="12" nclones="2" nlines="10" similarity="90">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-json/src/main/java/org/apache/groovy/json/internal/LazyValueMap.java" startline="179" endline="188" pcid="2452"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-json/src/main/java/org/apache/groovy/json/internal/ValueList.java" startline="109" endline="118" pcid="2638"></source>
+</class>
+
+<class classid="13" nclones="2" nlines="10" similarity="100">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-json/src/main/java/org/apache/groovy/json/internal/CharSequenceValue.java" startline="103" endline="112" pcid="2488"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-json/src/main/java/org/apache/groovy/json/internal/NumberValue.java" startline="98" endline="107" pcid="2717"></source>
+</class>
+
+<class classid="14" nclones="2" nlines="10" similarity="90">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-json/src/main/java/org/apache/groovy/json/internal/CharSequenceValue.java" startline="153" endline="165" pcid="2491"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-json/src/main/java/org/apache/groovy/json/internal/NumberValue.java" startline="128" endline="140" pcid="2720"></source>
+</class>
+
+<class classid="15" nclones="2" nlines="10" similarity="80">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-json/src/main/java/org/apache/groovy/json/internal/Chr.java" startline="52" endline="60" pcid="2609"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-json/src/main/java/org/apache/groovy/json/internal/Chr.java" startline="62" endline="70" pcid="2610"></source>
+</class>
+
+<class classid="16" nclones="2" nlines="11" similarity="90">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-json/src/main/java/org/apache/groovy/json/internal/CharScanner.java" startline="77" endline="87" pcid="2660"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-json/src/main/java/org/apache/groovy/json/internal/BaseJsonParser.java" startline="168" endline="178" pcid="2694"></source>
+</class>
+
+<class classid="17" nclones="2" nlines="14" similarity="85">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-json/src/main/java/org/apache/groovy/json/internal/CharScanner.java" startline="111" endline="124" pcid="2663"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-json/src/main/java/org/apache/groovy/json/internal/CharScanner.java" startline="130" endline="143" pcid="2665"></source>
+</class>
+
+<class classid="18" nclones="3" nlines="22" similarity="81">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-json/src/main/java/org/apache/groovy/json/internal/CharScanner.java" startline="195" endline="218" pcid="2668"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-json/src/main/java/org/apache/groovy/json/internal/CharScanner.java" startline="220" endline="243" pcid="2669"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-json/src/main/java/org/apache/groovy/json/internal/CharScanner.java" startline="245" endline="269" pcid="2670"></source>
+</class>
+
+<class classid="19" nclones="2" nlines="14" similarity="92">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-json/src/main/java/org/apache/groovy/json/internal/CharScanner.java" startline="497" endline="511" pcid="2683"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-json/src/main/java/org/apache/groovy/json/internal/BaseJsonParser.java" startline="91" endline="107" pcid="2684"></source>
+</class>
+
+<class classid="20" nclones="2" nlines="20" similarity="100">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-dateutil/src/main/java/org/apache/groovy/dateutil/extensions/DateUtilExtensions.java" startline="459" endline="486" pcid="2900"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DateGroovyMethods.java" startline="190" endline="217" pcid="7959"></source>
+</class>
+
+<class classid="21" nclones="2" nlines="15" similarity="100">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-test/src/main/java/groovy/test/GroovyAssert.java" startline="92" endline="106" pcid="3050"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-test/src/main/java/groovy/util/GroovyAssert.java" startline="41" endline="55" pcid="3093"></source>
+</class>
+
+<class classid="22" nclones="2" nlines="16" similarity="100">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-test/src/main/java/groovy/test/GroovyAssert.java" startline="116" endline="132" pcid="3051"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-test/src/main/java/groovy/util/GroovyAssert.java" startline="65" endline="81" pcid="3094"></source>
+</class>
+
+<class classid="23" nclones="2" nlines="22" similarity="100">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-test/src/main/java/groovy/test/GroovyAssert.java" startline="340" endline="360" pcid="3058"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-test/src/main/java/groovy/util/GroovyAssert.java" startline="124" endline="144" pcid="3096"></source>
+</class>
+
+<class classid="24" nclones="2" nlines="19" similarity="84">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-test/src/main/java/groovy/mock/interceptor/MockProxyMetaClass.java" startline="80" endline="98" pcid="3102"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-test/src/main/java/groovy/mock/interceptor/MockProxyMetaClass.java" startline="100" endline="118" pcid="3103"></source>
+</class>
+
+<class classid="25" nclones="2" nlines="24" similarity="83">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-sql/src/main/java/groovy/sql/Sql.java" startline="1209" endline="1233" pcid="3297"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-sql/src/main/java/groovy/sql/Sql.java" startline="1275" endline="1299" pcid="3299"></source>
+</class>
+
+<class classid="26" nclones="2" nlines="28" similarity="85">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-sql/src/main/java/groovy/sql/Sql.java" startline="2368" endline="2395" pcid="3342"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-sql/src/main/java/groovy/sql/Sql.java" startline="2455" endline="2482" pcid="3344"></source>
+</class>
+
+<class classid="27" nclones="2" nlines="15" similarity="80">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-sql/src/main/java/groovy/sql/Sql.java" startline="2617" endline="2631" pcid="3351"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-sql/src/main/java/groovy/sql/Sql.java" startline="2776" endline="2790" pcid="3357"></source>
+</class>
+
+<class classid="28" nclones="2" nlines="10" similarity="80">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-sql/src/main/java/groovy/sql/Sql.java" startline="3917" endline="3926" pcid="3395"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-sql/src/main/java/groovy/sql/Sql.java" startline="3939" endline="3949" pcid="3396"></source>
+</class>
+
+<class classid="29" nclones="2" nlines="14" similarity="85">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-jmx/src/main/java/groovy/jmx/builder/JmxBuilderModelMBean.java" startline="197" endline="211" pcid="3522"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-jmx/src/main/java/groovy/jmx/builder/JmxEventListener.java" startline="57" endline="70" pcid="3531"></source>
+</class>
+
+<class classid="30" nclones="4" nlines="11" similarity="81">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-groovydoc/src/test/groovy/org/codehaus/groovy/tools/groovydoc/GroovyDocToolTest.java" startline="158" endline="168" pcid="4135"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-groovydoc/src/test/groovy/org/codehaus/groovy/tools/groovydoc/GroovyDocToolTest.java" startline="192" endline="202" pcid="4138"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-groovydoc/src/test/groovy/org/codehaus/groovy/tools/groovydoc/GroovyDocToolTest.java" startline="180" endline="190" pcid="4137"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-groovydoc/src/test/groovy/org/codehaus/groovy/tools/groovydoc/GroovyDocToolTest.java" startline="204" endline="215" pcid="4139"></source>
+</class>
+
+<class classid="31" nclones="2" nlines="17" similarity="83">
+<source file="examples/Groovy-3.0.0/subprojects/groovy-groovydoc/src/test/groovy/org/codehaus/groovy/tools/groovydoc/GroovyDocToolTest.java" startline="238" endline="257" pcid="4141"></source>
+<source file="examples/Groovy-3.0.0/subprojects/groovy-groovydoc/src/test/groovy/org/codehaus/groovy/tools/groovydoc/GroovyDocToolTest.java" startline="259" endline="276" pcid="4142"></source>
+</class>
+
+<class classid="32" nclones="8" nlines="17" similarity="80">
+<source file="examples/Groovy-3.0.0/src/main/groovy/groovy/lang/Tuple7.java" startline="50" endline="69" pcid="4287"></source>
+<source file="examples/Groovy-3.0.0/src/main/groovy/groovy/lang/Tuple5.java" startline="46" endline="61" pcid="4626"></source>
+<source file="examples/Groovy-3.0.0/src/main/groovy/groovy/lang/Tuple9.java" startline="55" endline="78" pcid="5079"></source>
+<source file="examples/Groovy-3.0.0/src/main/groovy/groovy/lang/Tuple8.java" startline="52" endline="73" pcid="5056"></source>
+<source file="examples/Groovy-3.0.0/src/main/groovy/groovy/lang/Tuple6.java" startline="48" endline="65" pcid="4823"></source>
+<source file="examples/Groovy-3.0.0/src/main/groovy/groovy/lang/Tuple4.java" startline="44" endline="57" pcid="5007"></source>
+<source file="examples/Groovy-3.0.0/src/main/groovy/groovy/lang/Tuple3.java" startline="42" endline="53" pcid="5067"></source>
+<source file="examples/Groovy-3.0.0/src/main/groovy/groovy/lang/Tuple2.java" startline="37" endline="46" pcid="4553"></source>
+</class>
+
+<class classid="33" nclones="2" nlines="15" similarity="93">
+<source file="examples/Groovy-3.0.0/src/main/groovy/groovy/lang/ObjectRange.java" startline="238" endline="252" pcid="4431"></source>
+<source file="examples/Groovy-3.0.0/src/main/groovy/groovy/lang/NumberRange.java" startline="350" endline="364" pcid="5129"></source>
+</class>
+
+<class classid="34" nclones="2" nlines="12" similarity="83">
+<source file="examples/Groovy-3.0.0/src/main/groovy/groovy/lang/MetaMethod.java" startline="125" endline="135" pcid="5038"></source>
+<source file="examples/Groovy-3.0.0/src/main/groovy/groovy/lang/MetaMethod.java" startline="137" endline="147" pcid="5039"></source>
+</class>
+
+<class classid="35" nclones="2" nlines="19" similarity="84">
+<source file="examples/Groovy-3.0.0/src/main/groovy/groovy/lang/MetaClassImpl.java" startline="2133" endline="2152" pcid="5271"></source>
+<source file="examples/Groovy-3.0.0/src/main/groovy/groovy/lang/MetaClassImpl.java" startline="2154" endline="2173" pcid="5272"></source>
+</class>
+
+<class classid="36" nclones="2" nlines="14" similarity="86">
+<source file="examples/Groovy-3.0.0/src/main/groovy/groovy/time/Duration.java" startline="86" endline="101" pcid="5430"></source>
+<source file="examples/Groovy-3.0.0/src/main/groovy/groovy/time/DatumDependentDuration.java" startline="100" endline="117" pcid="5443"></source>
+</class>
+
+<class classid="37" nclones="2" nlines="20" similarity="95">
+<source file="examples/Groovy-3.0.0/src/main/groovy/groovy/util/FactoryBuilderSupport.java" startline="1314" endline="1337" pcid="5669"></source>
+<source file="examples/Groovy-3.0.0/src/main/groovy/groovy/util/FactoryBuilderSupport.java" startline="1339" endline="1362" pcid="5670"></source>
+</class>
+
+<class classid="38" nclones="2" nlines="21" similarity="95">
+<source file="examples/Groovy-3.0.0/src/main/groovy/groovy/util/ObservableSet.java" startline="253" endline="277" pcid="5702"></source>
+<source file="examples/Groovy-3.0.0/src/main/groovy/groovy/util/ObservableList.java" startline="294" endline="318" pcid="5981"></source>
+</class>
+
+<class classid="39" nclones="2" nlines="18" similarity="84">
+<source file="examples/Groovy-3.0.0/src/main/groovy/groovy/util/ObservableMap.java" startline="313" endline="329" pcid="5809"></source>
+<source file="examples/Groovy-3.0.0/src/main/groovy/groovy/util/ObservableList.java" startline="456" endline="474" pcid="6008"></source>
+</class>
+
+<class classid="40" nclones="2" nlines="11" similarity="81">
+<source file="examples/Groovy-3.0.0/src/main/groovy/groovy/util/GroovyCollections.java" startline="218" endline="228" pcid="6089"></source>
+<source file="examples/Groovy-3.0.0/src/main/groovy/groovy/util/GroovyCollections.java" startline="256" endline="266" pcid="6092"></source>
+</class>
+
+<class classid="41" nclones="2" nlines="12" similarity="83">
+<source file="examples/Groovy-3.0.0/src/main/java/org/apache/groovy/plugin/GroovyRunnerRegistry.java" startline="398" endline="409" pcid="6378"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/apache/groovy/plugin/GroovyRunnerRegistry.java" startline="444" endline="455" pcid="6380"></source>
+</class>
+
+<class classid="42" nclones="20" nlines="19" similarity="80">
+<source file="examples/Groovy-3.0.0/src/main/java/org/apache/groovy/util/Maps.java" startline="81" endline="92" pcid="6487"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/apache/groovy/util/Maps.java" startline="94" endline="106" pcid="6488"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/apache/groovy/util/Maps.java" startline="108" endline="121" pcid="6489"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/apache/groovy/util/Maps.java" startline="123" endline="137" pcid="6490"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/apache/groovy/util/Maps.java" startline="156" endline="172" pcid="6492"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/apache/groovy/util/Maps.java" startline="139" endline="154" pcid="6491"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/apache/groovy/util/Maps.java" startline="193" endline="211" pcid="6494"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/apache/groovy/util/Maps.java" startline="174" endline="191" pcid="6493"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/apache/groovy/util/Maps.java" startline="213" endline="232" pcid="6495"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/apache/groovy/util/Maps.java" startline="234" endline="254" pcid="6496"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/apache/groovy/util/Maps.java" startline="256" endline="277" pcid="6497"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/apache/groovy/util/Maps.java" startline="279" endline="301" pcid="6498"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/apache/groovy/util/Maps.java" startline="303" endline="326" pcid="6499"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/apache/groovy/util/Maps.java" startline="354" endline="379" pcid="6501"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/apache/groovy/util/Maps.java" startline="328" endline="352" pcid="6500"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/apache/groovy/util/Maps.java" startline="381" endline="407" pcid="6502"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/apache/groovy/util/Maps.java" startline="409" endline="436" pcid="6503"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/apache/groovy/util/Maps.java" startline="499" endline="529" pcid="6506"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/apache/groovy/util/Maps.java" startline="438" endline="466" pcid="6504"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/apache/groovy/util/Maps.java" startline="468" endline="497" pcid="6505"></source>
+</class>
+
+<class classid="43" nclones="2" nlines="15" similarity="81">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/StringGroovyMethods.java" startline="2620" endline="2634" pcid="7363"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/StringGroovyMethods.java" startline="2747" endline="2759" pcid="7370"></source>
+</class>
+
+<class classid="44" nclones="2" nlines="12" similarity="83">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/StringGroovyMethods.java" startline="3225" endline="3237" pcid="7402"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/StringGroovyMethods.java" startline="3743" endline="3755" pcid="7442"></source>
+</class>
+
+<class classid="45" nclones="2" nlines="17" similarity="94">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ProcessGroovyMethods.java" startline="241" endline="248" pcid="7481"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ProcessGroovyMethods.java" startline="263" endline="270" pcid="7482"></source>
+</class>
+
+<class classid="46" nclones="2" nlines="11" similarity="81">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ProcessGroovyMethods.java" startline="350" endline="360" pcid="7487"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ProcessGroovyMethods.java" startline="372" endline="382" pcid="7489"></source>
+</class>
+
+<class classid="47" nclones="2" nlines="10" similarity="100">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/dgmimpl/arrays/ArrayMetaMethod.java" startline="31" endline="40" pcid="7568"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethodsSupport.java" startline="104" endline="113" pcid="8063"></source>
+</class>
+
+<class classid="48" nclones="2" nlines="18" similarity="88">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/metaclass/MetaMethodIndex.java" startline="130" endline="151" pcid="8289"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/util/ComplexKeyHashMap.java" startline="87" endline="108" pcid="12461"></source>
+</class>
+
+<class classid="49" nclones="2" nlines="11" similarity="90">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/metaclass/MetaMethodIndex.java" startline="189" endline="202" pcid="8294"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/util/ComplexKeyHashMap.java" startline="160" endline="173" pcid="12467"></source>
+</class>
+
+<class classid="50" nclones="3" nlines="22" similarity="81">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/metaclass/MetaMethodIndex.java" startline="271" endline="292" pcid="8302"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/metaclass/MetaMethodIndex.java" startline="345" endline="368" pcid="8307"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/metaclass/MetaMethodIndex.java" startline="509" endline="529" pcid="8315"></source>
+</class>
+
+<class classid="51" nclones="2" nlines="14" similarity="85">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="1234" endline="1248" pcid="8587"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="1612" endline="1626" pcid="8601"></source>
+</class>
+
+<class classid="52" nclones="2" nlines="10" similarity="80">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="2720" endline="2729" pcid="8654"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="2796" endline="2805" pcid="8657"></source>
+</class>
+
+<class classid="53" nclones="2" nlines="10" similarity="90">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="3567" endline="3575" pcid="8705"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="3617" endline="3625" pcid="8708"></source>
+</class>
+
+<class classid="54" nclones="2" nlines="14" similarity="85">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="4977" endline="4989" pcid="8783"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="5041" endline="5053" pcid="8785"></source>
+</class>
+
+<class classid="55" nclones="2" nlines="14" similarity="85">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="5010" endline="5022" pcid="8784"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="5073" endline="5085" pcid="8786"></source>
+</class>
+
+<class classid="56" nclones="8" nlines="14" similarity="85">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="6694" endline="6709" pcid="8875"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="6829" endline="6844" pcid="8880"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="6856" endline="6871" pcid="8881"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="6883" endline="6898" pcid="8882"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="6775" endline="6790" pcid="8878"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="6748" endline="6763" pcid="8877"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="6802" endline="6817" pcid="8879"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="6721" endline="6736" pcid="8876"></source>
+</class>
+
+<class classid="57" nclones="2" nlines="13" similarity="84">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="6967" endline="6979" pcid="8888"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="7371" endline="7383" pcid="8906"></source>
+</class>
+
+<class classid="58" nclones="2" nlines="22" similarity="86">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="7048" endline="7068" pcid="8892"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="7281" endline="7301" pcid="8902"></source>
+</class>
+
+<class classid="59" nclones="2" nlines="13" similarity="84">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="10197" endline="10211" pcid="9067"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="10375" endline="10389" pcid="9078"></source>
+</class>
+
+<class classid="60" nclones="2" nlines="13" similarity="84">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="10553" endline="10566" pcid="9085"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="10791" endline="10804" pcid="9097"></source>
+</class>
+
+<class classid="61" nclones="2" nlines="13" similarity="84">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="10825" endline="10836" pcid="9098"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="11055" endline="11066" pcid="9110"></source>
+</class>
+
+<class classid="62" nclones="2" nlines="10" similarity="90">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="15508" endline="15517" pcid="9381"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="15528" endline="15537" pcid="9382"></source>
+</class>
+
+<class classid="63" nclones="2" nlines="10" similarity="90">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="15548" endline="15557" pcid="9383"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="15568" endline="15577" pcid="9384"></source>
+</class>
+
+<class classid="64" nclones="2" nlines="10" similarity="90">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="15588" endline="15597" pcid="9385"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="15608" endline="15617" pcid="9386"></source>
+</class>
+
+<class classid="65" nclones="2" nlines="10" similarity="90">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="15746" endline="15755" pcid="9390"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="15766" endline="15775" pcid="9391"></source>
+</class>
+
+<class classid="66" nclones="2" nlines="10" similarity="90">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="15786" endline="15794" pcid="9392"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="15805" endline="15813" pcid="9393"></source>
+</class>
+
+<class classid="67" nclones="2" nlines="10" similarity="90">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="15824" endline="15832" pcid="9394"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="15843" endline="15851" pcid="9395"></source>
+</class>
+
+<class classid="68" nclones="2" nlines="17" similarity="88">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="16610" endline="16625" pcid="9441"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/DefaultGroovyMethods.java" startline="16735" endline="16749" pcid="9449"></source>
+</class>
+
+<class classid="69" nclones="17" nlines="10" similarity="80">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="508" endline="511" pcid="9596"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="573" endline="576" pcid="9609"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="583" endline="586" pcid="9611"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="563" endline="566" pcid="9607"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="513" endline="516" pcid="9597"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="538" endline="541" pcid="9602"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="543" endline="546" pcid="9603"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="518" endline="521" pcid="9598"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="548" endline="551" pcid="9604"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="578" endline="581" pcid="9610"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="568" endline="571" pcid="9608"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="553" endline="556" pcid="9605"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="528" endline="531" pcid="9600"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="533" endline="536" pcid="9601"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="523" endline="526" pcid="9599"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="588" endline="591" pcid="9612"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="558" endline="561" pcid="9606"></source>
+</class>
+
+<class classid="70" nclones="17" nlines="12" similarity="83">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="593" endline="596" pcid="9613"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="663" endline="666" pcid="9627"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="608" endline="611" pcid="9616"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="633" endline="636" pcid="9621"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="658" endline="661" pcid="9626"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="628" endline="631" pcid="9620"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="598" endline="601" pcid="9614"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="638" endline="641" pcid="9622"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="613" endline="616" pcid="9617"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="623" endline="626" pcid="9619"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="653" endline="656" pcid="9625"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="673" endline="676" pcid="9629"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="643" endline="646" pcid="9623"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="648" endline="651" pcid="9624"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="603" endline="606" pcid="9615"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="668" endline="671" pcid="9628"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="618" endline="621" pcid="9618"></source>
+</class>
+
+<class classid="71" nclones="15" nlines="13" similarity="84">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="678" endline="681" pcid="9630"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="708" endline="711" pcid="9636"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="693" endline="696" pcid="9633"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="733" endline="736" pcid="9641"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="748" endline="751" pcid="9644"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="688" endline="691" pcid="9632"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="713" endline="716" pcid="9637"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="738" endline="741" pcid="9642"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="703" endline="706" pcid="9635"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="723" endline="726" pcid="9639"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="698" endline="701" pcid="9634"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="743" endline="746" pcid="9643"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="718" endline="721" pcid="9638"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="683" endline="686" pcid="9631"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="728" endline="731" pcid="9640"></source>
+</class>
+
+<class classid="72" nclones="112" nlines="19" similarity="80">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="753" endline="756" pcid="9645"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="758" endline="761" pcid="9646"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="763" endline="766" pcid="9647"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="768" endline="771" pcid="9648"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="773" endline="776" pcid="9649"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="778" endline="781" pcid="9650"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="818" endline="821" pcid="9658"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="838" endline="841" pcid="9662"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="783" endline="786" pcid="9651"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="813" endline="816" pcid="9657"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="843" endline="846" pcid="9663"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="808" endline="811" pcid="9656"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="788" endline="791" pcid="9652"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="828" endline="831" pcid="9660"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="803" endline="806" pcid="9655"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="833" endline="836" pcid="9661"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="793" endline="796" pcid="9653"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="798" endline="801" pcid="9654"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="823" endline="826" pcid="9659"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="888" endline="891" pcid="9672"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="903" endline="906" pcid="9675"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="878" endline="881" pcid="9670"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="893" endline="896" pcid="9673"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="873" endline="876" pcid="9669"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="848" endline="851" pcid="9664"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="853" endline="856" pcid="9665"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="858" endline="861" pcid="9666"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="883" endline="886" pcid="9671"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="863" endline="866" pcid="9667"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="898" endline="901" pcid="9674"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="868" endline="871" pcid="9668"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="923" endline="926" pcid="9679"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="908" endline="911" pcid="9676"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="913" endline="916" pcid="9677"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="928" endline="931" pcid="9680"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="918" endline="921" pcid="9678"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1018" endline="1021" pcid="9698"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="933" endline="936" pcid="9681"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="988" endline="991" pcid="9692"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="958" endline="961" pcid="9686"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="993" endline="996" pcid="9693"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="963" endline="966" pcid="9687"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="983" endline="986" pcid="9691"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="938" endline="941" pcid="9682"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="943" endline="946" pcid="9683"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1023" endline="1026" pcid="9699"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1028" endline="1031" pcid="9700"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1033" endline="1036" pcid="9701"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="968" endline="971" pcid="9688"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="998" endline="1001" pcid="9694"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1038" endline="1041" pcid="9702"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1043" endline="1046" pcid="9703"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="948" endline="951" pcid="9684"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1048" endline="1051" pcid="9704"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1053" endline="1056" pcid="9705"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1058" endline="1061" pcid="9706"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="973" endline="976" pcid="9689"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1063" endline="1066" pcid="9707"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1013" endline="1016" pcid="9697"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="953" endline="956" pcid="9685"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="978" endline="981" pcid="9690"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1003" endline="1006" pcid="9695"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1008" endline="1011" pcid="9696"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1078" endline="1081" pcid="9710"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1088" endline="1091" pcid="9712"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1068" endline="1071" pcid="9708"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1093" endline="1096" pcid="9713"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1103" endline="1106" pcid="9715"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1098" endline="1101" pcid="9714"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1073" endline="1076" pcid="9709"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1083" endline="1086" pcid="9711"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1123" endline="1126" pcid="9719"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1158" endline="1161" pcid="9726"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1113" endline="1116" pcid="9717"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1138" endline="1141" pcid="9722"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1163" endline="1166" pcid="9727"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1128" endline="1131" pcid="9720"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1173" endline="1176" pcid="9729"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1108" endline="1111" pcid="9716"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1153" endline="1156" pcid="9725"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1178" endline="1181" pcid="9730"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1133" endline="1136" pcid="9721"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1148" endline="1151" pcid="9724"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1183" endline="1186" pcid="9731"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1143" endline="1146" pcid="9723"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1118" endline="1121" pcid="9718"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1168" endline="1171" pcid="9728"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1203" endline="1206" pcid="9735"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1198" endline="1201" pcid="9734"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1193" endline="1196" pcid="9733"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1273" endline="1276" pcid="9749"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1258" endline="1261" pcid="9746"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1223" endline="1226" pcid="9739"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1238" endline="1241" pcid="9742"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1263" endline="1266" pcid="9747"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1218" endline="1221" pcid="9738"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1213" endline="1216" pcid="9737"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1268" endline="1271" pcid="9748"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1208" endline="1211" pcid="9736"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1253" endline="1256" pcid="9745"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1243" endline="1246" pcid="9743"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1233" endline="1236" pcid="9741"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1188" endline="1191" pcid="9732"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1248" endline="1251" pcid="9744"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1228" endline="1231" pcid="9740"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1308" endline="1311" pcid="9756"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1288" endline="1291" pcid="9752"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1298" endline="1301" pcid="9754"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1278" endline="1281" pcid="9750"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1303" endline="1306" pcid="9755"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1283" endline="1286" pcid="9751"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ArrayUtil.java" startline="1293" endline="1296" pcid="9753"></source>
+</class>
+
+<class classid="73" nclones="2" nlines="11" similarity="90">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/callsite/GetEffectivePogoPropertySite.java" startline="43" endline="53" pcid="9971"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/callsite/GetEffectivePogoPropertySite.java" startline="63" endline="73" pcid="9973"></source>
+</class>
+
+<class classid="74" nclones="9" nlines="11" similarity="81">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/callsite/PogoMetaMethodSite.java" startline="55" endline="65" pcid="9990"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/callsite/PogoMetaMethodSite.java" startline="67" endline="77" pcid="9991"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/callsite/StaticMetaMethodSite.java" startline="88" endline="98" pcid="10035"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/callsite/NullCallSite.java" startline="31" endline="41" pcid="10063"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/callsite/PerInstancePojoMetaClassSite.java" startline="34" endline="44" pcid="10052"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/callsite/PojoMetaClassSite.java" startline="43" endline="53" pcid="10054"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/callsite/StaticMetaClassSite.java" startline="49" endline="59" pcid="10070"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/callsite/StaticMetaClassSite.java" startline="61" endline="71" pcid="10071"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/callsite/PogoInterceptableSite.java" startline="44" endline="54" pcid="10021"></source>
+</class>
+
+<class classid="75" nclones="2" nlines="11" similarity="81">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/callsite/CallSiteClassLoader.java" startline="46" endline="57" pcid="10018"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/reflection/SunClassLoader.java" startline="100" endline="112" pcid="12400"></source>
+</class>
+
+<class classid="76" nclones="2" nlines="11" similarity="81">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/callsite/NullCallSite.java" startline="43" endline="53" pcid="10064"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/callsite/AbstractCallSite.java" startline="302" endline="312" pcid="10118"></source>
+</class>
+
+<class classid="77" nclones="2" nlines="21" similarity="85">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/callsite/PogoMetaClassSite.java" startline="37" endline="58" pcid="10073"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/callsite/PogoMetaClassSite.java" startline="64" endline="85" pcid="10075"></source>
+</class>
+
+<class classid="78" nclones="2" nlines="17" similarity="82">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ResourceGroovyMethods.java" startline="974" endline="991" pcid="10242"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/ResourceGroovyMethods.java" startline="1164" endline="1181" pcid="10252"></source>
+</class>
+
+<class classid="79" nclones="2" nlines="26" similarity="84">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/IOGroovyMethods.java" startline="447" endline="475" pcid="10523"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/IOGroovyMethods.java" startline="533" endline="560" pcid="10525"></source>
+</class>
+
+<class classid="80" nclones="2" nlines="11" similarity="90">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/IOGroovyMethods.java" startline="955" endline="965" pcid="10546"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/IOGroovyMethods.java" startline="1020" endline="1030" pcid="10552"></source>
+</class>
+
+<class classid="81" nclones="2" nlines="27" similarity="85">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/IOGroovyMethods.java" startline="1419" endline="1445" pcid="10574"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/IOGroovyMethods.java" startline="1458" endline="1485" pcid="10575"></source>
+</class>
+
+<class classid="82" nclones="2" nlines="19" similarity="89">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/IOGroovyMethods.java" startline="1611" endline="1628" pcid="10583"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/runtime/IOGroovyMethods.java" startline="1644" endline="1661" pcid="10584"></source>
+</class>
+
+<class classid="83" nclones="2" nlines="11" similarity="81">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/control/customizers/SecureASTCustomizer.java" startline="829" endline="842" pcid="11054"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/ast/CodeVisitorSupport.java" startline="104" endline="116" pcid="14544"></source>
+</class>
+
+<class classid="84" nclones="2" nlines="13" similarity="84">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/control/customizers/SecureASTCustomizer.java" startline="860" endline="874" pcid="11058"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/ast/CodeVisitorSupport.java" startline="131" endline="144" pcid="14548"></source>
+</class>
+
+<class classid="85" nclones="2" nlines="14" similarity="85">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/antlr/java/Java2GroovyProcessor.java" startline="135" endline="154" pcid="11400"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/antlr/java/Java2GroovyProcessor.java" startline="156" endline="175" pcid="11401"></source>
+</class>
+
+<class classid="86" nclones="3" nlines="26" similarity="80">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/reflection/CachedMethod.java" startline="240" endline="266" pcid="12163"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/reflection/CachedMethod.java" startline="297" endline="324" pcid="12165"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/reflection/CachedMethod.java" startline="269" endline="295" pcid="12164"></source>
+</class>
+
+<class classid="87" nclones="2" nlines="12" similarity="83">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/reflection/ParameterTypes.java" startline="268" endline="281" pcid="12343"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/reflection/ParameterTypes.java" startline="283" endline="296" pcid="12344"></source>
+</class>
+
+<class classid="88" nclones="2" nlines="29" similarity="82">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/util/AbstractConcurrentMapBase.java" startline="94" endline="123" pcid="12472"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/util/AbstractConcurrentMapBase.java" startline="125" endline="154" pcid="12473"></source>
+</class>
+
+<class classid="89" nclones="2" nlines="15" similarity="80">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/util/SingleKeyHashMap.java" startline="57" endline="77" pcid="12504"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/util/SingleKeyHashMap.java" startline="79" endline="99" pcid="12505"></source>
+</class>
+
+<class classid="90" nclones="2" nlines="15" similarity="80">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/util/SingleKeyHashMap.java" startline="120" endline="137" pcid="12507"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/util/TripleKeyHashMap.java" startline="68" endline="85" pcid="12606"></source>
+</class>
+
+<class classid="91" nclones="2" nlines="22" similarity="81">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/util/AbstractConcurrentMap.java" startline="59" endline="80" pcid="12537"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/util/AbstractConcurrentMap.java" startline="82" endline="103" pcid="12538"></source>
+</class>
+
+<class classid="92" nclones="2" nlines="20" similarity="85">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/classgen/asm/BinaryIntExpressionHelper.java" startline="145" endline="166" pcid="12814"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/classgen/asm/BinaryExpressionWriter.java" startline="86" endline="108" pcid="13069"></source>
+</class>
+
+<class classid="93" nclones="2" nlines="10" similarity="80">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/classgen/asm/CompileStack.java" startline="475" endline="484" pcid="13032"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/classgen/asm/CompileStack.java" startline="508" endline="517" pcid="13035"></source>
+</class>
+
+<class classid="94" nclones="3" nlines="11" similarity="81">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/classgen/VariableScopeVisitor.java" startline="599" endline="610" pcid="13691"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/ast/ClassCodeVisitorSupport.java" startline="92" endline="102" pcid="14645"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/ast/ClassCodeExpressionTransformer.java" startline="93" endline="103" pcid="15467"></source>
+</class>
+
+<class classid="95" nclones="2" nlines="15" similarity="80">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/classgen/AsmClassGenerator.java" startline="1260" endline="1277" pcid="13787"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/classgen/AsmClassGenerator.java" startline="1284" endline="1302" pcid="13788"></source>
+</class>
+
+<class classid="96" nclones="4" nlines="14" similarity="85">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/ast/expr/ListExpression.java" startline="78" endline="92" pcid="15204"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/ast/expr/TupleExpression.java" startline="96" endline="111" pcid="15356"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/ast/expr/ArrayExpression.java" startline="113" endline="127" pcid="15246"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/ast/expr/ClosureListExpression.java" startline="73" endline="87" pcid="15430"></source>
+</class>
+
+<class classid="97" nclones="2" nlines="10" similarity="80">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingVisitor.java" startline="4751" endline="4760" pcid="16313"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/transform/stc/StaticTypeCheckingVisitor.java" startline="4762" endline="4771" pcid="16314"></source>
+</class>
+
+<class classid="98" nclones="2" nlines="10" similarity="80">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/transform/stc/GroovyTypeCheckingExtensionSupport.java" startline="300" endline="309" pcid="16563"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/transform/stc/GroovyTypeCheckingExtensionSupport.java" startline="322" endline="331" pcid="16565"></source>
+</class>
+
+<class classid="99" nclones="2" nlines="29" similarity="89">
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/transform/ImmutableASTTransformation.java" startline="351" endline="383" pcid="16733"></source>
+<source file="examples/Groovy-3.0.0/src/main/java/org/codehaus/groovy/transform/ImmutableASTTransformation.java" startline="386" endline="418" pcid="16734"></source>
+</class>
+
+<class classid="100" nclones="2" nlines="20" similarity="100">
+<source file="examples/Groovy-3.0.0/src/test/org/codehaus/groovy/benchmarks/vm5/spectralnorm.java" startline="48" endline="71" pcid="17868"></source>
+<source file="examples/Groovy-3.0.0/benchmark/bench/spectralnorm.java" startline="25" endline="48" pcid="18217"></source>
+</class>
+
+<class classid="101" nclones="2" nlines="19" similarity="80">
+<source file="examples/Groovy-3.0.0/src/test/gls/ch06/s05/JName1Test.java" startline="31" endline="53" pcid="17914"></source>
+<source file="examples/Groovy-3.0.0/src/test/gls/ch06/s05/JName1Test.java" startline="55" endline="78" pcid="17915"></source>
+</class>
+
+<class classid="102" nclones="2" nlines="19" similarity="80">
+<source file="examples/Groovy-3.0.0/src/test/gls/ch06/s05/JName1Test.java" startline="161" endline="183" pcid="17926"></source>
+<source file="examples/Groovy-3.0.0/src/test/gls/ch06/s05/JName1Test.java" startline="185" endline="208" pcid="17927"></source>
+</class>
+
+</clones>

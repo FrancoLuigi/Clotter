@@ -19,7 +19,7 @@ import baseClass.Clone;
 
 public class GestoreClones {
 
-	public GestoreClones(String nomeFile, int version) throws ParserConfigurationException, SAXException, IOException {
+	public GestoreClones(String nomeFile, String version) throws ParserConfigurationException, SAXException, IOException {
 
 		cloni = new HashMap<String, Clone>();
 		classi = new HashMap<String, ClassClone>();
@@ -37,7 +37,7 @@ public class GestoreClones {
 		Node n1 = elemento.getElementsByTagName("systeminfo").item(0);
 
 		String processor = n1.getAttributes().getNamedItem("processor").getNodeValue();
-		String system = n1.getAttributes().getNamedItem("system").getNodeValue();
+		system = n1.getAttributes().getNamedItem("system").getNodeValue();
 		String granularity = n1.getAttributes().getNamedItem("granularity").getNodeValue();
 		String threshold = n1.getAttributes().getNamedItem("threshold").getNodeValue();
 		String min = n1.getAttributes().getNamedItem("minlines").getNodeValue();
@@ -65,9 +65,9 @@ public class GestoreClones {
 			int nlines = Integer.parseInt(nLines);
 			int similarity = Integer.parseInt(simila);
 
-			ClassClone c = new ClassClone(classid, nclones, nlines, similarity);
+			ClassClone c = new ClassClone(classid, nclones, nlines, similarity,version);
 
-			classi.put(classid, c);
+			classi.put(classid+version, c);
 
 			n = n + nclones;
 
@@ -84,7 +84,8 @@ public class GestoreClones {
 				String pcid = n6.getAttributes().getNamedItem("pcid").getNodeValue();
 
 				Clone cl = new Clone(file, startline, endline, pcid, classid,version);
-				cloni.put(pcid, cl);
+				
+				cloni.put(pcid+version, cl);
 				
 			}
 
@@ -163,10 +164,23 @@ public class GestoreClones {
 		return true;
 	}
 
+	
+	
+	public String getSystem() {
+		return system;
+	}
+
+	public void setSystem(String system) {
+		this.system = system;
+	}
+
+
+
 	private HashMap<String, Clone> cloni;
 	private HashMap<String, ClassClone> classi;
 	private int n;
 	private int a;
 	private String classid;
+	private String system;
 
 }

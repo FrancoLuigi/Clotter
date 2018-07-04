@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class Commit {
-	public Commit(String id, Date data, String descrizione, int version, Committer committer, HashMap<String, Change> changes) {
+	public Commit(String id, Date data, String descrizione, String version, Committer committer, HashMap<String, Change> changes) {
 		this.id = id;
 		this.data = data;
 		this.descrizione = descrizione;
@@ -58,11 +58,11 @@ public class Commit {
 	}
 
 	
-	public int getVersion() {
+	public String getVersion() {
 		return version;
 	}
 
-	public void setVersion(int version) {
+	public void setVersion(String version) {
 		this.version = version;
 	}
 
@@ -78,6 +78,7 @@ public class Commit {
 		if (id.contains("Commit:"))
 			id = sc.nextLine();
 
+//	System.out.println(id);
 	
 		String autore;
 		if (!sc.hasNextLine()) {
@@ -91,8 +92,8 @@ public class Commit {
 		}
 		email = sc.nextLine();
 
-		int em = email.hashCode();
-		Committer committer = new Committer(autore, em);
+		int em = Math.abs(email.hashCode());
+		Committer committer = new Committer(autore, Integer.toString(em));
 
 		// System.out.println(autore);
 
@@ -137,7 +138,7 @@ public class Commit {
 		ArrayList<Range> ranges = new ArrayList<Range>();
 		while (sc.hasNextLine() && !exit) {
 			file = sc.nextLine();
-
+			//System.out.println(file);
 			
 		
 			if(file.contains("Commit:")) {
@@ -158,6 +159,7 @@ public class Commit {
 
 					a1 = sc.nextLine();
 
+			//		System.out.println(a1);
 					
 					if (a1.contains("@@ ")) {
 						
@@ -256,11 +258,11 @@ public class Commit {
 			}
 
 		}
-	//	 System.out.println("----------");
-		return new Commit(id, date, descrizione, 0,committer, changes);
+		 //System.out.println("----------");
+		return new Commit(id, date, descrizione, "0",committer, changes);
 	}
 
-	private String id, descrizione;
+	private String id, descrizione, version;
 
 	@Override
 	public String toString() {
@@ -270,8 +272,7 @@ public class Commit {
 
 	private Committer committer;
 	private Date data;
-	private int version;
-
+	
 	private HashMap<String, Change> changes;
 
 }

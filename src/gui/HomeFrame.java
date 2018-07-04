@@ -97,6 +97,8 @@ public class HomeFrame {
 		listModel = new DefaultListModel<>();
 
 		listModel.addElement("Dnsjava");
+		listModel.addElement("Flink");
+		listModel.addElement("Groovy");
 		listModel.addElement("NoteManager");
 		listModel.addElement("Tika");
 
@@ -111,7 +113,7 @@ public class HomeFrame {
 
 		frame.add(new JScrollPane(list));
 		list.setVisible(true);
-		list.setBounds(130, 280, 100, 80);
+		list.setBounds(130, 280, 100, 120);
 
 		frame.getContentPane().add(list);
 		frame.getContentPane().setVisible(true);

@@ -1,12 +1,24 @@
 package baseClass;
 
 public class Association {
-	public Association(String idClone, String idCommit) {
+	public Association(String idClone, String idCommit, String version) {
 
 		this.idClone = idClone;
 		this.idCommit = idCommit;
+		this.version=version;
 
 	}
+
+	
+	public String getVersion() {
+		return version;
+	}
+
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+
 
 	@Override
 	public String toString() {
@@ -30,5 +42,6 @@ public class Association {
 	}
 
 	private String idClone, idCommit;
+	private String version;
 
 }
