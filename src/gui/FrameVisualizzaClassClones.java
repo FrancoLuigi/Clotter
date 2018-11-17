@@ -36,7 +36,6 @@ public class FrameVisualizzaClassClones {
 		frame = new JFrame();
 		frame.setForeground(Color.BLACK);
 		frame.setResizable(false);
-//
 		frame.setSize(350, 300);
 		frame.setLocationRelativeTo(null);
 		frame.setTitle("Clo_tter v1.0");
