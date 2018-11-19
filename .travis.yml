@@ -15,7 +15,6 @@ before_install:
 - sudo apt-get update -y
 - sudo service mysql restart
 - chmod +x gradlew
-- ./gradlew clean
  
 
 jdk:
