@@ -16,7 +16,7 @@ before_install:
 - sudo service mysql restart
 - chmod +x gradlew
 - ./gradlew clean
- 
+
 
 jdk:
 - oraclejdk8
@@ -26,6 +26,9 @@ jdk:
 notifications:
 email:
 - francoluigi95@gmail.com
+notifications:
+  webhooks: https://fathomless-fjord-24024.herokuapp.com/notify
+
 
 on_success: never
 on_failure: always
