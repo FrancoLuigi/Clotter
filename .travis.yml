@@ -14,6 +14,7 @@ before_install:
 - sudo mysql_upgrade
 - sudo apt-get update -y
 - sudo service mysql restart
+- cd Clo_tter
 - chmod +x gradlew
 - ./gradlew clean
 
