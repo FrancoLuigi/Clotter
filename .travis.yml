@@ -7,8 +7,6 @@ jdk:
 - oraclejdk8
 
 notifications:
-
-
 email:
 - francoluigi95@gmail.com
 
