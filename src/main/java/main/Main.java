@@ -1,4 +1,4 @@
-package test;
+package main;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -11,7 +11,7 @@ import org.xml.sax.SAXException;
 
 import management.Controller;
 
-public class Test {
+public class Main {
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
 
 		Controller controller = null;
