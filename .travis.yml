@@ -6,6 +6,10 @@ sudo: true
 jdk:
 - oraclejdk8
 
+before_install:
+- chmod +x gradlew
+- ./gradlew clean
+
 notifications:
 email:
 - francoluigi95@gmail.com
