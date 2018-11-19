@@ -8,3 +8,4 @@ The present project aims to analyze data recorded in repositories of open-source
 # ACCESS THE DATABASE
 In the file folder there is db.setting.txt which must be modified according to the database specified in order, address, port number, user and password.
 In the folder there is a database that represents an example of Clo_tter processing of the input files in the file folder
+
