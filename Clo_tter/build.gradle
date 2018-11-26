@@ -6,13 +6,10 @@
  * user guide available at https://docs.gradle.org/4.10.2/userguide/java_library_plugin.html
  */
 
-plugins {
-    // Apply the java-library plugin to add support for Java Library
-    id 'java-library'
-}
+apply plugin: 'java'
 
 dependencies {
-    compile 'mysql:mysql-connector-java:5.+'	
+    compile 'mysql:mysql-connector-java:5.+'
 }
 
 // In this section you declare where to find the dependencies of your project
