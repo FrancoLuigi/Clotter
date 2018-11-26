@@ -1,4 +1,4 @@
 # Auto detect text files and perform LF normalization
-*.rb linguist-language=Java
+*.rb Clotter-language=Java
 *.1 linguist-language=Text
 *.3 linguist-language=text
