@@ -224,7 +224,7 @@ public class Controller {
 
 		case "Flink":
 
-			Scanner sc4 = new Scanner(new File("files/" + f + "-1.3.2"));
+			Scanner sc4 = new Scanner(new File("files/" + f + "-1.3.2"+".txt"));
 			// Scanner sc1=new Scanner(new File("test"));
 			GestoreCommits gestoreCo4 = new GestoreCommits(sc4, "1.3.2");
 
@@ -259,7 +259,7 @@ public class Controller {
 
 			gestoreDB.insertAssociations(associations4);
 
-			Scanner sc5 = new Scanner(new File("files/" + f + "-1.4.3"));
+			Scanner sc5 = new Scanner(new File("files/" + f + "-1.4.3"+".txt"));
 			// Scanner sc1=new Scanner(new File("test"));
 			GestoreCommits gestoreCo5 = new GestoreCommits(sc5, "1.4.3");
 
@@ -294,7 +294,7 @@ public class Controller {
 
 			gestoreDB.insertAssociations(associations5);
 
-			Scanner sc6 = new Scanner(new File("files/" + f + "-1.5.0"));
+			Scanner sc6 = new Scanner(new File("files/" + f + "-1.5.0"+".txt"));
 			// Scanner sc1=new Scanner(new File("test"));
 			GestoreCommits gestoreCo6 = new GestoreCommits(sc6, "1.5.0");
 
@@ -335,7 +335,7 @@ public class Controller {
 
 		case "Groovy":
 
-			Scanner sc7 = new Scanner(new File("files/" + f + "-2.4.15"));
+			Scanner sc7 = new Scanner(new File("files/" + f + "-2.4.15"+".txt"));
 			// Scanner sc1=new Scanner(new File("test"));
 			GestoreCommits gestoreCo7 = new GestoreCommits(sc7, "2.4.15");
 
@@ -370,7 +370,7 @@ public class Controller {
 
 			gestoreDB.insertAssociations(associations7);
 
-			Scanner sc8 = new Scanner(new File("files/" + f + "-2.5"));
+			Scanner sc8 = new Scanner(new File("files/" + f + "-2.5"+".txt"));
 			// Scanner sc1=new Scanner(new File("test"));
 			GestoreCommits gestoreCo8 = new GestoreCommits(sc8, "2.5");
 
@@ -405,7 +405,7 @@ public class Controller {
 
 			gestoreDB.insertAssociations(associations8);
 
-			Scanner sc9 = new Scanner(new File("files/" + f + "-3.0"));
+			Scanner sc9 = new Scanner(new File("files/" + f + "-3.0"+".txt"));
 			// Scanner sc1=new Scanner(new File("test"));
 			GestoreCommits gestoreCo9 = new GestoreCommits(sc9, "3.0");
 
@@ -445,7 +445,7 @@ public class Controller {
 			break;
 
 		default:
-			Scanner sc = new Scanner(new File("files/" + f));
+			Scanner sc = new Scanner(new File("files/" + f+".txt"));
 			// Scanner sc1=new Scanner(new File("test"));
 			GestoreCommits gestore = new GestoreCommits(sc, "0");
 
