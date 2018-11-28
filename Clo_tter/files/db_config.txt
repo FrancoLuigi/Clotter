@@ -1,4 +1,4 @@
 localhost
 3306
-franco
+root
 ciccio95

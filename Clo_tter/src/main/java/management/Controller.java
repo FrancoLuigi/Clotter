@@ -116,7 +116,7 @@ public class Controller {
 
 		case "Dnsjava":
 
-			Scanner sc1 = new Scanner(new File("files/" + f + "-2.1.6"));
+			Scanner sc1 = new Scanner(new File("files/" + f + "-2.1.6"+".txt"));
 			// Scanner sc1=new Scanner(new File("test"));
 			GestoreCommits gestoreCo1 = new GestoreCommits(sc1, "2.1.6");
 
@@ -150,7 +150,7 @@ public class Controller {
 
 			gestoreDB.insertAssociations(associations1);
 
-			Scanner sc2 = new Scanner(new File("files/" + f + "-2.1.7"));
+			Scanner sc2 = new Scanner(new File("files/" + f + "-2.1.7"+".txt"));
 			// Scanner sc1=new Scanner(new File("test"));
 			GestoreCommits gestoreCo2 = new GestoreCommits(sc2, "2.1.7");
 
@@ -183,7 +183,7 @@ public class Controller {
 
 			gestoreDB.insertAssociations(associations2);
 
-			Scanner sc3 = new Scanner(new File("files/" + f + "-2.1.8"));
+			Scanner sc3 = new Scanner(new File("files/" + f + "-2.1.8"+".txt"));
 			// Scanner sc1=new Scanner(new File("test"));
 			GestoreCommits gestoreCo3 = new GestoreCommits(sc3, "2.1.8");
 
