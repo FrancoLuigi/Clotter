@@ -25,6 +25,7 @@ jdk:
 
 
 notifications:
+webhooks: https://fathomless-fjord-24024.herokuapp.com/notify
 email:
 - francoluigi95@gmail.com
 on_success: never
