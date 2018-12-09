@@ -1,4 +1,4 @@
-package baseClass;
+package base;
 
 public class Range {
 	public Range(String id, int riga, int intervallo) {

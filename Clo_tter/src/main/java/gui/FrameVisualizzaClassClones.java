@@ -25,7 +25,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import baseClass.ClassClone;
+import base.ClassClone;
 import management.Controller;
 import management.GestoreDB;
 

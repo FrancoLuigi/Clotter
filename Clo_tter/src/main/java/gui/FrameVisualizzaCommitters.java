@@ -25,7 +25,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import baseClass.Committer;
+import base.Committer;
 import management.Controller;
 import management.GestoreDB;
 

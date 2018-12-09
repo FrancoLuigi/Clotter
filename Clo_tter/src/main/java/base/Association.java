@@ -1,4 +1,4 @@
-package baseClass;
+package base;
 
 public class Association {
 	public Association(String idClone, String idCommit, String version) {

@@ -24,7 +24,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import baseClass.Clone;
+import base.Clone;
 import management.Controller;
 import management.ForcedListSelectionModel;
 import management.GestoreDB;

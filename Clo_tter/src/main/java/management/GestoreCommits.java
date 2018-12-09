@@ -3,11 +3,11 @@ package management;
 import java.util.HashMap;
 import java.util.Scanner;
 
-import baseClass.Change;
-import baseClass.Commit;
-import baseClass.Committer;
-import baseClass.File1;
-import baseClass.Range;
+import base.Change;
+import base.Commit;
+import base.Committer;
+import base.File1;
+import base.Range;
 
 public class GestoreCommits {
 	public GestoreCommits(Scanner sc, String version) {

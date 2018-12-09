@@ -12,14 +12,14 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import baseClass.Association;
-import baseClass.Change;
-import baseClass.ClassClone;
-import baseClass.Clone;
-import baseClass.Commit;
-import baseClass.Committer;
-import baseClass.File1;
-import baseClass.Range;
+import base.Association;
+import base.Change;
+import base.ClassClone;
+import base.Clone;
+import base.Commit;
+import base.Committer;
+import base.File1;
+import base.Range;
 import gui.DBConnectionSettingsFrame;
 import gui.FrameAssociationClone;
 import gui.FrameAssociationCommit;

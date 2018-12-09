@@ -2,11 +2,11 @@ package management;
 
 import java.util.HashMap;
 
-import baseClass.Association;
-import baseClass.Change;
-import baseClass.Clone;
-import baseClass.Commit;
-import baseClass.Range;
+import base.Association;
+import base.Change;
+import base.Clone;
+import base.Commit;
+import base.Range;
 
 public class GestoreAssociation {
 	public GestoreAssociation(HashMap<String, Commit> commits, HashMap<String, Clone> clones) {
