@@ -14,6 +14,7 @@ import management.Controller;
 public class Main {
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
 
+		//attilio
 		Controller controller = null;
 		try {
 			Controller.USE_DATABASE = true;
@@ -26,7 +27,6 @@ public class Main {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
 				| UnsupportedLookAndFeelException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		controller.visualizzaHomeFrame();
