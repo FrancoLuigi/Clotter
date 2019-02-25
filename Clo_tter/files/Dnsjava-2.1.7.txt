@@ -1,30 +1,4 @@
 Commit:
-6b86c9f72a849feb35f6d646ecde45dcbd8b5d6a
-Noa Resare
-noa@resare.com
-2015-02-17 16:22:34 +0100
-Update version number in pom.xml to 2.1.7
-diff --git a/pom.xml b/pom.xml
-index f375225..e5f2779 100644
---- a/pom.xml
-+++ b/pom.xml
-@@ -11,7 +11,7 @@
-     <modelVersion>4.0.0</modelVersion>
-     <groupId>dnsjava</groupId>
-     <artifactId>dnsjava</artifactId>
--    <version>2.1.6</version>
-+    <version>2.1.7</version>
-     <name>dnsjava</name>
-     <description>dnsjava is an implementation of DNS in Java. It supports all defined record types (including the DNSSEC types), and unknown types. It can be used for queries, zone transfers, and dynamic updates. It includes a cache which can be used by clients, and a minimal implementation of a server. It supports TSIG authenticated messages, partial DNSSEC verification, and EDNS0. </description>
-     <url>http://www.dnsjava.org</url>
-
-Commit:
-e07721a35afcd6a0e5a13c51f9bac61dae34afa8
-Noa Resare
-noa@resare.com
-2015-02-17 16:22:13 +0100
-Merge v2.1.7 changes from branch upstream into master
-Commit:
 f1eb3e8dd71f131923c285bf1b3d995c2a2710b1
 bwelling
 bwelling@c76caeb1-94fd-44dd-870f-0c9d92034fc1
@@ -1562,3 +1536,290 @@ index c795a9c..30d3834 100644
  }
  
  }
+
+Commit:
+23bdb2bfcfec16666301020f8d3ef1f90af12955
+Noa Resare
+noa@spotify.com
+2014-02-23 15:50:14 +0100
+Updated pom.xml
+diff --git a/pom.xml b/pom.xml
+index 841af9c..f375225 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -17,15 +17,16 @@
+     <url>http://www.dnsjava.org</url>
+     <licenses>
+         <license>
+-            <name>BSD license</name>
+-            <url>http://dnsjava.org/dnsjava-current/README</url>
++            <name>BSD 2-Clause license</name>
++            <url>http://opensource.org/licenses/BSD-2-Clause</url>
+             <distribution>repo</distribution>
+         </license>
+     </licenses>
+     <scm>
+-        <connection>scm:svn:https://svn.code.sf.net/p/dnsjava/code/trunk/k</connection>
+-        <developerConnection>scm:svn:https://svn.code.sf.net/p/dnsjava/code/trunk/</developerConnection>
+-        <url>http://sourceforge.net/p/dnsjava/code/HEAD/tree/</url>
++        <connection>scm:git:https://github.com/dnsjava/dnsjava</connection>
++        <developerConnection>scm:git:git@github.com:dnsjava/dnsjava</developerConnection>
++        <url>https://github.com/dnsjava/dnsjava</url>
++        <tag>v2.1.6</tag>
+     </scm>
+     <developers>
+         <developer>
+@@ -174,7 +175,8 @@
+             <groupId>junit</groupId>
+             <artifactId>junit</artifactId>
+             <version>3.8.2</version>
++            <scope>test</scope>
+         </dependency>
+     </dependencies>
+ 
+-</project>
+\ No newline at end of file
++</project>
+
+Commit:
+552402b5e9e3481a6cb193872659dc955bda16a4
+Noa Resare
+noa@spotify.com
+2014-02-23 15:45:29 +0100
+Initial version of pom.xml from OSSRH-1305
+diff --git a/README.md b/README.md
+index 53e9618..7e08fb9 100644
+--- a/README.md
++++ b/README.md
+@@ -1,4 +1,4 @@
+-# A github dnsjava mirror
++# A dnsjava mirror hosted at github
+ 
+ This repository contains a github mirror of the dnsjava svn repository
+ located at http://sourceforge.net/p/dnsjava/code/HEAD/tree/
+@@ -32,7 +32,6 @@ by doing issuing the following command:
+ `git svn clone --stdlayout http://svn.code.sf.net/p/dnsjava/code`
+ 
+ I then manually pushed the master branch onto the branch `upstream`
+-and copied the pom.xml file
+-http://repo1.maven.org/maven2/org/dnsjava/dnsjava/2.0.6/dnsjava-2.0.6.pom
++and copied the pom.xml file from
++https://issues.sonatype.org/browse/OSSRH-1305
+ with some updates to the master branch. 
+-
+diff --git a/pom.xml b/pom.xml
+new file mode 100644
+index 0000000..841af9c
+--- /dev/null
++++ b/pom.xml
+@@ -0,0 +1,180 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project
++    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
++    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
++    <parent>
++        <groupId>org.sonatype.oss</groupId>
++        <artifactId>oss-parent</artifactId>
++        <version>7</version>
++    </parent>
++
++    <modelVersion>4.0.0</modelVersion>
++    <groupId>dnsjava</groupId>
++    <artifactId>dnsjava</artifactId>
++    <version>2.1.6</version>
++    <name>dnsjava</name>
++    <description>dnsjava is an implementation of DNS in Java. It supports all defined record types (including the DNSSEC types), and unknown types. It can be used for queries, zone transfers, and dynamic updates. It includes a cache which can be used by clients, and a minimal implementation of a server. It supports TSIG authenticated messages, partial DNSSEC verification, and EDNS0. </description>
++    <url>http://www.dnsjava.org</url>
++    <licenses>
++        <license>
++            <name>BSD license</name>
++            <url>http://dnsjava.org/dnsjava-current/README</url>
++            <distribution>repo</distribution>
++        </license>
++    </licenses>
++    <scm>
++        <connection>scm:svn:https://svn.code.sf.net/p/dnsjava/code/trunk/k</connection>
++        <developerConnection>scm:svn:https://svn.code.sf.net/p/dnsjava/code/trunk/</developerConnection>
++        <url>http://sourceforge.net/p/dnsjava/code/HEAD/tree/</url>
++    </scm>
++    <developers>
++        <developer>
++            <id>bwelling</id>
++            <name>Brian Wellington</name>
++        </developer>
++    </developers>
++
++    <properties>
++        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
++        <target.jdk>1.4</target.jdk>
++    </properties>
++
++    <build>
++        <sourceDirectory>./</sourceDirectory>
++        <testSourceDirectory>./tests</testSourceDirectory>
++        <resources>
++            <resource>
++                <directory>org/xbill/DNS/spi/</directory>
++                <targetPath>META-INF</targetPath>
++                <includes>
++                    <include>services/</include>
++                </includes>
++            </resource>
++        </resources>
++
++        <plugins>
++        
++        <plugin>
++        <groupId>org.apache.maven.plugins</groupId>
++        <artifactId>maven-gpg-plugin</artifactId>
++        <version>1.4</version>
++        <executions>
++          <execution>
++            <id>sign-artifacts</id>
++            <phase>verify</phase>
++            <goals>
++              <goal>sign</goal>
++            </goals>
++          </execution>
++        </executions>
++      </plugin>
++            <plugin>
++                <groupId>org.apache.maven.plugins</groupId>
++                <artifactId>maven-compiler-plugin</artifactId>
++                <version>3.0</version>
++                <configuration>
++                    <source>${target.jdk}</source>
++                    <target>${target.jdk}</target>
++                    <encoding>iso8859-1</encoding>
++                    <testExcludes>
++                        <!-- Exclude unit tests with external dependencies -->
++                        <exclude>**/DNSSECWithLunaProviderTest.java</exclude>
++                    </testExcludes>
++                    <includes>
++                        <include>*.java</include>
++                        <include>org/**/*.java</include>
++                    </includes>
++                    <excludes>
++                        <exclude>org/xbill/DNS/tests/**</exclude>
++                    </excludes>
++                </configuration>
++            </plugin>
++
++            <plugin>
++                <groupId>org.apache.maven.plugins</groupId>
++                <artifactId>maven-source-plugin</artifactId>
++                <version>2.2.1</version>
++                <configuration>
++                    <includes>
++                        <include>*.java</include>
++                        <include>org/**/*.java</include>
++                    </includes>
++                    <excludes>
++                        <exclude>org/xbill/DNS/tests/</exclude>
++                    </excludes>
++                </configuration>
++                <executions>
++                    <execution>
++                        <id>attach-sources</id>
++                        <goals>
++                            <goal>jar-no-fork</goal>
++                        </goals>
++                    </execution>
++                </executions>
++            </plugin>
++
++            <plugin>
++                <artifactId>maven-jar-plugin</artifactId>
++                <version>2.4</version>
++                <configuration>
++                    <archive>
++                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
++                        <manifestEntries>
++                            <Bundle-RequiredExecutionEnvironment>J2SE-1.4</Bundle-RequiredExecutionEnvironment>
++                        </manifestEntries>
++                    </archive>
++                </configuration>
++            </plugin>
++
++            <plugin>
++                <groupId>org.apache.felix</groupId>
++                <artifactId>maven-bundle-plugin</artifactId>
++                <version>2.4.0</version>
++                <configuration>
++                    <instructions>
++                        <Export-Package>org.xbill.DNS;uses:="org.xbill.DNS.util",org.xbill.DNS.spi;uses:="org.xbill.DNS,sun.net.spi.nameservice",org.xbill.DNS.utils,org.xbill.DNS.windows</Export-Package>
++                    </instructions>
++                </configuration>
++                <executions>
++                    <execution>
++                        <id>bundle-manifest</id>
++                        <phase>process-classes</phase>
++                        <goals>
++                            <goal>manifest</goal>
++                        </goals>
++                    </execution>
++                </executions>
++            </plugin>
++
++            <plugin>
++                <groupId>org.apache.maven.plugins</groupId>
++                <artifactId>maven-javadoc-plugin</artifactId>
++                <version>2.7</version>
++                <configuration>
++                    <excludePackageNames>*.tests.*</excludePackageNames>
++                    <sourcepath>./org</sourcepath>
++                    <debug>true</debug>
++                    <windowtitle>dnsjava documentation</windowtitle>
++                    <footer></footer>
++                </configuration>
++                <executions>
++                    <execution>
++                        <id>attach-javadocs</id>
++                        <goals>
++                            <goal>jar</goal>
++                        </goals>
++                    </execution>
++                </executions>
++            </plugin>
++        </plugins>
++    </build>
++
++    <dependencies>
++        <dependency>
++            <groupId>junit</groupId>
++            <artifactId>junit</artifactId>
++            <version>3.8.2</version>
++        </dependency>
++    </dependencies>
++
++</project>
+\ No newline at end of file
+
+Commit:
+b85912d4adaa7c037b7a84ec3446453eacbecc55
+Noa Resare
+noa@spotify.com
+2014-02-23 15:40:01 +0100
+Fix test case (depends on specific IP assignments in the real world)
+diff --git a/tests/org/xbill/DNS/AddressTest.java b/tests/org/xbill/DNS/AddressTest.java
+index 451b262..323463d 100644
+--- a/tests/org/xbill/DNS/AddressTest.java
++++ b/tests/org/xbill/DNS/AddressTest.java
+@@ -277,7 +277,7 @@ public class AddressTest extends TestCase
+ 
+ 	out = Address.getByName("serl.cs.colorado.edu");
+ 	assertEquals("epic.cs.colorado.edu", out.getCanonicalHostName());
+-	assertEquals("128.138.201.71", out.getHostAddress());
++	assertEquals("128.138.72.229", out.getHostAddress());
+     }
+ 
+     public void test_getByName_invalid() throws UnknownHostException
+@@ -305,7 +305,7 @@ public class AddressTest extends TestCase
+ 	out = Address.getAllByName("serl.cs.colorado.edu");
+ 	assertEquals(1, out.length);
+ 	assertEquals("epic.cs.colorado.edu", out[0].getCanonicalHostName());
+-	assertEquals("128.138.201.71", out[0].getHostAddress());
++	assertEquals("128.138.72.229", out[0].getHostAddress());
+ 
+ 	out = Address.getAllByName("cnn.com");
+ 	assertTrue(out.length > 1);
