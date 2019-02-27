@@ -1,5 +1,5 @@
 <clones>
-<systeminfo processor="nicad5" system="dnsjava-2.1.8" granularity="functions" threshold="30%" minlines="10" maxlines="2500"/>
+<systeminfo processor="nicad5" system="Dnsjava-2.1.8" granularity="functions" threshold="30%" minlines="10" maxlines="2500"/>
 <cloneinfo npcs="2183" npairs="74"/>
 <runinfo ncompares="69938" cputime="92"/>
 <classinfo nclasses="36"/>
