@@ -52,9 +52,9 @@ public class Controller {
 			Scanner scanner = new Scanner(System.in);
 			while (!gestoreDB.isConnected()) {
 				System.out.println("\nInserisci i dati di configurazione per riprovare a connetterti.");
-				System.out.print("Inserisci l'host (in genere: localhost): ");
+				System.out.print("Inserisci l'host (127.0.0.1): ");
 				String host = scanner.nextLine();
-				System.out.print("Inserisci la porta (in genere: 3306): ");
+				System.out.print("Inserisci la porta (3306): ");
 				String port = scanner.nextLine();
 				System.out.print("Inserisci l'username:");
 				String user = scanner.nextLine();
