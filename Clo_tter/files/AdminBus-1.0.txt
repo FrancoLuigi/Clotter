@@ -1,0 +1,2664 @@
+Commit:
+db8a68edb1baa112ff9e79edb986306a23262018
+submarine91
+attilio.russo91@gmail.com
+2019-03-07 14:38:25 +0100
+Add AdminBus project
+diff --git a/.classpath b/.classpath
+new file mode 100644
+index 0000000..50204a5
+--- /dev/null
++++ b/.classpath
+@@ -0,0 +1,8 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<classpath>
++	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
++	<classpathentry kind="src" path="src"/>
++	<classpathentry kind="lib" path="C:/Users/attil10/Desktop/Progettazione del software/Progettazione_del_Software_2017/Progetto PS/Progetto/MuseoDelSannio/lib/mysql-connector-java-5.1.43-bin.jar"/>
++	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
++	<classpathentry kind="output" path="bin"/>
++</classpath>
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..e660fd9
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1 @@
++bin/
+diff --git a/.project b/.project
+new file mode 100644
+index 0000000..099382e
+--- /dev/null
++++ b/.project
+@@ -0,0 +1,17 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<projectDescription>
++	<name>Sottosistema TitoliViaggio</name>
++	<comment></comment>
++	<projects>
++	</projects>
++	<buildSpec>
++		<buildCommand>
++			<name>org.eclipse.jdt.core.javabuilder</name>
++			<arguments>
++			</arguments>
++		</buildCommand>
++	</buildSpec>
++	<natures>
++		<nature>org.eclipse.jdt.core.javanature</nature>
++	</natures>
++</projectDescription>
+diff --git a/.settings/org.eclipse.jdt.core.prefs b/.settings/org.eclipse.jdt.core.prefs
+new file mode 100644
+index 0000000..3a21537
+--- /dev/null
++++ b/.settings/org.eclipse.jdt.core.prefs
+@@ -0,0 +1,11 @@
++eclipse.preferences.version=1
++org.eclipse.jdt.core.compiler.codegen.inlineJsrBytecode=enabled
++org.eclipse.jdt.core.compiler.codegen.targetPlatform=1.8
++org.eclipse.jdt.core.compiler.codegen.unusedLocal=preserve
++org.eclipse.jdt.core.compiler.compliance=1.8
++org.eclipse.jdt.core.compiler.debug.lineNumber=generate
++org.eclipse.jdt.core.compiler.debug.localVariable=generate
++org.eclipse.jdt.core.compiler.debug.sourceFile=generate
++org.eclipse.jdt.core.compiler.problem.assertIdentifier=error
++org.eclipse.jdt.core.compiler.problem.enumIdentifier=error
++org.eclipse.jdt.core.compiler.source=1.8
+diff --git a/src/MainApp.java b/src/MainApp.java
+new file mode 100644
+index 0000000..d0f9f8d
+--- /dev/null
++++ b/src/MainApp.java
+@@ -0,0 +1,10 @@
++
++import Prenotazioni.View.FormPartenzaArrivo;
++
++public class MainApp {
++
++	public static void main(String[] args) {
++		FormPartenzaArrivo m = new FormPartenzaArrivo();
++	}
++
++}
+diff --git a/src/Prenotazioni/Controller/SportelloSystem.java b/src/Prenotazioni/Controller/SportelloSystem.java
+new file mode 100644
+index 0000000..8250ccd
+--- /dev/null
++++ b/src/Prenotazioni/Controller/SportelloSystem.java
+@@ -0,0 +1,276 @@
++package Prenotazioni.Controller;
++
++import java.text.SimpleDateFormat;
++import java.util.ArrayList;
++import java.util.Date;
++import java.util.List;
++
++import Prenotazioni.Model.Beans.Abbonamento;
++import Prenotazioni.Model.Beans.Biglietto;
++import Prenotazioni.Model.Beans.Cassa;
++import Prenotazioni.Model.Beans.Contanti;
++import Prenotazioni.Model.Beans.Corsa;
++import Prenotazioni.Model.Beans.TitoloViaggio;
++import Prenotazioni.Model.Beans.Tratta;
++import Prenotazioni.Model.DB.DAOFactory;
++
++public class SportelloSystem {
++	
++	private static SportelloSystem instance;
++	private Cassa cassa = null;
++	private double sommaInserita;
++	private String partenza;
++	private String arrivo;
++	private List<Corsa> listaCorseAbbonamento;
++	private Corsa corsaSelezionata;
++	private double costoBiglietto;
++	
++	private SportelloSystem() {	
++		cassa = DAOFactory.getDAOCassa().leggiCassa();
++		corsaSelezionata = new Corsa();
++		listaCorseAbbonamento = new ArrayList<Corsa>();
++		costoBiglietto = 0;
++	}
++
++	public static SportelloSystem getInstance() {
++		if(instance == null) {
++			instance = new SportelloSystem();
++		}
++		return instance;
++	}
++	
++	
++	public Cassa getCassa() {
++		return cassa;
++	}
++	
++	public void setCassa(Cassa cassa) {
++		this.cassa = cassa;
++	}
++	
++	public double getsommaInserita() {
++		return sommaInserita;
++	}
++
++	public void setsommaInserita(double sommaInserita) {
++		this.sommaInserita = sommaInserita;
++	}
++	
++	public Corsa getCorsaSelezionata() {
++		return corsaSelezionata;
++	}
++	
++	public void setCorsaSelezionata(Corsa corsaSelezionata) {
++		this.corsaSelezionata = corsaSelezionata;
++	}
++
++	public String getPartenza() {
++		return partenza;
++	}
++
++	public void setPartenza(String partenza) {
++		this.partenza = partenza;
++	}
++
++	public String getArrivo() {
++		return arrivo;
++	}
++
++	public void setArrivo(String arrivo) {
++		this.arrivo = arrivo;
++	}
++
++
++	public List<Corsa> getCorseAbbonamento() {
++		return listaCorseAbbonamento;
++	}
++
++	public void setCorseAbbonamento(List<Corsa> listaCorse) {
++		this.listaCorseAbbonamento = listaCorse;
++	} 
++
++	public double getCostoBiglietto() {
++		return costoBiglietto;
++	}
++
++	public void setCostoBiglietto(double costoBiglietto) {
++		this.costoBiglietto = costoBiglietto;
++	}
++
++	public List<Corsa> elencaCorse(String partenza, String arrivo) {
++		this.partenza = partenza;
++		this.arrivo = arrivo;
++		List<Corsa> listaCorse = DAOFactory.getDAOCorsa().doRetrieveByPlace(partenza, arrivo);
++		return listaCorse;					
++	}
++
++	public Corsa prenotaBiglietto(int idCorsa) {
++		Corsa corsa = DAOFactory.getDAOCorsa().doRetrieveByKey(idCorsa);
++		corsaSelezionata = corsa;
++		return corsa;
++	}
++	
++	public boolean verificaDisponibilit‡Abbonamento(Corsa corsa){
++		List<Corsa> corseTotali = DAOFactory.getDAOCorsa().doRetrieveByPlace(partenza, arrivo);
++		List<Corsa> corseMese = new ArrayList<Corsa>();
++		for(Corsa c1:corseTotali) {
++			if((c1.getGiorni() - corsa.getGiorni()) <= 30 && (c1.getGiorni() - corsa.getGiorni()) >= 0)
++				corseMese.add(c1);
++		}
++		List<Corsa> corseLibereMese = new ArrayList<Corsa>();
++		for(Corsa c2:corseMese) {
++			if(c2.getPostiDisponibili() > 0)
++				corseLibereMese.add(c2);
++		}
++		
++		if(corseLibereMese.size() == corseMese.size()) {
++			setCorseAbbonamento(corseLibereMese);
++			return true;
++		}
++		else 
++			return false;
++		
++	}
++	
++	
++	public double calcolaPrezzoBiglietto(String from, String to) {
++		Tratta tratta = DAOFactory.getDAOTratta().doRetrieveByKey(from, to);
++		double prezzo = tratta.getPrezzo();
++		costoBiglietto = prezzo;
++		
++		return prezzo;
++	}
++	
++	public double calcolaPrezzoAbbonamento(double prezzoBiglietto) {
++		double prezzoAbbonamento = listaCorseAbbonamento.size() * prezzoBiglietto;
++		return prezzoAbbonamento;
++	}
++	
++	
++	public boolean verificaMaterialeStampa() {
++		boolean verifica = false;
++		double random = Math.random() * 10;
++		if(random > 0)
++			verifica = true;
++		return verifica;
++	}
++	
++	public void annullaOperazione() {
++		partenza = "";
++		arrivo = "";
++		listaCorseAbbonamento = null;
++		corsaSelezionata = null;
++		sommaInserita = 0;
++		costoBiglietto = 0;
++	}
++
++	public double calcolaResto(double sommaInserita, double prezzo) {
++		double resto = sommaInserita - prezzo;
++		return resto;
++	}
++
++	public boolean verificaDisponibilit‡Resto(double resto) {
++		boolean verifica = false;
++		double random = Math.random() * 10;
++		if(random > 0 && resto < cassa.getDisponibilit‡())
++			verifica = true;
++		return verifica;
++	}
++	
++	public Biglietto creaBiglietto() {
++		List<Biglietto> bigliettiEmessi = DAOFactory.getDAOBiglietto().doRetrieveAll();
++		Biglietto bigliettoNuovo = new Biglietto();
++		int count = bigliettiEmessi.size() + 1;
++		bigliettoNuovo.setID(count);
++		bigliettoNuovo.setCorsa(corsaSelezionata);
++		Date dataSistema = new Date();
++		bigliettoNuovo.setDataOraEmissione(dataSistema);
++		bigliettoNuovo.setLocalit‡Partenza(partenza);
++		bigliettoNuovo.setLocalit‡Arrivo(arrivo);
++		bigliettoNuovo.setPrezzo(costoBiglietto);
++		
++		return bigliettoNuovo;
++	}
++	
++	public Abbonamento creaAbbonamento(Corsa corsa) {
++		List<Abbonamento> abbonamentiEmessi = DAOFactory.getDAOAbbonamento().doRetrieveAll();
++		Abbonamento abbonamentoNuovo = new Abbonamento();
++		int count = abbonamentiEmessi.size() + 1;
++		abbonamentoNuovo.setID(count);
++		abbonamentoNuovo.setCorse(listaCorseAbbonamento);
++		int giorniAggiunti = corsa.getDataOra().getDate() + 30;
++		Date dataFine = corsa.getDataOra();
++		dataFine.setDate(giorniAggiunti);
++		abbonamentoNuovo.setDataFine(dataFine);
++		Date dataSistema = new Date();
++		abbonamentoNuovo.setDataOraEmissione(dataSistema);
++		abbonamentoNuovo.setLocalit‡Partenza(partenza);
++		abbonamentoNuovo.setLocalit‡Arrivo(arrivo);
++		abbonamentoNuovo.setPrezzo(calcolaPrezzoAbbonamento(costoBiglietto));
++		
++		return abbonamentoNuovo;
++	}
++	
++	public Contanti creaPagamentoContanti(TitoloViaggio t) {
++		Contanti pagamentoNuovo = new Contanti();
++		pagamentoNuovo.setsommaInserita(sommaInserita);
++		if(t instanceof Biglietto) {
++			pagamentoNuovo.setResto(calcolaResto(sommaInserita, t.getPrezzo()));
++		}
++		else 
++			pagamentoNuovo.setResto(calcolaResto(sommaInserita, calcolaPrezzoAbbonamento(t.getPrezzo())));
++		pagamentoNuovo.setTitoloViaggio(t);
++		
++		return pagamentoNuovo;
++	}
++	
++	public void acquistaBiglietto(Biglietto b) {
++		if(corsaSelezionata.getPostiDisponibili() == 0)
++			System.out.println("Biglietto non acquistabile per mancanza posti.");
++		else{
++			cassa.setDisponibilit‡(cassa.getDisponibilit‡() + b.getPrezzo());
++	   		if(b != null)
++				DAOFactory.getDAOBiglietto().saveOrUpdate(b);
++			Contanti c = creaPagamentoContanti(b);
++			if(c != null)
++				DAOFactory.getDAOContanti().saveOrUpdate(c);
++			DAOFactory.getDAOCorsa().saveOrUpdate(corsaSelezionata);
++			b.print();
++			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm");
++			System.out.println("Valido per " + (int)(b.getPrezzo() / calcolaPrezzoBiglietto(partenza, arrivo)) + " persone");
++			System.out.println("ID corsa: " + b.getCorsa().getIDCorsa() + " - " + b.getCorsa().getLinea().getNome() + " - " + sdf.format(b.getCorsa().getDataOra()));
++			System.out.println("Resto emesso: " + c.getResto() + " Ä");
++		}
++	}
++	
++	public void acquistaAbbonamento(Abbonamento a) {
++		cassa.setDisponibilit‡(cassa.getDisponibilit‡() + a.getPrezzo());	
++		for(Corsa c:listaCorseAbbonamento) {
++			DAOFactory.getDAOCorsa().saveOrUpdate(c);
++		}
++		
++		if(a != null) {
++			DAOFactory.getDAOAbbonamento().saveOrUpdate(a);
++			DAOFactory.getDAOAbbonamento().saveOrUpdate(a, listaCorseAbbonamento);
++		}
++		Contanti c = creaPagamentoContanti(a);
++		if(c != null)
++			DAOFactory.getDAOContanti().saveOrUpdate(c);
++		a.print();
++		System.out.print("Lista corse per abbonamento id = " + a.getID() + ": ");
++		for(Corsa c2:listaCorseAbbonamento) {
++			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm");
++			System.out.println(" [ " + c2.getIDCorsa() + ", " + c2.getLinea().getNome() + ", " + sdf.format(c2.getDataOra()) + " ] ");
++		}
++		System.out.println("Resto emesso: " + c.getResto() + "Ä");
++	}
++	
++	public void acquistaTitoloViaggio(TitoloViaggio t) {
++		if(t instanceof Biglietto)
++			this.acquistaBiglietto((Biglietto) t);
++		else
++			this.acquistaAbbonamento((Abbonamento) t);
++		DAOFactory.getDAOCassa().aggiornaCassa(cassa);
++	}
++	
++}
+diff --git a/src/Prenotazioni/Model/Beans/Abbonamento.java b/src/Prenotazioni/Model/Beans/Abbonamento.java
+new file mode 100644
+index 0000000..d89fbab
+--- /dev/null
++++ b/src/Prenotazioni/Model/Beans/Abbonamento.java
+@@ -0,0 +1,97 @@
++package Prenotazioni.Model.Beans;
++
++import java.text.SimpleDateFormat;
++import java.util.Date;
++import java.util.List;
++
++import Prenotazioni.Model.Beans.Corsa;
++
++
++public class Abbonamento extends TitoloViaggio {
++	private List<Corsa> corse;
++	private Date dataFine;
++	private String codiceFiscale;
++	private String nome;
++	private String cognome;
++	
++	public Abbonamento(int ID,
++					   List<Corsa> corse,
++					   Date dataFine,
++					   Date dataOraEmissione,
++					   String codiceFiscale,
++					   String nome,
++					   String cognome,
++					   String luogoPartenza,
++					   String luogoArrivo,
++					   double prezzo) {
++		super(ID, dataOraEmissione, prezzo, luogoPartenza, luogoArrivo);
++		this.corse = corse;
++		this.dataFine = dataFine;
++		this.codiceFiscale = codiceFiscale;
++		this.nome = nome;
++		this.cognome = cognome;
++	}
++
++	public Abbonamento() {
++		// TODO Auto-generated constructor stub
++	}
++
++	public List<Corsa> getCorse() {
++		return corse;
++	}
++
++	public Date getDataFine() {
++		return dataFine;
++	}
++
++	public String getCodiceFiscale() {
++		return codiceFiscale;
++	}
++
++	public String getNome() {
++		return nome;
++	}
++
++	public String getCognome() {
++		return cognome;
++	}
++
++	public void setCorse(List<Corsa> corse) {
++		this.corse = corse;
++	}
++
++	public void setDataFine(Date dataFine) {
++		this.dataFine = dataFine;
++	}
++
++	public void setCodiceFiscale(String codiceFiscale) {
++		this.codiceFiscale = codiceFiscale;
++	}
++
++	public void setNome(String nome) {
++		this.nome = nome;
++	}
++
++	public void setCognome(String cognome) {
++		this.cognome = cognome;
++	}
++
++	public void print() {
++		System.out.println("_________Stampa abbonamento_________");
++		System.out.println("ID titolo viaggio: " + this.getID());
++		System.out.println("Nome: " + this.nome);
++		System.out.println("Cognome: " + this.cognome);
++		System.out.println("Codice Fiscale: " + this.codiceFiscale);
++		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm");
++		String dataS1 = sdf.format(this.getDataFine());
++		System.out.println("Valido fino al: " + dataS1);
++		System.out.println("Partenza: " + this.getLocalit‡Partenza());
++		System.out.println("Arrivo: " + this.getLocalit‡Arrivo());
++		String dataS2 = sdf.format(this.getDataOraEmissione());
++		System.out.println("Data ora emissione: " + dataS2);
++		System.out.println("Costo titolo viaggio: " + this.getPrezzo() + " Ä");
++		
++	}
++	
++}
++
+diff --git a/src/Prenotazioni/Model/Beans/Biglietto.java b/src/Prenotazioni/Model/Beans/Biglietto.java
+new file mode 100644
+index 0000000..843bdf3
+--- /dev/null
++++ b/src/Prenotazioni/Model/Beans/Biglietto.java
+@@ -0,0 +1,43 @@
++package Prenotazioni.Model.Beans;
++
++import java.text.SimpleDateFormat;
++import java.util.Date;
++
++import Prenotazioni.Model.Beans.Corsa;
++
++public class Biglietto extends TitoloViaggio {
++	private Corsa corsa;
++	
++	public Biglietto(int ID,
++			         Corsa corsa,
++			         Date dataOraEmissione,
++			         String luogoPartenza,
++			         String luogoArrivo,
++			         double prezzo) {
++		super(ID, dataOraEmissione, prezzo, luogoPartenza, luogoArrivo);
++		this.corsa = corsa;
++	}
++
++	public Biglietto() {
++		// TODO Auto-generated constructor stub
++	}
++
++	public Corsa getCorsa() {
++		return corsa;
++	}
++
++	public void setCorsa(Corsa corsa) {
++		this.corsa = corsa;
++	}
++	
++	public void print() {
++		System.out.println("_________Stampa biglietto_________");
++		System.out.println("ID titolo viaggio: " + this.getID());
++		System.out.println("Partenza: " + this.getLocalit‡Partenza());
++		System.out.println("Arrivo: " + this.getLocalit‡Arrivo());
++		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm");
++		String dataS = sdf.format(this.getDataOraEmissione());
++		System.out.println("Data ora emissione: " + dataS);
++		System.out.println("Costo titolo viaggio: " + this.getPrezzo() + " Ä");
++	}
++}
+\ No newline at end of file
+diff --git a/src/Prenotazioni/Model/Beans/Cassa.java b/src/Prenotazioni/Model/Beans/Cassa.java
+new file mode 100644
+index 0000000..50aabac
+--- /dev/null
++++ b/src/Prenotazioni/Model/Beans/Cassa.java
+@@ -0,0 +1,20 @@
++package Prenotazioni.Model.Beans;
++
++public class Cassa {
++
++	private double disponibilit‡;
++	
++	public Cassa(double disponibilit‡) {
++		this.disponibilit‡ = disponibilit‡;
++	}
++
++	public double getDisponibilit‡() {
++		return disponibilit‡;
++	}
++
++	public void setDisponibilit‡(double disponibilit‡) {
++		this.disponibilit‡ = disponibilit‡;
++	}
++	
++	
++}
+diff --git a/src/Prenotazioni/Model/Beans/Contanti.java b/src/Prenotazioni/Model/Beans/Contanti.java
+new file mode 100644
+index 0000000..4e356a4
+--- /dev/null
++++ b/src/Prenotazioni/Model/Beans/Contanti.java
+@@ -0,0 +1,32 @@
++package Prenotazioni.Model.Beans;
++
++import java.util.Date;
++
++import Prenotazioni.Model.Beans.Pagamento;
++
++public class Contanti extends Pagamento {
++	private double resto;
++
++	public Contanti(double sommaInserita, Date dataOraEmissione, TitoloViaggio titoloViaggio, double resto) {
++		super(sommaInserita, dataOraEmissione, titoloViaggio);
++		this.resto = resto;
++	}
++
++	public Contanti() {
++		// TODO Auto-generated constructor stub
++	}
++
++	public double getResto() {
++		return resto;
++	}
++
++	public void setResto(double resto) {
++		this.resto = resto;
++	}
++
++	@Override
++	public String toString() {
++		return "Contanti [resto=" + resto + ", sommaInserita=" + getsommaInserita() + "]";
++	}
++	
++}
+diff --git a/src/Prenotazioni/Model/Beans/Corsa.java b/src/Prenotazioni/Model/Beans/Corsa.java
+new file mode 100644
+index 0000000..d9410d0
+--- /dev/null
++++ b/src/Prenotazioni/Model/Beans/Corsa.java
+@@ -0,0 +1,86 @@
++package Prenotazioni.Model.Beans;
++
++import java.text.SimpleDateFormat;
++import java.util.Date;
++
++import Prenotazioni.Controller.SportelloSystem;
++import Prenotazioni.Model.Beans.Mezzo;
++
++public class Corsa {
++	private int IDCorsa;
++	private Linea linea;
++	private Date dataOra;
++	private int postiDisponibili;
++	private Mezzo mezzo;
++	
++	public Corsa(int iDCorsa, Linea linea, Date dataOra, int postiDisponibili, Mezzo mezzo) {
++		super();
++		IDCorsa = iDCorsa;
++		this.linea = linea;
++		this.dataOra = dataOra;
++		this.postiDisponibili = postiDisponibili;
++		this.mezzo = mezzo;
++	}
++
++	public Corsa() {
++		// TODO Auto-generated constructor stub
++	}
++
++	public int getIDCorsa() {
++		return IDCorsa;
++	}
++
++	public void setIDCorsa(int iDCorsa) {
++		IDCorsa = iDCorsa;
++	}
++	
++	public Linea getLinea() {
++		return linea;
++	}
++
++	public void setLinea(Linea linea) {
++		this.linea = linea;
++	}
++
++	public Date getDataOra() {
++		return dataOra;
++	}
++
++	public void setDataOra(Date dataOra) {
++		this.dataOra = dataOra;
++	}
++
++	public int getPostiDisponibili() {
++		return postiDisponibili;
++	}
++
++	public void setPostiDisponibili(int postiDisponibili) {
++		this.postiDisponibili = postiDisponibili;
++	}
++
++	public Mezzo getMezzo() {
++		return mezzo;
++	}
++
++	public void setMezzo(Mezzo mezzo) {
++		this.mezzo = mezzo;
++	}
++	
++	@Override
++	public String toString() {
++		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm");
++		String dataS = sdf.format(dataOra);
++		return "Corsa " + IDCorsa + " - " + linea.getNome() + " - data " + dataS + " - posti disponibili "
++				+ postiDisponibili + " - mezzo " + mezzo.getTarga();
++	}
++
++	public int getGiorni() {
++		long millisecondi = this.getDataOra().getTime();
++		long sec = millisecondi / 1000;
++		long min = sec / 60;
++		long ore = min / 60;
++		int giorni = (int) (ore / 24);
++		return giorni;
++	}
++		
++}
+\ No newline at end of file
+diff --git a/src/Prenotazioni/Model/Beans/Linea.java b/src/Prenotazioni/Model/Beans/Linea.java
+new file mode 100644
+index 0000000..9a56c08
+--- /dev/null
++++ b/src/Prenotazioni/Model/Beans/Linea.java
+@@ -0,0 +1,52 @@
++package Prenotazioni.Model.Beans;
++
++import java.util.List;
++import java.util.Set;
++
++public class Linea {
++	private String nome;
++	private Localit‡ localit‡Partenza;
++	private Localit‡ localit‡Arrivo;
++	private Set<Tratta> tratte;
++
++	public Linea(String nome, Localit‡ localit‡Partenza, Localit‡ localit‡Arrivo, Set<Tratta> tratte) {
++		this.nome = nome;
++		this.localit‡Partenza = localit‡Partenza;
++		this.localit‡Arrivo = localit‡Arrivo;
++		this.tratte = tratte;
++	}
++
++	public String getNome() {
++		return nome;
++	}
++
++	public Localit‡ getLocalit‡Partenza() {
++		return localit‡Partenza;
++	}
++
++	public Localit‡ getLocalit‡Arrivo() {
++		return localit‡Arrivo;
++	}
++
++	public Set<Tratta> getTratte() {
++		return tratte;
++	}
++
++	public void setNome(String nome) {
++		this.nome = nome;
++	}
++
++	public void setLocalit‡Partenza(Localit‡ localit‡Partenza) {
++		this.localit‡Partenza = localit‡Partenza;
++	}
++
++	public void setLocalit‡Arrivo(Localit‡ localit‡Arrivo) {
++		this.localit‡Arrivo = localit‡Arrivo;
++	}
++
++	public void setTratte(Set<Tratta> tratte) {
++		this.tratte = tratte;
++	}
++
++	
++}
+diff --git "a/src/Prenotazioni/Model/Beans/Localit\303\240.java" "b/src/Prenotazioni/Model/Beans/Localit\303\240.java"
+new file mode 100644
+index 0000000..548f0a1
+--- /dev/null
++++ "b/src/Prenotazioni/Model/Beans/Localit\303\240.java"
+@@ -0,0 +1,25 @@
++package Prenotazioni.Model.Beans;
++
++public class Localit‡ {
++	private String nome;
++	
++	public Localit‡(String nome) {
++		this.nome = nome;
++	}
++
++	public String getNome() {
++		return nome;
++	}
++
++	public void setNome(String nome) {
++		this.nome = nome;
++	}
++
++	@Override
++	public String toString() {
++		return nome;
++	}
++	
++	
++
++}
+\ No newline at end of file
+diff --git a/src/Prenotazioni/Model/Beans/Mezzo.java b/src/Prenotazioni/Model/Beans/Mezzo.java
+new file mode 100644
+index 0000000..c9246bc
+--- /dev/null
++++ b/src/Prenotazioni/Model/Beans/Mezzo.java
+@@ -0,0 +1,28 @@
++package Prenotazioni.Model.Beans;
++
++public class Mezzo {
++	private String targa;
++	private int numeroTotalePosti;
++	
++	public Mezzo(String targa, int numeroTotalePosti) {
++		this.targa = targa;
++		this.numeroTotalePosti = numeroTotalePosti;
++	}
++
++	public String getTarga() {
++		return targa;
++	}
++
++	public int getNumeroTotalePosti() {
++		return numeroTotalePosti;
++	}
++
++	public void setTarga(String targa) {
++		this.targa = targa;
++	}
++
++	public void setNumeroTotalePosti(int numeroTotalePosti) {
++		this.numeroTotalePosti = numeroTotalePosti;
++	}
++
++}
+diff --git a/src/Prenotazioni/Model/Beans/Pagamento.java b/src/Prenotazioni/Model/Beans/Pagamento.java
+new file mode 100644
+index 0000000..e8d5869
+--- /dev/null
++++ b/src/Prenotazioni/Model/Beans/Pagamento.java
+@@ -0,0 +1,45 @@
++package Prenotazioni.Model.Beans;
++
++import java.util.Date;
++
++public class Pagamento {
++	public Pagamento() {
++		super();
++		// TODO Auto-generated constructor stub
++	}
++
++	private double sommaInserita;
++	private Date dataOraEmissione;
++	private TitoloViaggio titoloViaggio;
++	
++	public Pagamento(double sommaInserita, Date dataOraEmissione, TitoloViaggio titoloViaggio) {
++		this.sommaInserita = sommaInserita;
++		this.dataOraEmissione = dataOraEmissione;
++		this.titoloViaggio = titoloViaggio;
++	}
++
++	public double getsommaInserita() {
++		return sommaInserita;
++	}
++
++	public Date getDataOraEmissione() {
++		return dataOraEmissione;
++	}
++
++	public TitoloViaggio getTitoloViaggio() {
++		return titoloViaggio;
++	}
++
++	public void setsommaInserita(double sommaInserita) {
++		this.sommaInserita = sommaInserita;
++	}
++
++	public void setDataOraEmissione(Date dataOraEmissione) {
++		this.dataOraEmissione = dataOraEmissione;
++	}
++
++	public void setTitoloViaggio(TitoloViaggio titoloViaggio) {
++		this.titoloViaggio = titoloViaggio;
++	}
++
++}
+\ No newline at end of file
+diff --git a/src/Prenotazioni/Model/Beans/TitoloViaggio.java b/src/Prenotazioni/Model/Beans/TitoloViaggio.java
+new file mode 100644
+index 0000000..3364e93
+--- /dev/null
++++ b/src/Prenotazioni/Model/Beans/TitoloViaggio.java
+@@ -0,0 +1,67 @@
++
++package Prenotazioni.Model.Beans;
++
++import java.util.Date;
++
++public class TitoloViaggio {
++	public TitoloViaggio() {
++		super();
++		// TODO Auto-generated constructor stub
++	}
++
++	private int ID;
++	private Date dataOraEmissione;
++	private double prezzo;
++	private String localit‡Partenza;
++	private String localit‡Arrivo;
++	
++	public TitoloViaggio(int ID, Date dataOraEmissione, double prezzo, String localit‡Partenza, String localit‡Arrivo) {
++		this.ID = ID;
++		this.dataOraEmissione = dataOraEmissione;
++		this.prezzo = prezzo;
++		this.localit‡Partenza = localit‡Partenza;
++		this.localit‡Arrivo = localit‡Arrivo;
++	}
++
++	public int getID() {
++		return ID;
++	}
++
++	public Date getDataOraEmissione() {
++		return dataOraEmissione;
++	}
++
++	public double getPrezzo() {
++		return prezzo;
++	}
++
++	public String getLocalit‡Partenza() {
++		return localit‡Partenza;
++	}
++
++	public String getLocalit‡Arrivo() {
++		return localit‡Arrivo;
++	}
++
++	public void setID(int iD) {
++		ID = iD;
++	}
++
++	public void setDataOraEmissione(Date dataOraEmissione) {
++		this.dataOraEmissione = dataOraEmissione;
++	}
++
++	public void setPrezzo(double prezzo) {
++		this.prezzo = prezzo;
++	}
++
++	public void setLocalit‡Partenza(String localit‡Partenza) {
++		this.localit‡Partenza = localit‡Partenza;
++	}
++
++	public void setLocalit‡Arrivo(String localit‡Arrivo) {
++		this.localit‡Arrivo = localit‡Arrivo;
++	}	
++
++}
++
+diff --git a/src/Prenotazioni/Model/Beans/Tratta.java b/src/Prenotazioni/Model/Beans/Tratta.java
+new file mode 100644
+index 0000000..a572816
+--- /dev/null
++++ b/src/Prenotazioni/Model/Beans/Tratta.java
+@@ -0,0 +1,97 @@
++package Prenotazioni.Model.Beans;
++
++public class Tratta {
++	@Override
++	public int hashCode() {
++		final int prime = 31;
++		int result = 1;
++		result = prime * result + ((Localit‡Arrivo == null) ? 0 : Localit‡Arrivo.hashCode());
++		result = prime * result + durata;
++		result = prime * result + ((localit‡Partenza == null) ? 0 : localit‡Partenza.hashCode());
++		long temp;
++		temp = Double.doubleToLongBits(prezzo);
++		result = prime * result + (int) (temp ^ (temp >>> 32));
++		return result;
++	}
++
++	@Override
++	public boolean equals(Object obj) {
++		if (this == obj)
++			return true;
++		if (obj == null)
++			return false;
++		if (getClass() != obj.getClass())
++			return false;
++		Tratta other = (Tratta) obj;
++		if (Localit‡Arrivo == null) {
++			if (other.Localit‡Arrivo != null)
++				return false;
++		} else if (!Localit‡Arrivo.equals(other.Localit‡Arrivo))
++			return false;
++		if (durata != other.durata)
++			return false;
++		if (localit‡Partenza == null) {
++			if (other.localit‡Partenza != null)
++				return false;
++		} else if (!localit‡Partenza.equals(other.localit‡Partenza))
++			return false;
++		if (Double.doubleToLongBits(prezzo) != Double.doubleToLongBits(other.prezzo))
++			return false;
++		return true;
++	}
++
++	private Localit‡ localit‡Partenza;
++	private Localit‡ Localit‡Arrivo;
++	private int durata;
++	private double prezzo;
++	
++	public Tratta(Localit‡ localit‡Partenza,
++			      Localit‡ localit‡Arrivo,
++			      int durata,
++			      double prezzo) {
++		this.localit‡Partenza = localit‡Partenza;
++		this.Localit‡Arrivo = localit‡Arrivo;
++		this.durata = durata;
++		this.prezzo = prezzo;
++	}
++
++	public Localit‡ getLocalit‡Partenza() {
++		return localit‡Partenza;
++	}
++
++	public Localit‡ getLocalit‡Arrivo() {
++		return Localit‡Arrivo;
++	}
++
++	public int getDurata() {
++		return durata;
++	}
++
++	public double getPrezzo() {
++		return prezzo;
++	}
++
++	public void setLocalit‡Partenza(Localit‡ localit‡Partenza) {
++		this.localit‡Partenza = localit‡Partenza;
++	}
++
++	public void setLocalit‡Arrivo(Localit‡ localit‡Arrivo) {
++		Localit‡Arrivo = localit‡Arrivo;
++	}
++
++	public void setDurata(int durata) {
++		this.durata = durata;
++	}
++
++	public void setPrezzo(double prezzo) {
++		this.prezzo = prezzo;
++	}
++
++	@Override
++	public String toString() {
++		return "Tratta [localit‡Partenza=" + localit‡Partenza + ", Localit‡Arrivo=" + Localit‡Arrivo + "]";
++	}
++
++	
++}
++
+diff --git a/src/Prenotazioni/Model/DB/DAOAbbonamento.java b/src/Prenotazioni/Model/DB/DAOAbbonamento.java
+new file mode 100644
+index 0000000..227a55f
+--- /dev/null
++++ b/src/Prenotazioni/Model/DB/DAOAbbonamento.java
+@@ -0,0 +1,140 @@
++package Prenotazioni.Model.DB;
++
++import java.sql.Connection;
++import java.sql.Date;
++import java.sql.ResultSet;
++import java.sql.SQLException;
++import java.sql.Statement;
++import java.util.ArrayList;
++import java.util.List;
++
++import Prenotazioni.Model.Beans.Corsa;
++import Prenotazioni.Model.Beans.Abbonamento;
++
++public class DAOAbbonamento implements DAOInterface<Abbonamento> {
++	
++	public DAOAbbonamento() {
++		
++	}
++
++	@Override
++	public List<Abbonamento> doRetrieveAll() {
++		List<Abbonamento> listaAbbonamenti = new ArrayList<Abbonamento>();
++		try {
++			Connection connection = DataSource.getConnection();
++			Statement statement = connection.createStatement();
++			ResultSet result = statement.executeQuery("SELECT * FROM abbonamenti");
++			
++			while(result.next()) {
++				int ID = result.getInt("id");
++				List<Corsa> corse = DAOFactory.getDAOCorsa().doRetrieveByAbbonamento(ID);
++				Date dataInizio = result.getDate("data_fine");
++				Date dataOraEmissione = new Date(result.getTimestamp("data_ora_emissione").getTime());
++				String codiceFiscale = result.getString("codice_fiscale");
++				String nome = result.getString("nome");
++				String cognome = result.getString("cognome");
++				String luogoPartenza = result.getString("luogo_partenza");
++				String luogoArrivo = result.getString("luogo_arrivo");
++				double prezzo = result.getDouble("prezzo");
++				
++				Abbonamento a = new Abbonamento(ID,
++						                        corse,
++						                        dataInizio,
++						                        dataOraEmissione,
++						                        codiceFiscale,
++						                        nome,
++						                        cognome,
++						                        luogoPartenza,
++						                        luogoArrivo,
++						                        prezzo);
++				
++				listaAbbonamenti.add(a);				
++			}
++		} catch (SQLException e) {
++			e.printStackTrace();
++		}
++		
++		return listaAbbonamenti;
++	}
++
++	
++	public Abbonamento doRetrieveByKey(int ID) {
++		Abbonamento abbonamento = null;
++		try {
++			Connection connection = DataSource.getConnection();
++			Statement statement = connection.createStatement();
++			ResultSet result = statement.executeQuery("SELECT * FROM abbonamenti WHERE id = '"+ID+"'");
++			
++			if(result.next()) {
++				List<Corsa> corse = DAOFactory.getDAOCorsa().doRetrieveByAbbonamento(ID);
++				Date dataInizio = result.getDate("data_fine");
++				Date dataOraEmissione = new Date(result.getTimestamp("data_ora_emissione").getTime());
++				String codiceFiscale = result.getString("codice_fiscale");
++				String nome = result.getString("nome");
++				String cognome = result.getString("cognome");
++				String luogoPartenza = result.getString("luogo_partenza");
++				String luogoArrivo = result.getString("luogo_arrivo");
++				double prezzo = result.getDouble("prezzo");
++				
++				abbonamento = new Abbonamento(ID,
++						                      corse,
++						                      dataInizio,
++						                      dataOraEmissione,
++						                      codiceFiscale,
++						                      nome,
++						                      cognome,
++						                      luogoPartenza,
++						                      luogoArrivo,
++						                      prezzo);
++			}
++		} catch (SQLException e) {
++			e.printStackTrace();
++		}
++		
++		return abbonamento;
++	}
++
++	@Override
++	public void saveOrUpdate(Abbonamento a) {
++		try {
++			Connection conn = DataSource.getConnection();
++			Statement statement = conn.createStatement();
++			Date dataFine = new Date(a.getDataFine().getTime());
++			String sql = "insert into abbonamenti (id, data_fine, codice_fiscale, nome, cognome, data_ora_emissione, luogo_partenza, luogo_arrivo, prezzo) " 
++						+ "values (" + a.getID() + ", \"" + dataFine + "\", \"" + a.getCodiceFiscale() + "\", \"" + a.getNome() + "\", \"" 
++						+ a.getCognome() + "\"" + ", CURTIME(), \"" + a.getLocalit‡Partenza() + "\", \"" + a.getLocalit‡Arrivo() + "\", " + a.getPrezzo() + ")";
++			int esito = statement.executeUpdate(sql);
++			if(esito!=1)
++				throw new SQLException("Insert abbonamento non effettuato");
++		}
++		catch(SQLException e) {
++			e.printStackTrace();
++			System.err.println(e.getMessage());
++		}
++	}
++	
++	public void saveOrUpdate(Abbonamento a, List<Corsa> corseAbbonamenti) {
++		try {
++			Connection conn = DataSource.getConnection();
++			Statement statement = conn.createStatement();
++			for(Corsa c:corseAbbonamenti) {
++				String sql = "insert into abbonamenti_corse (id_abbonamento, id_corsa) " 
++						+ "values (" + a.getID() + ", " + c.getIDCorsa() + ")";
++				int esito = statement.executeUpdate(sql);
++				if(esito!=1)
++					throw new SQLException("Insert abbonamento non effettuato");
++			}	
++		}
++		catch(SQLException e) {
++			e.printStackTrace();
++			System.err.println(e.getMessage());
++		}
++	}
++
++	@Override
++	public void delete(Abbonamento a) {
++		// TO DO
++	}
++
++}
++
+diff --git a/src/Prenotazioni/Model/DB/DAOBiglietto.java b/src/Prenotazioni/Model/DB/DAOBiglietto.java
+new file mode 100644
+index 0000000..6de1ab1
+--- /dev/null
++++ b/src/Prenotazioni/Model/DB/DAOBiglietto.java
+@@ -0,0 +1,104 @@
++package Prenotazioni.Model.DB;
++
++import java.sql.Connection;
++import java.sql.ResultSet;
++import java.sql.SQLException;
++import java.sql.Statement;
++import java.util.ArrayList;
++import java.util.Date;
++import java.util.List;
++
++import com.mysql.jdbc.PreparedStatement;
++
++import Prenotazioni.Model.Beans.Biglietto;
++import Prenotazioni.Model.Beans.Corsa;
++
++public class DAOBiglietto implements DAOInterface<Biglietto> {
++	
++	public DAOBiglietto() {
++	}
++
++	@Override
++	public List<Biglietto> doRetrieveAll() {
++		List<Biglietto> listaBiglietti = new ArrayList<Biglietto>();
++		try {
++			Connection connection = DataSource.getConnection();
++			Statement statement = connection.createStatement();
++			ResultSet result = statement.executeQuery("SELECT * FROM biglietti");
++			
++			while(result.next()) {
++				int ID = result.getInt("id");
++				Corsa corsa = DAOFactory.getDAOCorsa().doRetrieveByKey(result.getInt("id"));
++				Date dataOraEmissione = new Date(result.getTimestamp("data_ora_emissione").getTime());;
++				String luogoPartenza = result.getString("luogo_partenza");
++				String luogoArrivo = result.getString("luogo_arrivo");
++				double prezzo = result.getDouble("prezzo");
++				
++				Biglietto b = new Biglietto(ID,
++						                    corsa,
++						                    dataOraEmissione,
++						                    luogoPartenza,
++						                    luogoArrivo,
++						                    prezzo);
++				
++				listaBiglietti.add(b);				
++			}
++		} catch (SQLException e) {
++			e.printStackTrace();
++		}
++		
++		return listaBiglietti;
++	}
++
++	public Biglietto doRetrieveByKey(int ID) {
++		Biglietto biglietti = null;
++		try {
++			Connection connection = DataSource.getConnection();
++			Statement statement = connection.createStatement();
++			ResultSet result = statement.executeQuery("SELECT * FROM biglietti WHERE id = '"+ID+"'");
++			
++			if(result.next()) {
++				Corsa corsa = DAOFactory.getDAOCorsa().doRetrieveByKey(result.getInt("id"));
++				Date dataOraEmissione = new Date(result.getTimestamp("data_ora_emissione").getTime());;
++				String luogoPartenza = result.getString("luogo_partenza");
++				String luogoArrivo = result.getString("luogo_arrivo");
++				double prezzo = result.getDouble("prezzo");
++				
++				biglietti = new Biglietto(ID,
++										  corsa,
++						                  dataOraEmissione,
++						                  luogoPartenza,
++						                  luogoArrivo,
++						                  prezzo);
++			}
++		} catch (SQLException e) {
++			e.printStackTrace();
++		}
++		
++		return biglietti;
++	}
++
++	@Override
++	public void saveOrUpdate(Biglietto b) {
++		try {
++			Connection conn = DataSource.getConnection();
++			Statement statement = conn.createStatement();
++			String sql = "insert into biglietti (id, id_corsa, data_ora_emissione, luogo_partenza, luogo_arrivo, prezzo) " 
++						+ "values (" + b.getID() + ", " + b.getCorsa().getIDCorsa() + ", CURTIME(), \"" 
++						+ b.getLocalit‡Partenza() + "\", \"" + b.getLocalit‡Arrivo() + "\", " + b.getPrezzo() + ")";		
++			int esito = statement.executeUpdate(sql);
++			if(esito!=1)
++				throw new SQLException("Insert biglietto non effettuato");
++		}
++		catch(SQLException e) {
++			e.printStackTrace();
++			System.err.println(e.getMessage());
++		}
++	}
++
++	@Override
++	public void delete(Biglietto b) {
++		// TO DO
++	}
++
++}
+diff --git a/src/Prenotazioni/Model/DB/DAOCassa.java b/src/Prenotazioni/Model/DB/DAOCassa.java
+new file mode 100644
+index 0000000..ee68488
+--- /dev/null
++++ b/src/Prenotazioni/Model/DB/DAOCassa.java
+@@ -0,0 +1,50 @@
++package Prenotazioni.Model.DB;
++
++import java.sql.Connection;
++import java.sql.PreparedStatement;
++import java.sql.ResultSet;
++import java.sql.SQLException;
++
++import Prenotazioni.Model.Beans.Cassa;
++
++public class DAOCassa {
++	
++	public DAOCassa() {		
++	}
++	
++	public Cassa leggiCassa() {
++		Connection conn = DataSource.getConnection();
++		double disponibilit‡ = 0;
++		try {
++			PreparedStatement stat = conn.prepareStatement("select disponibilit‡ from cassa");
++			ResultSet res = stat.executeQuery();
++			if(res.next()) 
++				disponibilit‡ = res.getDouble("disponibilit‡");
++			
++			
++			conn.close();
++			
++		} catch (SQLException e) {
++			System.err.println("Errore connessione al DB!");
++		}
++		
++		return new Cassa(disponibilit‡);
++
++	}
++	
++	public void aggiornaCassa(Cassa c) {
++		
++		try {
++			Connection conn = DataSource.getConnection();
++			PreparedStatement stat = conn.prepareStatement("update cassa set disponibilit‡ = " + c.getDisponibilit‡());
++			int esito = stat.executeUpdate();
++			if(esito!=1)
++				throw new SQLException("Update cassa non effettuato");
++		
++		} catch (SQLException e) {
++			// TODO Auto-generated catch block
++			e.printStackTrace();
++		}
++	}
++	
++}
+diff --git a/src/Prenotazioni/Model/DB/DAOContanti.java b/src/Prenotazioni/Model/DB/DAOContanti.java
+new file mode 100644
+index 0000000..752f59f
+--- /dev/null
++++ b/src/Prenotazioni/Model/DB/DAOContanti.java
+@@ -0,0 +1,51 @@
++package Prenotazioni.Model.DB;
++
++import java.sql.Connection;
++import java.sql.SQLException;
++import java.sql.Statement;
++import java.util.List;
++
++import Prenotazioni.Model.Beans.Contanti;
++
++public class DAOContanti implements DAOInterface<Contanti> {
++	
++	public DAOContanti() {
++	}
++
++	
++	public List<Contanti> doRetrieveAll() {
++		// TODO Auto-generated method stub
++		return null;
++	}
++
++	public Contanti doRetrieveByKey(int ID) {
++		// TODO Auto-generated method stub
++		return null;
++	}
++
++	@Override
++	public void saveOrUpdate(Contanti p) {
++		try {
++			Connection conn = DataSource.getConnection();
++			Statement statement = conn.createStatement();
++			String sql = "insert into contanti (importo, data_ora, id_titolo_viaggio, resto) " 
++						+ "values (" + p.getsommaInserita() + ", CURTIME(), " + p.getTitoloViaggio().getID() + ", " + p.getResto() + ")";		
++			int esito = statement.executeUpdate(sql);
++			if(esito!=1)
++				throw new SQLException("Insert pagamento non effettuato");
++		}
++		catch(SQLException e) {
++			e.printStackTrace();
++			System.err.println(e.getMessage());
++		}
++		
++	}
++
++	@Override
++	public void delete(Contanti p) {
++		// TODO Auto-generated method stub
++		
++	}
++
++}
++
+diff --git a/src/Prenotazioni/Model/DB/DAOCorsa.java b/src/Prenotazioni/Model/DB/DAOCorsa.java
+new file mode 100644
+index 0000000..5a8f695
+--- /dev/null
++++ b/src/Prenotazioni/Model/DB/DAOCorsa.java
+@@ -0,0 +1,167 @@
++package Prenotazioni.Model.DB;
++
++import java.sql.Connection;
++import java.sql.ResultSet;
++import java.sql.SQLException;
++import java.sql.Statement;
++import java.util.ArrayList;
++import java.util.Date;
++import java.util.List;
++
++import Prenotazioni.Controller.SportelloSystem;
++import Prenotazioni.Model.Beans.Corsa;
++import Prenotazioni.Model.Beans.Linea;
++import Prenotazioni.Model.Beans.Mezzo;
++import Prenotazioni.Model.DB.DAOFactory;
++import Prenotazioni.Model.DB.DAOInterface;
++import Prenotazioni.Model.DB.DataSource;
++
++public class DAOCorsa implements DAOInterface<Corsa> {
++	
++	public DAOCorsa() {
++	}
++
++	@Override
++	public List<Corsa> doRetrieveAll() {
++		List<Corsa> listaCorse = new ArrayList<Corsa>();
++		try {
++			Connection connection = DataSource.getConnection();
++			Statement statement = connection.createStatement();
++			ResultSet result = statement.executeQuery("SELECT * FROM corse");
++			
++			while(result.next()) {
++				int ID = result.getInt("id");
++				Linea linea = DAOFactory.getDAOLinea().doRetrieveByKey(result.getString("nome_linea"));
++				Date dataOra = new Date(result.getTimestamp("data_ora").getTime());
++				int postiDisponibili = result.getInt("posti_disponibili");
++				Mezzo mezzo = DAOFactory.getDAOMezzo().doRetrieveByKey(result.getString("targa_mezzo"));	
++				Corsa c = new Corsa(ID, linea, dataOra, postiDisponibili, mezzo);
++
++				listaCorse.add(c);				
++			}
++		} catch (SQLException e) {
++			e.printStackTrace();
++		}
++		
++		return listaCorse;
++	}
++	
++	
++	public List<Corsa> doRetrieveByLinea(String nome) {
++		List<Corsa> listaCorse = new ArrayList<Corsa>();
++		try {
++			Connection connection = DataSource.getConnection();
++			Statement statement = connection.createStatement();
++			ResultSet result = statement.executeQuery("SELECT * FROM corse WHERE nome_linea = '"+nome+"'");
++			
++			while(result.next()) {
++				int ID = result.getInt("id");
++				Linea linea = DAOFactory.getDAOLinea().doRetrieveByKey(result.getString("nome_linea"));
++				Date dataOra = new Date(result.getTimestamp("data_ora").getTime());
++				int postiDisponibili = result.getInt("posti_disponibili");
++				Mezzo mezzo = DAOFactory.getDAOMezzo().doRetrieveByKey(result.getString("targa_mezzo"));
++				
++				Corsa c = new Corsa(ID, linea, dataOra, postiDisponibili, mezzo);
++
++				
++				listaCorse.add(c);				
++			}
++		} catch (SQLException e) {
++			e.printStackTrace();
++		}
++		
++		return listaCorse;
++	}
++	
++	
++	public List<Corsa> doRetrieveByAbbonamento(int ID) {
++		List<Corsa> listaCorse = new ArrayList<Corsa>();
++		try {
++			Connection connection = DataSource.getConnection();
++			Statement statement = connection.createStatement();
++			ResultSet result = statement.executeQuery("SELECT * FROM abbonamenti_corse WHERE id_abbonamento = '"+ID+"'");
++			
++			while(result.next()) {
++				Corsa corsa = doRetrieveByKey(result.getInt("id_corsa"));
++				
++				listaCorse.add(corsa);				
++			}
++		} catch (SQLException e) {
++			e.printStackTrace();
++		}
++		
++		return listaCorse;
++	}
++	
++	
++	public List<Corsa> doRetrieveByPlace(String from, String to) {
++		List<Corsa> listaCorse = new ArrayList<Corsa>();
++
++		List<Linea> linee = DAOFactory.getDAOLinea().doRetrieveByPlace(from, to);
++
++		for(Linea l : linee) {
++			try {
++				Connection connection = DataSource.getConnection();
++				Statement statement = connection.createStatement();
++				ResultSet result = statement.executeQuery("SELECT * FROM corse WHERE nome_linea = '"+l.getNome()+"' and data_ora >= CURTIME()");
++				while(result.next()) {
++					Corsa corsa = doRetrieveByKey(result.getInt("id"));
++					listaCorse.add(corsa);				
++					
++				}
++			} catch (SQLException e) {
++				e.printStackTrace();
++			}
++		}
++		
++		return listaCorse;
++	}
++
++	
++	public Corsa doRetrieveByKey(int ID) {
++		Corsa corsa = null;
++		try {
++			Connection connection = DataSource.getConnection();
++			Statement statement = connection.createStatement();
++			ResultSet result = statement.executeQuery("SELECT * FROM corse WHERE id = '"+ID+"'");
++			
++			if(result.next()) {
++				Linea linea = DAOFactory.getDAOLinea().doRetrieveByKey(result.getString("nome_linea"));
++				Date dataOra = new Date(result.getTimestamp("data_ora").getTime());
++				int postiDisponibili = result.getInt("posti_disponibili");
++				Mezzo mezzo = DAOFactory.getDAOMezzo().doRetrieveByKey(result.getString("targa_mezzo"));
++				corsa = new Corsa(ID, linea, dataOra, postiDisponibili, mezzo);
++			}
++		} catch (SQLException e) {
++			e.printStackTrace();
++		}
++		
++		return corsa;
++	}
++
++	@Override
++	public void saveOrUpdate(Corsa c) {
++		try {
++			Connection conn = DataSource.getConnection();
++			Statement statement = conn.createStatement();
++			SportelloSystem controller = SportelloSystem.getInstance();
++			String sql = "update corse set posti_disponibili = " + (c.getPostiDisponibili() - (controller.getCostoBiglietto() / SportelloSystem.getInstance().calcolaPrezzoBiglietto(controller.getPartenza(), controller.getArrivo()))) 
++						+ " where id = " + c.getIDCorsa();
++			int esito = statement.executeUpdate(sql);
++			if(esito!=1)
++				throw new SQLException("Update corsa non effettuato");
++		}
++		catch(SQLException e) {
++			e.printStackTrace();
++			System.err.println(e.getMessage());
++		}
++			
++	}
++	
++
++	@Override
++	public void delete(Corsa c) {
++		// TO DO
++	}
++
++}
+diff --git a/src/Prenotazioni/Model/DB/DAOFactory.java b/src/Prenotazioni/Model/DB/DAOFactory.java
+new file mode 100644
+index 0000000..39dd871
+--- /dev/null
++++ b/src/Prenotazioni/Model/DB/DAOFactory.java
+@@ -0,0 +1,22 @@
++package Prenotazioni.Model.DB;
++
++import Prenotazioni.Model.DB.DAOCorsa;
++import Prenotazioni.Model.DB.DAOLocalit‡;
++import Prenotazioni.Model.DB.DAOLinea;
++import Prenotazioni.Model.DB.DAOMezzo;
++import Prenotazioni.Model.DB.DAOTratta;
++
++public class DAOFactory {
++	
++	private DAOFactory() { }
++	
++	public static DAOLinea getDAOLinea() { return new DAOLinea(); }
++	public static DAOTratta getDAOTratta() { return new DAOTratta(); }
++	public static DAOCorsa getDAOCorsa() { return new DAOCorsa(); }
++	public static DAOLocalit‡ getDAOLocalit‡() { return new DAOLocalit‡(); }
++	public static DAOMezzo getDAOMezzo() { return new DAOMezzo(); }
++	public static DAOBiglietto getDAOBiglietto() {return new DAOBiglietto();}
++	public static DAOAbbonamento getDAOAbbonamento() {return new DAOAbbonamento();}
++	public static DAOContanti getDAOContanti() {return new DAOContanti();}
++	public static DAOCassa getDAOCassa() {return new DAOCassa();}
++}
+diff --git a/src/Prenotazioni/Model/DB/DAOInterface.java b/src/Prenotazioni/Model/DB/DAOInterface.java
+new file mode 100644
+index 0000000..ec5a2ee
+--- /dev/null
++++ b/src/Prenotazioni/Model/DB/DAOInterface.java
+@@ -0,0 +1,11 @@
++package Prenotazioni.Model.DB;
++
++import java.util.List;
++
++public interface DAOInterface<E> {
++	
++	List<E> doRetrieveAll();
++	void saveOrUpdate(E e);
++	void delete(E e);
++	
++}
+diff --git a/src/Prenotazioni/Model/DB/DAOLinea.java b/src/Prenotazioni/Model/DB/DAOLinea.java
+new file mode 100644
+index 0000000..da2ed19
+--- /dev/null
++++ b/src/Prenotazioni/Model/DB/DAOLinea.java
+@@ -0,0 +1,109 @@
++package Prenotazioni.Model.DB;
++
++import java.sql.Connection;
++import java.sql.ResultSet;
++import java.sql.SQLException;
++import java.sql.Statement;
++import java.util.ArrayList;
++import java.util.List;
++import java.util.Set;
++
++import Prenotazioni.Model.Beans.Linea;
++import Prenotazioni.Model.Beans.Localit‡;
++import Prenotazioni.Model.Beans.Tratta;
++import Prenotazioni.Model.DB.DAOFactory;
++import Prenotazioni.Model.DB.DAOInterface;
++import Prenotazioni.Model.DB.DataSource;
++
++public class DAOLinea implements DAOInterface<Linea> {
++	
++	public DAOLinea() {
++	}
++	
++	@Override
++	public List<Linea> doRetrieveAll() {
++		List<Linea> listaLinee = new ArrayList<Linea>();
++		try {
++			Connection connection = DataSource.getConnection();
++			Statement statement = connection.createStatement();
++			ResultSet result = statement.executeQuery("SELECT * FROM linee");
++			
++			while(result.next()) {
++				String nome = result.getString("nome");
++				Localit‡ localit‡Partenza = DAOFactory.getDAOLocalit‡().doRetrieveByKey(result.getString("localit‡_partenza"));
++				Localit‡ localit‡Arrivo = DAOFactory.getDAOLocalit‡().doRetrieveByKey(result.getString("localit‡_arrivo"));
++				Set<Tratta> tratte = DAOFactory.getDAOTratta().doRetrieveByLinea(nome);
++				
++				Linea l = new Linea(nome,
++						            localit‡Partenza,
++						            localit‡Arrivo,
++						            tratte);
++				
++				listaLinee.add(l);				
++			}
++		} catch (SQLException e) {
++			e.printStackTrace();
++		}
++		
++		return listaLinee;
++	}
++
++	public List<Linea> doRetrieveByPlace(String from, String to){
++		List<Linea> listaLinee = new ArrayList<Linea>();
++		try {
++			Connection connection = DataSource.getConnection();
++			Statement statement = connection.createStatement();
++			String query = "select nome_linea from linee_tratte" + 
++							" where localit‡_partenza = '" + from + "'" +
++							" and localit‡_arrivo = '" + to + "'";
++
++			ResultSet result = statement.executeQuery(query);
++			
++			while(result.next()) {
++				Linea linea = doRetrieveByKey(result.getString("nome_linea"));
++				
++				listaLinee.add(linea);				
++			}
++		} catch (SQLException e) {
++			e.printStackTrace();
++		}
++		
++		return listaLinee;
++	}
++	
++	public Linea doRetrieveByKey(String nome) {
++		Linea linea = null;
++		try {
++			Connection connection = DataSource.getConnection();
++			Statement statement = connection.createStatement();
++			ResultSet result = statement.executeQuery("SELECT * FROM linee WHERE nome = '"+nome+"'");
++			
++			if(result.next()) {
++				Localit‡ localit‡Partenza = DAOFactory.getDAOLocalit‡().doRetrieveByKey(result.getString("localit‡_partenza"));
++				Localit‡ localit‡Arrivo = DAOFactory.getDAOLocalit‡().doRetrieveByKey(result.getString("localit‡_arrivo"));
++				Set<Tratta> tratte = DAOFactory.getDAOTratta().doRetrieveByLinea(nome);
++				
++				linea = new Linea(nome,
++			                      localit‡Partenza,
++			                      localit‡Arrivo,
++			                      tratte);
++			}
++		} catch (SQLException e) {
++			e.printStackTrace();
++		}
++		
++		return linea;
++	}
++
++	@Override
++	public void saveOrUpdate(Linea l) {
++		// TO DO
++	}
++
++	@Override
++	public void delete(Linea l) {
++		// TO DO
++	}
++
++}
++
+diff --git "a/src/Prenotazioni/Model/DB/DAOLocalit\303\240.java" "b/src/Prenotazioni/Model/DB/DAOLocalit\303\240.java"
+new file mode 100644
+index 0000000..85c906c
+--- /dev/null
++++ "b/src/Prenotazioni/Model/DB/DAOLocalit\303\240.java"
+@@ -0,0 +1,70 @@
++package Prenotazioni.Model.DB;
++
++import java.sql.Connection;
++import java.sql.ResultSet;
++import java.sql.SQLException;
++import java.sql.Statement;
++import java.util.ArrayList;
++import java.util.List;
++
++import Prenotazioni.Model.Beans.Localit‡;
++import Prenotazioni.Model.DB.DAOInterface;
++import Prenotazioni.Model.DB.DataSource;
++
++public class DAOLocalit‡ implements DAOInterface<Localit‡> {
++	
++	
++	public DAOLocalit‡() {
++	}
++
++	@Override
++	public List<Localit‡> doRetrieveAll() {
++		List<Localit‡> listaLocalit‡ = new ArrayList<Localit‡>();
++		try {
++			Connection connection = DataSource.getConnection();
++			Statement statement = connection.createStatement();
++			ResultSet result = statement.executeQuery("SELECT * FROM localit‡");
++			
++			while(result.next()) {
++				String nome = result.getString("nome");
++				
++				Localit‡ localit‡ = new Localit‡(nome);
++				
++				listaLocalit‡.add(localit‡);
++			}
++		} catch (SQLException e) {
++			e.printStackTrace();
++		}
++	
++		return listaLocalit‡;
++	}
++
++	
++	public Localit‡ doRetrieveByKey(String nome) {
++		Localit‡ localit‡ = null;
++		try {
++			Connection connection = DataSource.getConnection();
++			Statement statement = connection.createStatement();
++			ResultSet result = statement.executeQuery("SELECT * FROM localit‡ WHERE nome = '"+nome+"'");
++			
++			if(result.next())
++				localit‡ = new Localit‡(result.getString("nome"));
++
++		} catch (SQLException e) {
++			e.printStackTrace();
++		}
++//		System.out.println(" - " + localit‡.getNome());
++		return localit‡;
++	}
++
++	@Override
++	public void saveOrUpdate(Localit‡ l) {
++		// TO DO
++	}
++
++	@Override
++	public void delete(Localit‡ l) {
++		// TO DO
++	}
++
++}
+diff --git a/src/Prenotazioni/Model/DB/DAOMezzo.java b/src/Prenotazioni/Model/DB/DAOMezzo.java
+new file mode 100644
+index 0000000..74618c7
+--- /dev/null
++++ b/src/Prenotazioni/Model/DB/DAOMezzo.java
+@@ -0,0 +1,73 @@
++package Prenotazioni.Model.DB;
++
++import java.sql.Connection;
++import java.sql.ResultSet;
++import java.sql.SQLException;
++import java.sql.Statement;
++import java.util.ArrayList;
++import java.util.List;
++
++import Prenotazioni.Model.Beans.Mezzo;
++import Prenotazioni.Model.DB.DAOInterface;
++import Prenotazioni.Model.DB.DataSource;
++
++public class DAOMezzo implements DAOInterface<Mezzo> {
++	
++	public DAOMezzo() {
++	}
++
++	@Override
++	public List<Mezzo> doRetrieveAll() {
++		List<Mezzo> listaMezzi = new ArrayList<Mezzo>();
++		try {
++			Connection connection = DataSource.getConnection();
++			Statement statement = connection.createStatement();
++			ResultSet result = statement.executeQuery("SELECT * FROM mezzi");
++			
++			while(result.next()) {
++				String targa = result.getString("targa");
++				int numeroPosti = result.getInt("numero_posti");
++				
++				Mezzo mezzo = new Mezzo(targa, numeroPosti);
++				
++				listaMezzi.add(mezzo);
++			}
++		} catch (SQLException e) {
++			e.printStackTrace();
++		}
++	
++		return listaMezzi;
++	}
++
++	
++	public Mezzo doRetrieveByKey(String targa) {
++		Mezzo mezzo = null;
++		try {
++			Connection connection = DataSource.getConnection();
++			Statement statement = connection.createStatement();
++			ResultSet result = statement.executeQuery("SELECT * FROM mezzi WHERE targa = '"+targa+"'");
++			
++			if(result.next()) {
++				int numeroPosti = result.getInt("numero_posti");
++				mezzo = new Mezzo(targa, numeroPosti);
++			}
++
++		} catch (SQLException e) {
++			e.printStackTrace();
++		}
++	
++		return mezzo;
++	}
++
++	@Override
++	public void saveOrUpdate(Mezzo m) {
++		// TO DO
++	}
++
++	@Override
++	public void delete(Mezzo m) {
++		// TO DO
++	}
++
++}
++
+diff --git a/src/Prenotazioni/Model/DB/DAOTratta.java b/src/Prenotazioni/Model/DB/DAOTratta.java
+new file mode 100644
+index 0000000..4020ccb
+--- /dev/null
++++ b/src/Prenotazioni/Model/DB/DAOTratta.java
+@@ -0,0 +1,106 @@
++package Prenotazioni.Model.DB;
++
++import java.sql.Connection;
++import java.sql.ResultSet;
++import java.sql.SQLException;
++import java.sql.Statement;
++import java.util.ArrayList;
++import java.util.HashSet;
++import java.util.List;
++import java.util.Set;
++
++import Prenotazioni.Model.Beans.Localit‡;
++import Prenotazioni.Model.Beans.Tratta;
++import Prenotazioni.Model.DB.DataSource;
++
++public class DAOTratta implements DAOInterface<Tratta> {
++	
++	public DAOTratta() {
++	}
++
++	@Override
++	public List<Tratta> doRetrieveAll() {
++		List<Tratta> listaTratte = new ArrayList<Tratta>();
++		try {
++			Connection connection = DataSource.getConnection();
++			Statement statement = connection.createStatement();
++			ResultSet result = statement.executeQuery("SELECT * FROM tratte");
++			
++			while(result.next()) {
++				Localit‡ localit‡Partenza = DAOFactory.getDAOLocalit‡().doRetrieveByKey(result.getString("localit‡_partenza"));
++				Localit‡ localit‡Arrivo = DAOFactory.getDAOLocalit‡().doRetrieveByKey(result.getString("localit‡_arrivo"));
++				int durata = result.getInt("durata");
++				double prezzo = result.getDouble("prezzo");
++				
++				Tratta t = new Tratta(localit‡Partenza,
++						              localit‡Arrivo,
++                                      durata,
++						              prezzo);
++				
++				listaTratte.add(t);				
++			}
++		} catch (SQLException e) {
++			e.printStackTrace();
++		}
++		
++		
++		return listaTratte;
++	}
++	
++	
++	public Set<Tratta> doRetrieveByLinea(String nome) {
++		Set<Tratta> listaTratte = new HashSet<Tratta>();
++		try {
++			Connection connection = DataSource.getConnection();
++			Statement statement = connection.createStatement();
++			ResultSet result = statement.executeQuery("SELECT * FROM linee_tratte WHERE nome_linea = '"+nome+"'");
++			
++			while(result.next()) {
++				Tratta tratta = doRetrieveByKey(result.getString("localit‡_partenza"), result.getString("localit‡_arrivo"));
++				listaTratte.add(tratta);				
++			}
++		} catch (SQLException e) {
++			e.printStackTrace();
++		}
++		
++		return listaTratte;
++	}
++
++	
++	public Tratta doRetrieveByKey(String from, String to) {
++		Tratta tratta = null;
++		try {
++			Connection connection = DataSource.getConnection();
++			Statement statement = connection.createStatement();
++			ResultSet result = statement.executeQuery("SELECT * FROM tratte WHERE localit‡_partenza = '"+from+"' and localit‡_arrivo = '"+to+"'");
++			
++			if(result.next()) {
++				Localit‡ localit‡Partenza = DAOFactory.getDAOLocalit‡().doRetrieveByKey(result.getString("localit‡_partenza"));
++				Localit‡ localit‡Arrivo = DAOFactory.getDAOLocalit‡().doRetrieveByKey(result.getString("localit‡_arrivo"));
++				int durata = result.getInt("durata");
++				double prezzo = result.getDouble("prezzo");
++				
++				tratta = new Tratta(localit‡Partenza,
++			                        localit‡Arrivo,
++                                    durata,
++			                        prezzo);
++			}
++		} catch (SQLException e) {
++			e.printStackTrace();
++		}
++		return tratta;
++	}
++
++	@Override
++	public void saveOrUpdate(Tratta t) {
++		// TODO Auto-generated method stub
++		
++	}
++
++	@Override
++	public void delete(Tratta t) {
++		// TODO Auto-generated method stub
++		
++	}
++
++}
+diff --git a/src/Prenotazioni/Model/DB/DataSource.java b/src/Prenotazioni/Model/DB/DataSource.java
+new file mode 100644
+index 0000000..bd7f88c
+--- /dev/null
++++ b/src/Prenotazioni/Model/DB/DataSource.java
+@@ -0,0 +1,25 @@
++package Prenotazioni.Model.DB;
++
++import java.sql.Connection;
++import java.sql.DriverManager;
++import java.sql.SQLException;
++
++public class DataSource {
++	
++	private static final String jdbcURL = "jdbc:mysql://localhost/adminbus?user=root";
++	private static Connection conn;
++
++	public static Connection getConnection() {
++		try {
++
++			if (conn == null || conn.isClosed()) {
++				conn = DriverManager.getConnection(jdbcURL);
++			}
++
++		} catch (SQLException e) {
++			System.err.println("Errore connessione al DB");
++			throw new RuntimeException(e);
++		}
++		return conn;
++	}
++}
+diff --git a/src/Prenotazioni/View/ConfermaAbbonamento.java b/src/Prenotazioni/View/ConfermaAbbonamento.java
+new file mode 100644
+index 0000000..200cfeb
+--- /dev/null
++++ b/src/Prenotazioni/View/ConfermaAbbonamento.java
+@@ -0,0 +1,70 @@
++package Prenotazioni.View;
++
++import java.awt.BorderLayout;
++import java.awt.event.ActionEvent;
++import java.awt.event.ActionListener;
++import java.util.List;
++
++import javax.swing.JButton;
++import javax.swing.JFrame;
++import javax.swing.JLabel;
++import javax.swing.JOptionPane;
++import javax.swing.JPanel;
++
++import Prenotazioni.Controller.SportelloSystem;
++import Prenotazioni.Model.Beans.Corsa;
++
++public class ConfermaAbbonamento {
++	private JFrame frame;
++	private SportelloSystem controller;
++	
++	public ConfermaAbbonamento(List<Corsa> corse) {
++		controller = SportelloSystem.getInstance();
++		frame=new JFrame("Admin bus App");
++		frame.getContentPane().setLayout(new BorderLayout());
++		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
++
++		JPanel p1 = new JPanel();
++		JLabel l1 = new JLabel("Confermi acquisto?");
++		p1.add(l1);
++		JButton b1 = new JButton("Conferma");
++		JButton b2 = new JButton("Annulla");
++		JPanel p2  = new JPanel();
++		p2.add(b1);
++		p2.add(b2);
++		
++		frame.add(p1, BorderLayout.NORTH);
++		frame.add(p2, BorderLayout.SOUTH);
++		
++		ActionListener confermaListener = new ActionListener() {
++			
++			@Override
++			public void actionPerformed(ActionEvent e) {
++				frame.setVisible(false);
++				if(controller.verificaMaterialeStampa()) {
++					new FormAbbonamento(corse);
++				}
++				else {
++					controller.annullaOperazione();
++					JOptionPane.showMessageDialog(null, "Operazione annullata: materiale stampa esaurito");
++				}				
++			}
++		};
++		
++		ActionListener indietroListener = new ActionListener() {
++			
++			@Override
++			public void actionPerformed(ActionEvent e) {
++				frame.setVisible(false);
++				new CorseView(controller.elencaCorse(controller.getPartenza(), controller.getArrivo()));
++			}
++		};
++		
++		b2.addActionListener(indietroListener);
++		b1.addActionListener(confermaListener);
++		
++		frame.pack();
++		frame.setLocation(700, 400);
++		frame.setVisible(true);
++	}
++}
+diff --git a/src/Prenotazioni/View/ConfermaBigliettoView.java b/src/Prenotazioni/View/ConfermaBigliettoView.java
+new file mode 100644
+index 0000000..01387aa
+--- /dev/null
++++ b/src/Prenotazioni/View/ConfermaBigliettoView.java
+@@ -0,0 +1,74 @@
++package Prenotazioni.View;
++
++import java.awt.BorderLayout;
++import java.awt.event.ActionEvent;
++import java.awt.event.ActionListener;
++
++import javax.swing.JButton;
++import javax.swing.JFrame;
++import javax.swing.JLabel;
++import javax.swing.JOptionPane;
++import javax.swing.JPanel;
++
++import Prenotazioni.Controller.SportelloSystem;
++import Prenotazioni.Model.Beans.Biglietto;
++import Prenotazioni.Model.Beans.Corsa;
++
++public class ConfermaBigliettoView {
++	
++	private JFrame frame;
++	private SportelloSystem controller;
++	
++	public ConfermaBigliettoView(Corsa corsa) {
++		controller = SportelloSystem.getInstance();
++		frame=new JFrame("Admin bus App");
++		frame.getContentPane().setLayout(new BorderLayout());
++		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
++
++		JPanel p1 = new JPanel();
++		JLabel l1 = new JLabel("Confermi prenotazione?");
++		p1.add(l1);
++		JButton b1 = new JButton("Conferma");
++		JButton b2 = new JButton("Annulla");
++		JPanel p2  = new JPanel();
++		p2.add(b1);
++		p2.add(b2);
++		
++		frame.add(p1, BorderLayout.NORTH);
++		frame.add(p2, BorderLayout.SOUTH);
++		
++		ActionListener confermaListener = new ActionListener() {
++			
++			@Override
++			public void actionPerformed(ActionEvent e) {
++				frame.setVisible(false);
++				double prezzoBiglietto = controller.calcolaPrezzoBiglietto(controller.getPartenza(), controller.getArrivo());
++				if(controller.verificaMaterialeStampa()) {
++					controller.setCostoBiglietto(prezzoBiglietto);
++					Biglietto biglietto = controller.creaBiglietto();
++					new FormPagamento(biglietto);
++				}
++				else {
++					controller.annullaOperazione();
++					JOptionPane.showMessageDialog(null, "Operazione annullata: materiale stampa esaurito");
++				}				
++			}
++		};
++		
++		ActionListener indietroListener = new ActionListener() {
++			
++			@Override
++			public void actionPerformed(ActionEvent e) {
++				frame.setVisible(false);
++				new CorseView(controller.elencaCorse(controller.getPartenza(), controller.getArrivo()));
++			}
++		};
++		
++		b2.addActionListener(indietroListener);
++		b1.addActionListener(confermaListener);
++		
++		frame.setLocation(700, 400);
++		frame.pack();
++		frame.setVisible(true);
++	}
++}
+diff --git a/src/Prenotazioni/View/CorseView.java b/src/Prenotazioni/View/CorseView.java
+new file mode 100644
+index 0000000..46f4e41
+--- /dev/null
++++ b/src/Prenotazioni/View/CorseView.java
+@@ -0,0 +1,128 @@
++package Prenotazioni.View;
++
++import java.awt.BorderLayout;
++import java.awt.GridLayout;
++import java.awt.event.ActionEvent;
++import java.awt.event.ActionListener;
++import java.util.List;
++
++import javax.swing.*;
++import javax.swing.event.ListSelectionEvent;
++import javax.swing.event.ListSelectionListener;
++
++import Prenotazioni.View.FormPartenzaArrivo;
++import Prenotazioni.Controller.SportelloSystem;
++import Prenotazioni.Model.Beans.Corsa;
++
++public class CorseView {
++	
++	private JFrame frame;
++	private SportelloSystem controller;
++	
++	public CorseView(List<Corsa> corse) {
++		controller = SportelloSystem.getInstance();
++		frame=new JFrame("Admin bus App - Corse");
++		frame.getContentPane().setLayout(new BorderLayout());
++		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
++
++		JLabel lab1 = new JLabel();
++		lab1.setText("Seleziona una corsa per la tratta: " + controller.getPartenza() + " - " + controller.getArrivo());
++		JPanel p1 = new JPanel();
++		p1.add(lab1);
++		JLabel lab2 = new JLabel();
++		JLabel lab3 = new JLabel();
++		
++		JButton indietro = new JButton("Indietro");
++		JButton prenota = new JButton("Prenota biglietto");
++		prenota.setEnabled(false);
++		JButton compra = new JButton("Acquista abbonamento");
++		compra.setEnabled(false);
++		DefaultListModel<Corsa> listModel = new DefaultListModel<>();
++		for(Corsa c:corse) {
++			listModel.addElement(c);
++		}
++		JList<Corsa> list = new JList<>(listModel);
++		JPanel p2 = new JPanel(new GridLayout(3, 1));
++		p2.add(list, 0);
++		JPanel p4 = new JPanel(new GridLayout(1, 2));
++		p4.add(lab2, 0);
++		p4.add(lab3, 1);
++		p2.add(p4, 1);
++		JPanel p3 = new JPanel();
++		p3.add(indietro);
++		p3.add(prenota);
++		p3.add(compra);
++		
++		list.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
++
++			@Override
++			public void valueChanged(ListSelectionEvent e) {
++				if(list.getSelectedIndex() > -1) {
++					Corsa corsaSelezionata = list.getSelectedValue();
++					controller.setCorsaSelezionata(corsaSelezionata);
++					
++					if(corsaSelezionata.getPostiDisponibili() == 0) {
++						prenota.setEnabled(false);
++						compra.setEnabled(false);
++					}
++					else {
++						double prezzoBiglietto = controller.calcolaPrezzoBiglietto(controller.getPartenza(), controller.getArrivo());
++						lab2.setText("Costo biglietto: " + prezzoBiglietto + " Ä");
++						if(controller.verificaDisponibilit‡Abbonamento(corsaSelezionata)) {
++							double prezzoAbbonamento = controller.calcolaPrezzoAbbonamento(prezzoBiglietto);
++							lab3.setText("Costo abbonamento: " + prezzoAbbonamento + " Ä");
++							prenota.setEnabled(true);
++							compra.setEnabled(true);
++						}
++						else {	
++							prenota.setEnabled(true);
++							compra.setEnabled(false);
++						}
++					
++					}
++				}
++				
++			}	
++		});	
++		
++		ActionListener indietroListener=new ActionListener(){
++			public void actionPerformed(ActionEvent e) {
++				frame.setVisible(false);
++				controller.annullaOperazione();
++				new FormPartenzaArrivo();
++				
++			}
++		};
++		
++		indietro.addActionListener(indietroListener);
++		
++		ActionListener prenotaListener=new ActionListener(){
++			public void actionPerformed(ActionEvent e) {
++				frame.setVisible(false);
++				Corsa corsa = controller.prenotaBiglietto(list.getSelectedValue().getIDCorsa());
++				new ConfermaBigliettoView(corsa);
++			}
++		};
++		
++		ActionListener compraListener=new ActionListener(){
++			public void actionPerformed(ActionEvent e) {
++				frame.setVisible(false);
++				controller.setCorsaSelezionata(list.getSelectedValue());
++				List<Corsa> corsePerAbbonamento = controller.getCorseAbbonamento();
++				new ConfermaAbbonamento(corsePerAbbonamento);
++			}
++		};
++		
++		indietro.addActionListener(indietroListener);
++		prenota.addActionListener(prenotaListener);
++		compra.addActionListener(compraListener);
++		
++		frame.add(p1, BorderLayout.NORTH);
++		frame.add(p2, BorderLayout.CENTER);
++		frame.add(p3, BorderLayout.SOUTH);
++
++		frame.setLocation(700, 400);
++		frame.setVisible(true);
++		frame.pack();
++	}
++}
+diff --git a/src/Prenotazioni/View/FormAbbonamento.java b/src/Prenotazioni/View/FormAbbonamento.java
+new file mode 100644
+index 0000000..6c5d483
+--- /dev/null
++++ b/src/Prenotazioni/View/FormAbbonamento.java
+@@ -0,0 +1,96 @@
++package Prenotazioni.View;
++
++import java.awt.BorderLayout;
++import java.awt.GridLayout;
++import java.awt.event.ActionEvent;
++import java.awt.event.ActionListener;
++import java.util.List;
++
++import javax.swing.JButton;
++import javax.swing.JFrame;
++import javax.swing.JLabel;
++import javax.swing.JOptionPane;
++import javax.swing.JPanel;
++import javax.swing.JTextField;
++
++import Prenotazioni.Controller.SportelloSystem;
++import Prenotazioni.Model.Beans.Abbonamento;
++import Prenotazioni.Model.Beans.Corsa;
++import Prenotazioni.Model.Beans.TitoloViaggio;
++
++public class FormAbbonamento {
++	private JFrame frame;
++	private SportelloSystem controller;
++	
++	public FormAbbonamento(List<Corsa> corse) {
++		controller = SportelloSystem.getInstance();
++		frame=new JFrame("Admin bus App - Form Abbonamento");
++		frame.getContentPane().setLayout(new BorderLayout());
++		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
++
++		JPanel p1 = new JPanel(new GridLayout(3, 2));
++		JLabel l1 = new JLabel("Nome: ");
++		JLabel l2 = new JLabel("Cognome: ");
++		JLabel l3 = new JLabel("Codice fiscale: ");
++		JTextField t1 = new JTextField();
++		JTextField t2 = new JTextField();
++		JTextField t3 = new JTextField();
++		p1.add(l1, 0);
++		p1.add(t1, 1);
++		p1.add(l2, 2);
++		p1.add(t2, 3);
++		p1.add(l3, 4);
++		p1.add(t3, 5);
++		JPanel p2 = new JPanel();
++		JButton avanti = new JButton("Avanti");
++		JButton annulla = new JButton("Annulla");
++		p2.add(avanti);
++		p2.add(annulla);
++		frame.add(p1, BorderLayout.CENTER);
++		frame.add(p2, BorderLayout.SOUTH);
++		
++		ActionListener avantiListener = new ActionListener() {
++			
++			@Override
++			public void actionPerformed(ActionEvent e) {
++				if(t1.getText().isEmpty() || t2.getText().isEmpty() || t3.getText().isEmpty())
++					JOptionPane.showMessageDialog(null, "Completare tutti i campi");
++				else if(t3.getText().length()!=16)
++					JOptionPane.showMessageDialog(null, "Controllare la lunghezza del codice fiscale (16 caratteri)");
++				else {
++					
++					frame.setVisible(false);
++					
++					Corsa corsaSelezionata = controller.getCorsaSelezionata();
++					Abbonamento abb = controller.creaAbbonamento(corsaSelezionata);
++					abb.setNome(t1.getText());
++					abb.setCognome(t2.getText());
++					abb.setCodiceFiscale(t3.getText());
++					
++					new FormPagamento(abb);
++				}
++			}
++		};
++		
++		avanti.addActionListener(avantiListener);
++		
++		ActionListener annullaListener = new ActionListener() {
++			
++			@Override
++			public void actionPerformed(ActionEvent e) {
++				frame.setVisible(false);
++				JOptionPane.showMessageDialog(null, "Abbonamento annullato");
++				controller.annullaOperazione();
++				new FormPartenzaArrivo();
++				
++			}
++		};
++		
++		annulla.addActionListener(annullaListener);
++		
++		frame.pack();
++		frame.setLocation(700, 400);
++		frame.setVisible(true);
++		
++	}
++}
+diff --git a/src/Prenotazioni/View/FormPagamento.java b/src/Prenotazioni/View/FormPagamento.java
+new file mode 100644
+index 0000000..5ab5105
+--- /dev/null
++++ b/src/Prenotazioni/View/FormPagamento.java
+@@ -0,0 +1,141 @@
++package Prenotazioni.View;
++
++import java.awt.BorderLayout;
++import java.awt.GridLayout;
++import java.awt.event.ActionEvent;
++import java.awt.event.ActionListener;
++
++import javax.swing.JButton;
++import javax.swing.JComboBox;
++import javax.swing.JFrame;
++import javax.swing.JLabel;
++import javax.swing.JOptionPane;
++import javax.swing.JPanel;
++import javax.swing.JTextField;
++
++import Prenotazioni.Controller.SportelloSystem;
++import Prenotazioni.Model.Beans.Abbonamento;
++import Prenotazioni.Model.Beans.TitoloViaggio;
++
++public class FormPagamento {
++
++	private JFrame frame;
++	private SportelloSystem controller;
++	private double sommaCorrente = 0;
++	private double prezzo = 0;
++	
++	public FormPagamento(TitoloViaggio titolo) {
++		prezzo = titolo.getPrezzo();
++		controller = SportelloSystem.getInstance();
++		frame = new JFrame("Admin bus App - Pagamento");
++		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
++		frame.getContentPane().setLayout(new BorderLayout());
++		
++		JPanel p1 = new JPanel();
++		JLabel l1 = new JLabel("Costo titolo viaggio: " + titolo.getPrezzo() + " Ä");
++		p1.add(l1);
++		JLabel l2 = new JLabel("Inserisci importo: ");
++		JLabel l3 = new JLabel();
++		JTextField txt1 = new JTextField();
++		JPanel p2 = new JPanel(new GridLayout(2,3));
++		p2.add(l2,0);
++		p2.add(txt1,1);
++		p2.add(l3,2);
++		
++		JLabel l = new JLabel("Numero posti ");
++		JComboBox<Integer> combo = new JComboBox<Integer>();
++		int [] posti = { 1, 2, 3, 4, 5};	
++		for(Integer i:posti) {
++			combo.addItem(i);
++		}
++		JPanel p5 = new JPanel(new GridLayout(1, 2));
++		p5.add(l, 0);
++		p5.add(combo, 1);
++		p2.add(p5, 3);
++		if(titolo instanceof Abbonamento) {
++			combo.setEnabled(false);
++		}		
++		
++		JButton insert = new JButton("Insert pay");
++		JButton annulla = new JButton("Annulla");
++		JPanel p4 = new JPanel(new GridLayout(1, 2));
++		p4.add(insert);
++		p4.add(annulla);
++		
++		
++		ActionListener comboListener = new ActionListener() {
++			
++			@Override
++			public void actionPerformed(ActionEvent e) {
++				if((combo.getSelectedIndex()+1) <= controller.getCorsaSelezionata().getPostiDisponibili()) {
++					insert.setEnabled(true);
++					prezzo = (combo.getSelectedIndex()+1) * titolo.getPrezzo();
++					l1.setText ("Costo: " + prezzo + " Ä");
++				}
++				else
++					insert.setEnabled(false);
++			}
++		};
++		
++		combo.addActionListener(comboListener);
++		
++		ActionListener annullaListener = new ActionListener() {
++			
++			@Override
++			public void actionPerformed(ActionEvent e) {
++				frame.setVisible(false);
++				JOptionPane.showMessageDialog(null, "Pagamento annullato");
++				new FormPartenzaArrivo();
++			}
++		};
++		
++		annulla.addActionListener(annullaListener);
++		
++		ActionListener insertListener = new ActionListener() {
++			
++			@Override
++			public void actionPerformed(ActionEvent e) {
++				double sommaInserita = 0;
++				try {
++					sommaInserita = Double.parseDouble(txt1.getText());
++					titolo.setPrezzo(prezzo);
++					sommaCorrente = sommaCorrente + sommaInserita;
++					l3.setText("Importo: " + sommaCorrente + " Ä");
++					if(sommaCorrente >= prezzo) {
++						double resto = controller.calcolaResto(sommaCorrente, titolo.getPrezzo());
++						boolean disponibilit‡ = controller.verificaDisponibilit‡Resto(resto);
++						if(disponibilit‡) {
++							frame.setVisible(false);
++							controller.setCostoBiglietto(prezzo);
++							controller.setsommaInserita(sommaCorrente);	
++							controller.acquistaTitoloViaggio(titolo);
++							JOptionPane.showMessageDialog(null, "Acquisto effettuato con successo\nBuon Vaggio!");
++							
++						}
++						else {
++							frame.setVisible(false);
++							controller.annullaOperazione();
++							JOptionPane.showMessageDialog(null, "Resto non disponibile!");
++							JOptionPane.showMessageDialog(null, "Restituzione importo avvenuta con successo!");
++							System.out.println("Somma restituita: " + sommaCorrente + " Ä");
++						}
++						new FormPartenzaArrivo();
++					}			
++				} catch(NumberFormatException e1) {
++					sommaInserita = 0;
++					JOptionPane.showMessageDialog(null, "Inserire valori numerici");
++				}
++			}	
++				
++		};
++		
++		insert.addActionListener(insertListener);
++		
++		frame.add(p1, BorderLayout.NORTH);
++		frame.add(p2, BorderLayout.CENTER);
++		frame.add(p4, BorderLayout.SOUTH);
++		frame.setLocation(700, 400);
++		frame.pack();
++		frame.setVisible(true);
++	}
++}
+diff --git a/src/Prenotazioni/View/FormPartenzaArrivo.java b/src/Prenotazioni/View/FormPartenzaArrivo.java
+new file mode 100644
+index 0000000..58a8dda
+--- /dev/null
++++ b/src/Prenotazioni/View/FormPartenzaArrivo.java
+@@ -0,0 +1,77 @@
++package Prenotazioni.View;
++
++import java.awt.BorderLayout;
++import java.awt.GridLayout;
++import java.awt.event.ActionEvent;
++import java.awt.event.ActionListener;
++import java.util.List;
++import javax.swing.*;
++import Prenotazioni.Controller.SportelloSystem;
++import Prenotazioni.Model.Beans.Corsa;
++import Prenotazioni.Model.Beans.Localit‡;
++import Prenotazioni.Model.DB.DAOFactory;
++
++public class FormPartenzaArrivo {
++	
++	private JFrame frame;
++	private SportelloSystem controller;
++	
++	public FormPartenzaArrivo() {
++		frame = new JFrame();
++		frame.setTitle("Admin bus App");
++		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
++		frame.getContentPane().setLayout(new BorderLayout());
++		
++		JPanel panel1 = new JPanel();
++		panel1.setLayout(new GridLayout(3, 2));
++		JLabel lab1 = new JLabel("Partenza (From): ");
++		panel1.add(lab1);
++		List<Localit‡> l1 = DAOFactory.getDAOLocalit‡().doRetrieveAll();
++		JComboBox<Localit‡> c1 = new JComboBox<>();
++		for(Localit‡ l:l1)
++			c1.addItem(l);
++		panel1.add(c1);
++		JLabel lab2 = new JLabel("Arrivo (To): ");
++		panel1.add(lab2);
++		List<Localit‡> l2 = DAOFactory.getDAOLocalit‡().doRetrieveAll();
++		JComboBox<Localit‡> c2 = new JComboBox<>();
++		for(Localit‡ l:l2)
++			c2.addItem(l);
++		panel1.add(c2);
++		JButton btn_cerca = new JButton("Elenca corse");
++		JPanel panel2 = new JPanel();
++		panel2.add(btn_cerca);
++		
++		frame.add(panel1, BorderLayout.CENTER);
++		frame.add(panel2, BorderLayout.SOUTH);
++		
++		
++		ActionListener listener = new ActionListener() {
++			public void actionPerformed(ActionEvent e) {
++				controller = SportelloSystem.getInstance();
++				if(c1.getSelectedItem().toString().equals(c2.getSelectedItem().toString())) {
++					frame.setVisible(true);
++					JOptionPane.showMessageDialog(null, "Si scelga una destinazione diversa dalla partenza");
++				}
++				else {
++					List<Corsa> listaCorse = controller.elencaCorse(c1.getSelectedItem().toString(), c2.getSelectedItem().toString());
++					frame.setVisible(false);
++					if(listaCorse.size() == 0) {
++						frame.setVisible(true);
++						JOptionPane.showMessageDialog(null, "Nessuna corsa disponibile!");
++					}
++					else
++						new CorseView(listaCorse);
++				}
++				
++			}
++		};
++		
++		btn_cerca.addActionListener(listener);
++		
++		frame.setLocation(700, 400);
++		frame.pack();
++		
++		frame.setVisible(true);
++	}
++}
+
+Commit:
+409b6ce8a3d8280fe39ce15e3aed4a4857a36f1d
+GitHub
+noreply@github.com
+2019-03-07 12:27:50 +0100
+Initial commit
+diff --git a/README.md b/README.md
+new file mode 100644
+index 0000000..114323a
+--- /dev/null
++++ b/README.md
+@@ -0,0 +1 @@
++# AdminBus
+\ No newline at end of file

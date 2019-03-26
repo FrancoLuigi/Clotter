@@ -1,0 +1,12 @@
+<clones>
+<systeminfo processor="nicad5" system="AdminBus-3.0" granularity="functions" threshold="30%" minlines="10" maxlines="2500"/>
+<cloneinfo npcs="53" npairs="1"/>
+<runinfo ncompares="17" cputime="77"/>
+<classinfo nclasses="1"/>
+
+<class classid="1" nclones="2" nlines="42" similarity="83">
+<source file="examples/AdminBus-3.0/src/Prenotazioni/View/ConfermaAbbonamento.java" startline="21" endline="69" pcid="45"></source>
+<source file="examples/AdminBus-3.0/src/Prenotazioni/View/ConfermaBigliettoView.java" startline="22" endline="73" pcid="48"></source>
+</class>
+
+</clones>

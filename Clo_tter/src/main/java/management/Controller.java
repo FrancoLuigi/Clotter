@@ -443,6 +443,113 @@ public class Controller {
 			System.err.println("Inseriment completed");
 
 			break;
+			
+		case "AdminBus":
+
+			Scanner sc10 = new Scanner(new File("files/" + f + "-1.0"+".txt"));
+			// Scanner sc1=new Scanner(new File("test"));
+			GestoreCommits gestoreCo10 = new GestoreCommits(sc10, "1.0");
+
+			// GestoreCommits gestore2=new GestoreCommits(sc1);
+			GestoreClones gestoreCl10 = new GestoreClones("files/" + f + "-1.0" + ".xml", "1.0");
+
+			HashMap<String, Commit> commits10 = gestoreCo10.getCommits();
+
+			HashMap<String, Clone> clones10 = gestoreCl10.getClones();
+
+			HashMap<String, File1> files10 = gestoreCo10.getFiles();
+
+			HashMap<String, Committer> committers10 = gestoreCo10.getCommitters();
+			HashMap<String, ClassClone> classClone10 = gestoreCl10.getClassi();
+			HashMap<String, Range> ranges10 = gestoreCo10.getRanges();
+			HashMap<String, Change> changes10 = gestoreCo10.getChanges();
+
+			GestoreAssociation g10 = new GestoreAssociation(commits10, clones10);
+
+			HashMap<String, Association> associations10 = g10.getAssociation();
+
+			gestoreDB.insertFiles(files10);
+
+			gestoreDB.insertCommitters(committers10);
+			gestoreDB.insertClassClone(classClone10);
+			gestoreDB.insertCommits(commits10);
+			gestoreDB.insertChanges(changes10);
+
+			gestoreDB.insertClones(clones10);
+
+			gestoreDB.insertRanges(ranges10);
+
+			gestoreDB.insertAssociations(associations10);
+
+			Scanner sc11 = new Scanner(new File("files/" + f + "-2.0"+".txt"));
+			// Scanner sc1=new Scanner(new File("test"));
+			GestoreCommits gestoreCo11 = new GestoreCommits(sc11, "2.0");
+
+			// GestoreCommits gestore2=new GestoreCommits(sc1);
+			GestoreClones gestoreCl11 = new GestoreClones("files/" + f + "-2.0" + ".xml", "2.0");
+
+			HashMap<String, Commit> commits11 = gestoreCo11.getCommits();
+
+			HashMap<String, Clone> clones11 = gestoreCl11.getClones();
+
+			HashMap<String, File1> files11 = gestoreCo11.getFiles();
+
+			HashMap<String, Committer> committers11 = gestoreCo11.getCommitters();
+			HashMap<String, ClassClone> classClone11 = gestoreCl11.getClassi();
+			HashMap<String, Range> ranges11 = gestoreCo11.getRanges();
+			HashMap<String, Change> changes11 = gestoreCo11.getChanges();
+
+			GestoreAssociation g11 = new GestoreAssociation(commits11, clones11);
+
+			HashMap<String, Association> associations11 = g11.getAssociation();
+
+			gestoreDB.insertFiles(files11);
+
+			gestoreDB.insertCommitters(committers11);
+			gestoreDB.insertClassClone(classClone11);
+			gestoreDB.insertCommits(commits11);
+			gestoreDB.insertChanges(changes11);
+
+			gestoreDB.insertClones(clones11);
+
+			gestoreDB.insertRanges(ranges11);
+
+			gestoreDB.insertAssociations(associations11);
+
+			Scanner sc12 = new Scanner(new File("files/" + f + "-3.0"+".txt"));
+			// Scanner sc1=new Scanner(new File("test"));
+			GestoreCommits gestoreCo12 = new GestoreCommits(sc12, "3.0");
+
+			// GestoreCommits gestore2=new GestoreCommits(sc1);
+			GestoreClones gestoreCl12 = new GestoreClones("files/" + f + "-3.0" + ".xml", "3.0");
+
+			HashMap<String, Commit> commits12 = gestoreCo12.getCommits();
+
+			HashMap<String, Clone> clones12 = gestoreCl12.getClones();
+
+			HashMap<String, File1> files12 = gestoreCo12.getFiles();
+
+			HashMap<String, Committer> committers12 = gestoreCo12.getCommitters();
+			HashMap<String, ClassClone> classClone12 = gestoreCl12.getClassi();
+			HashMap<String, Range> ranges12 = gestoreCo12.getRanges();
+			HashMap<String, Change> changes12 = gestoreCo12.getChanges();
+
+			GestoreAssociation g12 = new GestoreAssociation(commits12, clones12);
+
+			HashMap<String, Association> associations12 = g12.getAssociation();
+
+			gestoreDB.insertFiles(files12);
+
+			gestoreDB.insertCommitters(committers12);
+			gestoreDB.insertClassClone(classClone12);
+			gestoreDB.insertCommits(commits12);
+			gestoreDB.insertChanges(changes12);
+
+			gestoreDB.insertClones(clones12);
+
+			gestoreDB.insertRanges(ranges12);
+
+			gestoreDB.insertAssociations(associations12);
 
 		default:
 			Scanner sc = new Scanner(new File("files/" + f+".txt"));

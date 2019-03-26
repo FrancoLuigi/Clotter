@@ -95,7 +95,8 @@ public class HomeFrame {
 		frame.getContentPane().add(lblNewLabel);
 
 		listModel = new DefaultListModel<>();
-
+		
+		listModel.addElement("AdminBus");
 		listModel.addElement("Dnsjava");
 		listModel.addElement("Flink");
 		listModel.addElement("Groovy");

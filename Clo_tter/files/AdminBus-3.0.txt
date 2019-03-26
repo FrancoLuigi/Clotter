@@ -1,0 +1,269 @@
+Commit:
+bf92461d5ff14d1691c77e5ded24388ea36444f7
+submarine91
+attilio.russo91@gmail.com
+2019-03-13 10:10:44 +0100
+Remove the instance of clone: "CloneConfermaBigliettoView.java" Remove clone class in the file: "DAOCorsa.java"
+diff --git a/.gitignore b/.gitignore
+index a1a77cc..d717de3 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -1,3 +1,4 @@
+ bin/
+ AdminBusCommits
+ AdminBus-1.0.txt
++AdminBus-2.0.txt
+diff --git a/src/Package_Clone/CloneConfermaBigliettoView.java b/src/Package_Clone/CloneConfermaBigliettoView.java
+deleted file mode 100644
+index 3b6da22..0000000
+--- a/src/Package_Clone/CloneConfermaBigliettoView.java
++++ /dev/null
+@@ -1,75 +0,0 @@
+-package Package_Clone;
+-
+-
+-import java.awt.BorderLayout;
+-import java.awt.event.ActionEvent;
+-import java.awt.event.ActionListener;
+-
+-import javax.swing.JButton;
+-import javax.swing.JFrame;
+-import javax.swing.JLabel;
+-import javax.swing.JOptionPane;
+-import javax.swing.JPanel;
+-
+-import Prenotazioni.Controller.SportelloSystem;
+-import Prenotazioni.Model.Beans.Biglietto;
+-import Prenotazioni.Model.Beans.Corsa;
+-
+-public class CloneCloneConfermaBigliettoView {
+-	
+-	private JFrame frame;
+-	private SportelloSystem controller;
+-	
+-	public CloneConfermaBigliettoView(Corsa corsa) {
+-		controller = SportelloSystem.getInstance();
+-		frame=new JFrame("Admin bus App");
+-		frame.getContentPane().setLayout(new BorderLayout());
+-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+-
+-		JPanel p1 = new JPanel();
+-		JLabel l1 = new JLabel("Confermi prenotazione?");
+-		p1.add(l1);
+-		JButton b1 = new JButton("Conferma");
+-		JButton b2 = new JButton("Annulla");
+-		JPanel p2  = new JPanel();
+-		p2.add(b1);
+-		p2.add(b2);
+-		
+-		frame.add(p1, BorderLayout.NORTH);
+-		frame.add(p2, BorderLayout.SOUTH);
+-		
+-		ActionListener confermaListener = new ActionListener() {
+-			
+-			@Override
+-			public void actionPerformed(ActionEvent e) {
+-				frame.setVisible(false);
+-				double prezzoBiglietto = controller.calcolaPrezzoBiglietto(controller.getPartenza(), controller.getArrivo());
+-				if(controller.verificaMaterialeStampa()) {
+-					controller.setCostoBiglietto(prezzoBiglietto);
+-					Biglietto biglietto = controller.creaBiglietto();
+-					new FormPagamento(biglietto);
+-				}
+-				else {
+-					controller.annullaOperazione();
+-					JOptionPane.showMessageDialog(null, "Operazione annullata: materiale stampa esaurito");
+-				}				
+-			}
+-		};
+-		
+-		ActionListener indietroListener = new ActionListener() {
+-			
+-			@Override
+-			public void actionPerformed(ActionEvent e) {
+-				frame.setVisible(false);
+-				new CorseView(controller.elencaCorse(controller.getPartenza(), controller.getArrivo()));
+-			}
+-		};
+-		
+-		b2.addActionListener(indietroListener);
+-		b1.addActionListener(confermaListener);
+-		
+-		frame.setLocation(700, 400);
+-		frame.pack();
+-		frame.setVisible(true);
+-	}
+-}
+diff --git a/src/Prenotazioni/Model/DB/DAOCorsa.java b/src/Prenotazioni/Model/DB/DAOCorsa.java
+deleted file mode 100644
+index 5a8f695..0000000
+--- a/src/Prenotazioni/Model/DB/DAOCorsa.java
++++ /dev/null
+@@ -1,167 +0,0 @@
+-package Prenotazioni.Model.DB;
+-
+-import java.sql.Connection;
+-import java.sql.ResultSet;
+-import java.sql.SQLException;
+-import java.sql.Statement;
+-import java.util.ArrayList;
+-import java.util.Date;
+-import java.util.List;
+-
+-import Prenotazioni.Controller.SportelloSystem;
+-import Prenotazioni.Model.Beans.Corsa;
+-import Prenotazioni.Model.Beans.Linea;
+-import Prenotazioni.Model.Beans.Mezzo;
+-import Prenotazioni.Model.DB.DAOFactory;
+-import Prenotazioni.Model.DB.DAOInterface;
+-import Prenotazioni.Model.DB.DataSource;
+-
+-public class DAOCorsa implements DAOInterface<Corsa> {
+-	
+-	public DAOCorsa() {
+-	}
+-
+-	@Override
+-	public List<Corsa> doRetrieveAll() {
+-		List<Corsa> listaCorse = new ArrayList<Corsa>();
+-		try {
+-			Connection connection = DataSource.getConnection();
+-			Statement statement = connection.createStatement();
+-			ResultSet result = statement.executeQuery("SELECT * FROM corse");
+-			
+-			while(result.next()) {
+-				int ID = result.getInt("id");
+-				Linea linea = DAOFactory.getDAOLinea().doRetrieveByKey(result.getString("nome_linea"));
+-				Date dataOra = new Date(result.getTimestamp("data_ora").getTime());
+-				int postiDisponibili = result.getInt("posti_disponibili");
+-				Mezzo mezzo = DAOFactory.getDAOMezzo().doRetrieveByKey(result.getString("targa_mezzo"));	
+-				Corsa c = new Corsa(ID, linea, dataOra, postiDisponibili, mezzo);
+-
+-				listaCorse.add(c);				
+-			}
+-		} catch (SQLException e) {
+-			e.printStackTrace();
+-		}
+-		
+-		return listaCorse;
+-	}
+-	
+-	
+-	public List<Corsa> doRetrieveByLinea(String nome) {
+-		List<Corsa> listaCorse = new ArrayList<Corsa>();
+-		try {
+-			Connection connection = DataSource.getConnection();
+-			Statement statement = connection.createStatement();
+-			ResultSet result = statement.executeQuery("SELECT * FROM corse WHERE nome_linea = '"+nome+"'");
+-			
+-			while(result.next()) {
+-				int ID = result.getInt("id");
+-				Linea linea = DAOFactory.getDAOLinea().doRetrieveByKey(result.getString("nome_linea"));
+-				Date dataOra = new Date(result.getTimestamp("data_ora").getTime());
+-				int postiDisponibili = result.getInt("posti_disponibili");
+-				Mezzo mezzo = DAOFactory.getDAOMezzo().doRetrieveByKey(result.getString("targa_mezzo"));
+-				
+-				Corsa c = new Corsa(ID, linea, dataOra, postiDisponibili, mezzo);
+-
+-				
+-				listaCorse.add(c);				
+-			}
+-		} catch (SQLException e) {
+-			e.printStackTrace();
+-		}
+-		
+-		return listaCorse;
+-	}
+-	
+-	
+-	public List<Corsa> doRetrieveByAbbonamento(int ID) {
+-		List<Corsa> listaCorse = new ArrayList<Corsa>();
+-		try {
+-			Connection connection = DataSource.getConnection();
+-			Statement statement = connection.createStatement();
+-			ResultSet result = statement.executeQuery("SELECT * FROM abbonamenti_corse WHERE id_abbonamento = '"+ID+"'");
+-			
+-			while(result.next()) {
+-				Corsa corsa = doRetrieveByKey(result.getInt("id_corsa"));
+-				
+-				listaCorse.add(corsa);				
+-			}
+-		} catch (SQLException e) {
+-			e.printStackTrace();
+-		}
+-		
+-		return listaCorse;
+-	}
+-	
+-	
+-	public List<Corsa> doRetrieveByPlace(String from, String to) {
+-		List<Corsa> listaCorse = new ArrayList<Corsa>();
+-
+-		List<Linea> linee = DAOFactory.getDAOLinea().doRetrieveByPlace(from, to);
+-
+-		for(Linea l : linee) {
+-			try {
+-				Connection connection = DataSource.getConnection();
+-				Statement statement = connection.createStatement();
+-				ResultSet result = statement.executeQuery("SELECT * FROM corse WHERE nome_linea = '"+l.getNome()+"' and data_ora >= CURTIME()");
+-				while(result.next()) {
+-					Corsa corsa = doRetrieveByKey(result.getInt("id"));
+-					listaCorse.add(corsa);				
+-					
+-				}
+-			} catch (SQLException e) {
+-				e.printStackTrace();
+-			}
+-		}
+-		
+-		return listaCorse;
+-	}
+-
+-	
+-	public Corsa doRetrieveByKey(int ID) {
+-		Corsa corsa = null;
+-		try {
+-			Connection connection = DataSource.getConnection();
+-			Statement statement = connection.createStatement();
+-			ResultSet result = statement.executeQuery("SELECT * FROM corse WHERE id = '"+ID+"'");
+-			
+-			if(result.next()) {
+-				Linea linea = DAOFactory.getDAOLinea().doRetrieveByKey(result.getString("nome_linea"));
+-				Date dataOra = new Date(result.getTimestamp("data_ora").getTime());
+-				int postiDisponibili = result.getInt("posti_disponibili");
+-				Mezzo mezzo = DAOFactory.getDAOMezzo().doRetrieveByKey(result.getString("targa_mezzo"));
+-				corsa = new Corsa(ID, linea, dataOra, postiDisponibili, mezzo);
+-			}
+-		} catch (SQLException e) {
+-			e.printStackTrace();
+-		}
+-		
+-		return corsa;
+-	}
+-
+-	@Override
+-	public void saveOrUpdate(Corsa c) {
+-		try {
+-			Connection conn = DataSource.getConnection();
+-			Statement statement = conn.createStatement();
+-			SportelloSystem controller = SportelloSystem.getInstance();
+-			String sql = "update corse set posti_disponibili = " + (c.getPostiDisponibili() - (controller.getCostoBiglietto() / SportelloSystem.getInstance().calcolaPrezzoBiglietto(controller.getPartenza(), controller.getArrivo()))) 
+-						+ " where id = " + c.getIDCorsa();
+-			int esito = statement.executeUpdate(sql);
+-			if(esito!=1)
+-				throw new SQLException("Update corsa non effettuato");
+-		}
+-		catch(SQLException e) {
+-			e.printStackTrace();
+-			System.err.println(e.getMessage());
+-		}
+-			
+-	}
+-	
+-
+-	@Override
+-	public void delete(Corsa c) {
+-		// TO DO
+-	}
+-
+-}
