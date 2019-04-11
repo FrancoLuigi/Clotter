@@ -53,7 +53,7 @@ public class FrameVisualizzaCommits {
 
 		JPanel panel = new JPanel();
 
-		String col[] = { "Id", "Data", "Descrizione", "Nome", "Id Committer" };
+		String col[] = { "Id", "Data", "Descrizione", "Nome", "Id Committer", "Version"};
 
 		controller = Controller.getInstance();
 		g = GestoreDB.getInstance();
@@ -64,7 +64,7 @@ public class FrameVisualizzaCommits {
 		lblNewLabel.setBounds(100, 50, 500, 500);
 		frame.getContentPane().add(lblNewLabel);
 
-		Object[][] data = new Object[commits.size()][5];
+		Object[][] data = new Object[commits.size()][6];
 		
 		SimpleDateFormat sd = new SimpleDateFormat("dd/MM/yyy HH:mm:ss");
 
@@ -76,6 +76,7 @@ public class FrameVisualizzaCommits {
 			data[row][2] = c.getDescrizione();
 			data[row][3] = c.getCommitter().getNome();
 			data[row][4] =  Integer.parseInt(c.getCommitter().getEmail());
+			data[row][5] = c.getVersion();
 			row++;
 		}
 

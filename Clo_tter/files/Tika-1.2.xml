@@ -1,0 +1,242 @@
+<clones>
+<systeminfo processor="nicad5" system="tika-1.2" granularity="functions" threshold="30%" minlines="10" maxlines="2500"/>
+<cloneinfo npcs="3320" npairs="77"/>
+<runinfo ncompares="179829" cputime="155"/>
+<classinfo nclasses="44"/>
+
+<class classid="1" nclones="2" nlines="15" similarity="93">
+<source file="examples/tika-1.2/tika-app/src/main/java/org/apache/tika/cli/TikaCLI.java" startline="734" endline="751" pcid="37"></source>
+<source file="examples/tika-1.2/tika-server/src/main/java/org/apache/tika/server/UnpackerResource.java" startline="228" endline="245" pcid="3175"></source>
+</class>
+
+<class classid="2" nclones="2" nlines="13" similarity="76">
+<source file="examples/tika-1.2/tika-app/src/main/java/org/apache/tika/gui/TikaGUI.java" startline="274" endline="286" pcid="66"></source>
+<source file="examples/tika-1.2/tika-app/src/main/java/org/apache/tika/gui/TikaGUI.java" startline="288" endline="300" pcid="67"></source>
+</class>
+
+<class classid="3" nclones="2" nlines="10" similarity="80">
+<source file="examples/tika-1.2/tika-core/src/main/java/org/apache/tika/io/EndianUtils.java" startline="81" endline="90" pcid="317"></source>
+<source file="examples/tika-1.2/tika-core/src/main/java/org/apache/tika/io/EndianUtils.java" startline="99" endline="108" pcid="318"></source>
+</class>
+
+<class classid="4" nclones="2" nlines="14" similarity="85">
+<source file="examples/tika-1.2/tika-core/src/main/java/org/apache/tika/io/EndianUtils.java" startline="118" endline="140" pcid="319"></source>
+<source file="examples/tika-1.2/tika-core/src/main/java/org/apache/tika/io/EndianUtils.java" startline="149" endline="171" pcid="320"></source>
+</class>
+
+<class classid="5" nclones="2" nlines="10" similarity="80">
+<source file="examples/tika-1.2/tika-core/src/main/java/org/apache/tika/io/IOUtils.java" startline="928" endline="938" pcid="384"></source>
+<source file="examples/tika-1.2/tika-core/src/main/java/org/apache/tika/io/IOUtils.java" startline="1032" endline="1041" pcid="388"></source>
+</class>
+
+<class classid="6" nclones="2" nlines="18" similarity="72">
+<source file="examples/tika-1.2/tika-core/src/main/java/org/apache/tika/io/IOUtils.java" startline="1123" endline="1143" pcid="391"></source>
+<source file="examples/tika-1.2/tika-core/src/main/java/org/apache/tika/io/IOUtils.java" startline="1160" endline="1180" pcid="392"></source>
+</class>
+
+<class classid="7" nclones="2" nlines="11" similarity="72">
+<source file="examples/tika-1.2/tika-core/src/main/java/org/apache/tika/io/ProxyInputStream.java" startline="75" endline="85" pcid="424"></source>
+<source file="examples/tika-1.2/tika-core/src/main/java/org/apache/tika/io/ProxyInputStream.java" startline="96" endline="106" pcid="425"></source>
+</class>
+
+<class classid="8" nclones="2" nlines="15" similarity="73">
+<source file="examples/tika-1.2/tika-core/src/main/java/org/apache/tika/metadata/Metadata.java" startline="400" endline="414" pcid="582"></source>
+<source file="examples/tika-1.2/tika-core/src/main/java/org/apache/tika/metadata/Metadata.java" startline="423" endline="437" pcid="583"></source>
+</class>
+
+<class classid="9" nclones="2" nlines="10" similarity="70">
+<source file="examples/tika-1.2/tika-core/src/main/java/org/apache/tika/sax/WriteOutContentHandler.java" startline="132" endline="147" pcid="1042"></source>
+<source file="examples/tika-1.2/tika-core/src/main/java/org/apache/tika/sax/WriteOutContentHandler.java" startline="150" endline="165" pcid="1043"></source>
+</class>
+
+<class classid="10" nclones="2" nlines="12" similarity="83">
+<source file="examples/tika-1.2/tika-core/src/main/java/org/apache/tika/Tika.java" startline="197" endline="208" pcid="1116"></source>
+<source file="examples/tika-1.2/tika-core/src/main/java/org/apache/tika/Tika.java" startline="223" endline="234" pcid="1117"></source>
+</class>
+
+<class classid="11" nclones="2" nlines="15" similarity="86">
+<source file="examples/tika-1.2/tika-core/src/main/java/org/apache/tika/Tika.java" startline="373" endline="391" pcid="1125"></source>
+<source file="examples/tika-1.2/tika-core/src/main/java/org/apache/tika/Tika.java" startline="414" endline="432" pcid="1126"></source>
+</class>
+
+<class classid="12" nclones="2" nlines="11" similarity="81">
+<source file="examples/tika-1.2/tika-core/src/test/java/org/apache/tika/config/TikaConfigTest.java" startline="54" endline="64" pcid="1148"></source>
+<source file="examples/tika-1.2/tika-core/src/test/java/org/apache/tika/config/TikaConfigTest.java" startline="72" endline="82" pcid="1149"></source>
+</class>
+
+<class classid="13" nclones="2" nlines="13" similarity="76">
+<source file="examples/tika-1.2/tika-core/src/test/java/org/apache/tika/io/LookaheadInputStreamTest.java" startline="43" endline="55" pcid="1183"></source>
+<source file="examples/tika-1.2/tika-core/src/test/java/org/apache/tika/io/LookaheadInputStreamTest.java" startline="90" endline="103" pcid="1186"></source>
+</class>
+
+<class classid="14" nclones="4" nlines="12" similarity="75">
+<source file="examples/tika-1.2/tika-core/src/test/java/org/apache/tika/sax/SecureContentHandlerTest.java" startline="46" endline="56" pcid="1273"></source>
+<source file="examples/tika-1.2/tika-core/src/test/java/org/apache/tika/sax/SecureContentHandlerTest.java" startline="70" endline="80" pcid="1275"></source>
+<source file="examples/tika-1.2/tika-core/src/test/java/org/apache/tika/sax/SecureContentHandlerTest.java" startline="58" endline="68" pcid="1274"></source>
+<source file="examples/tika-1.2/tika-core/src/test/java/org/apache/tika/sax/SecureContentHandlerTest.java" startline="82" endline="93" pcid="1276"></source>
+</class>
+
+<class classid="15" nclones="2" nlines="11" similarity="72">
+<source file="examples/tika-1.2/tika-core/src/test/java/org/apache/tika/sax/SecureContentHandlerTest.java" startline="95" endline="104" pcid="1277"></source>
+<source file="examples/tika-1.2/tika-core/src/test/java/org/apache/tika/sax/SecureContentHandlerTest.java" startline="106" endline="116" pcid="1278"></source>
+</class>
+
+<class classid="16" nclones="2" nlines="16" similarity="75">
+<source file="examples/tika-1.2/tika-core/src/test/java/org/apache/tika/sax/xpath/XPathParserTest.java" startline="71" endline="85" pcid="1303"></source>
+<source file="examples/tika-1.2/tika-core/src/test/java/org/apache/tika/sax/xpath/XPathParserTest.java" startline="104" endline="119" pcid="1305"></source>
+</class>
+
+<class classid="17" nclones="2" nlines="13" similarity="78">
+<source file="examples/tika-1.2/tika-parsers/src/main/java/org/apache/tika/parser/chm/accessor/ChmItsfHeader.java" startline="357" endline="372" pcid="1413"></source>
+<source file="examples/tika-1.2/tika-parsers/src/main/java/org/apache/tika/parser/chm/accessor/ChmLzxcResetTable.java" startline="171" endline="186" pcid="1496"></source>
+</class>
+
+<class classid="18" nclones="2" nlines="16" similarity="75">
+<source file="examples/tika-1.2/tika-parsers/src/main/java/org/apache/tika/parser/dwg/DWGParser.java" startline="136" endline="154" pcid="1776"></source>
+<source file="examples/tika-1.2/tika-parsers/src/main/java/org/apache/tika/parser/dwg/DWGParser.java" startline="173" endline="191" pcid="1778"></source>
+</class>
+
+<class classid="19" nclones="2" nlines="16" similarity="81">
+<source file="examples/tika-1.2/tika-parsers/src/main/java/org/apache/tika/parser/epub/EpubContentParser.java" startline="52" endline="78" pcid="1786"></source>
+<source file="examples/tika-1.2/tika-parsers/src/main/java/org/apache/tika/parser/odf/OpenDocumentContentParser.java" startline="333" endline="360" pcid="2303"></source>
+</class>
+
+<class classid="20" nclones="2" nlines="25" similarity="77">
+<source file="examples/tika-1.2/tika-parsers/src/main/java/org/apache/tika/parser/mp3/ID3v23Handler.java" startline="44" endline="67" pcid="2218"></source>
+<source file="examples/tika-1.2/tika-parsers/src/main/java/org/apache/tika/parser/mp3/ID3v24Handler.java" startline="45" endline="72" pcid="2231"></source>
+</class>
+
+<class classid="21" nclones="2" nlines="13" similarity="84">
+<source file="examples/tika-1.2/tika-parsers/src/main/java/org/apache/tika/parser/txt/CharsetDetector.java" startline="247" endline="263" pcid="2416"></source>
+<source file="examples/tika-1.2/tika-parsers/src/main/java/org/apache/tika/parser/txt/CharsetDetector.java" startline="281" endline="297" pcid="2417"></source>
+</class>
+
+<class classid="22" nclones="2" nlines="21" similarity="85">
+<source file="examples/tika-1.2/tika-parsers/src/main/java/org/apache/tika/parser/txt/CharsetRecog_mbcs.java" startline="200" endline="223" pcid="2447"></source>
+<source file="examples/tika-1.2/tika-parsers/src/main/java/org/apache/tika/parser/txt/CharsetRecog_mbcs.java" startline="262" endline="288" pcid="2451"></source>
+</class>
+
+<class classid="23" nclones="3" nlines="10" similarity="72">
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/mime/TestMimeTypes.java" startline="638" endline="648" pcid="2702"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/mime/TestMimeTypes.java" startline="657" endline="668" pcid="2704"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/mime/TestMimeTypes.java" startline="698" endline="709" pcid="2709"></source>
+</class>
+
+<class classid="24" nclones="3" nlines="11" similarity="72">
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/audio/AudioParserTest.java" startline="26" endline="39" pcid="2711"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/audio/AudioParserTest.java" startline="41" endline="54" pcid="2712"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/audio/AudioParserTest.java" startline="56" endline="69" pcid="2713"></source>
+</class>
+
+<class classid="25" nclones="2" nlines="17" similarity="76">
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/chm/TestChmLzxcControlData.java" startline="35" endline="76" pcid="2791"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/chm/TestChmLzxState.java" startline="35" endline="79" pcid="2814"></source>
+</class>
+
+<class classid="26" nclones="2" nlines="17" similarity="72">
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/executable/ExecutableParserTest.java" startline="30" endline="57" pcid="2851"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/executable/ExecutableParserTest.java" startline="59" endline="84" pcid="2852"></source>
+</class>
+
+<class classid="27" nclones="2" nlines="10" similarity="80">
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/html/HtmlParserTest.java" startline="285" endline="302" pcid="2882"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/html/HtmlParserTest.java" startline="371" endline="388" pcid="2886"></source>
+</class>
+
+<class classid="28" nclones="2" nlines="31" similarity="70">
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/microsoft/ExcelParserTest.java" startline="73" endline="143" pcid="2969"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/microsoft/ooxml/OOXMLParserTest.java" startline="80" endline="152" pcid="2983"></source>
+</class>
+
+<class classid="29" nclones="2" nlines="15" similarity="73">
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/microsoft/ExcelParserTest.java" startline="185" endline="203" pcid="2971"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/microsoft/ExcelParserTest.java" startline="205" endline="220" pcid="2972"></source>
+</class>
+
+<class classid="30" nclones="2" nlines="12" similarity="83">
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/microsoft/ooxml/OOXMLContainerExtractionTest.java" startline="41" endline="58" pcid="2976"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/microsoft/POIContainerExtractionTest.java" startline="32" endline="52" pcid="3008"></source>
+</class>
+
+<class classid="31" nclones="3" nlines="14" similarity="71">
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/microsoft/ooxml/OOXMLParserTest.java" startline="443" endline="463" pcid="2992"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/microsoft/ooxml/OOXMLParserTest.java" startline="469" endline="491" pcid="2993"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/microsoft/ooxml/OOXMLParserTest.java" startline="497" endline="510" pcid="2994"></source>
+</class>
+
+<class classid="32" nclones="6" nlines="53" similarity="74">
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/microsoft/ooxml/OOXMLParserTest.java" startline="512" endline="581" pcid="2995"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/microsoft/PowerPointParserTest.java" startline="55" endline="124" pcid="3014"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/microsoft/ooxml/OOXMLParserTest.java" startline="583" endline="652" pcid="2996"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/rtf/RTFParserTest.java" startline="228" endline="285" pcid="3108"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/microsoft/WordParserTest.java" startline="196" endline="265" pcid="3031"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/pdf/PDFParserTest.java" startline="188" endline="259" pcid="3061"></source>
+</class>
+
+<class classid="33" nclones="3" nlines="12" similarity="75">
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/microsoft/ooxml/OOXMLParserTest.java" startline="655" endline="669" pcid="2997"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/microsoft/ooxml/OOXMLParserTest.java" startline="709" endline="722" pcid="2998"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/microsoft/PowerPointParserTest.java" startline="126" endline="143" pcid="3015"></source>
+</class>
+
+<class classid="34" nclones="2" nlines="25" similarity="80">
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/microsoft/ooxml/OOXMLParserTest.java" startline="796" endline="825" pcid="3001"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/microsoft/PowerPointParserTest.java" startline="192" endline="219" pcid="3016"></source>
+</class>
+
+<class classid="35" nclones="2" nlines="21" similarity="73">
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/microsoft/OutlookParserTest.java" startline="146" endline="178" pcid="3005"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/microsoft/OutlookParserTest.java" startline="180" endline="205" pcid="3006"></source>
+</class>
+
+<class classid="36" nclones="3" nlines="17" similarity="76">
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/microsoft/WordParserTest.java" startline="85" endline="105" pcid="3028"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/rtf/RTFParserTest.java" startline="347" endline="366" pcid="3117"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/pdf/PDFParserTest.java" startline="448" endline="469" pcid="3071"></source>
+</class>
+
+<class classid="37" nclones="4" nlines="25" similarity="92">
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/mp3/Mp3ParserTest.java" startline="41" endline="70" pcid="3034"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/mp3/Mp3ParserTest.java" startline="162" endline="191" pcid="3037"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/mp3/Mp3ParserTest.java" startline="232" endline="265" pcid="3039"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/mp3/Mp3ParserTest.java" startline="127" endline="156" pcid="3036"></source>
+</class>
+
+<class classid="38" nclones="2" nlines="12" similarity="75">
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/odf/ODFParserTest.java" startline="272" endline="285" pcid="3050"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/odf/ODFParserTest.java" startline="304" endline="317" pcid="3052"></source>
+</class>
+
+<class classid="39" nclones="2" nlines="29" similarity="72">
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/pdf/PDFParserTest.java" startline="340" endline="373" pcid="3067"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/pdf/PDFParserTest.java" startline="405" endline="436" pcid="3069"></source>
+</class>
+
+<class classid="40" nclones="3" nlines="31" similarity="90">
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/pkg/Bzip2ParserTest.java" startline="32" endline="65" pcid="3078"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/pkg/TarParserTest.java" startline="32" endline="65" pcid="3083"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/pkg/GzipParserTest.java" startline="32" endline="65" pcid="3080"></source>
+</class>
+
+<class classid="41" nclones="2" nlines="16" similarity="93">
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/pkg/Bzip2ParserTest.java" startline="72" endline="94" pcid="3079"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/pkg/GzipParserTest.java" startline="71" endline="93" pcid="3081"></source>
+</class>
+
+<class classid="42" nclones="2" nlines="12" similarity="75">
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/txt/TXTParserTest.java" startline="145" endline="163" pcid="3125"></source>
+<source file="examples/tika-1.2/tika-parsers/src/test/java/org/apache/tika/parser/txt/TXTParserTest.java" startline="170" endline="189" pcid="3126"></source>
+</class>
+
+<class classid="43" nclones="3" nlines="11" similarity="81">
+<source file="examples/tika-1.2/tika-server/src/test/java/org/apache/tika/server/MetadataResourceTest.java" startline="52" endline="65" pcid="3183"></source>
+<source file="examples/tika-1.2/tika-server/src/test/java/org/apache/tika/server/TikaResourceTest.java" startline="48" endline="61" pcid="3186"></source>
+<source file="examples/tika-1.2/tika-server/src/test/java/org/apache/tika/server/TikaVersionTest.java" startline="46" endline="68" pcid="3192"></source>
+</class>
+
+<class classid="44" nclones="2" nlines="17" similarity="72">
+<source file="examples/tika-1.2/tika-xmp/src/test/java/org/apache/tika/xmp/TikaToXMPTest.java" startline="142" endline="170" pcid="3288"></source>
+<source file="examples/tika-1.2/tika-xmp/src/test/java/org/apache/tika/xmp/XMPMetadataTest.java" startline="80" endline="102" pcid="3300"></source>
+</class>
+
+</clones>

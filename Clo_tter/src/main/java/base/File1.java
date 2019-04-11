@@ -32,7 +32,7 @@ public class File1 {
 
 	@Override
 	public String toString() {
-		return "File1 [file=" + file + "]";
+		return "File: " + file;
 	}
 
 	public void setNome(String file) {

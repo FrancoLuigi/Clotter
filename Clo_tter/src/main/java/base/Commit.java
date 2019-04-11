@@ -12,6 +12,7 @@ public class Commit {
 		this.id = id;
 		this.data = data;
 		this.descrizione = descrizione;
+		this.version = version;
 		this.committer = committer;
 		this.changes = changes;
 
@@ -266,8 +267,8 @@ public class Commit {
 
 	@Override
 	public String toString() {
-		return "Commit [id=" + id + ", descrizione=" + descrizione + ", committer=" + committer + ", data=" + data
-				+ ", changes=" + changes.values() + "]";
+		return "Commit ID: " + id + ", Descrizione: " + descrizione + ", Committer: " + committer + ", Data: " + data
+				 ;
 	}
 
 	private Committer committer;

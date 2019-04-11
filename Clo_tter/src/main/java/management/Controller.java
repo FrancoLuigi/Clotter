@@ -333,14 +333,14 @@ public class Controller {
 
 			break;
 
-		case "Groovy":
+		case "Tika":
 
-			Scanner sc7 = new Scanner(new File("files/" + f + "-2.4.15"+".txt"));
+			Scanner sc7 = new Scanner(new File("files/" + f + "-1.1"+".txt"));
 			// Scanner sc1=new Scanner(new File("test"));
-			GestoreCommits gestoreCo7 = new GestoreCommits(sc7, "2.4.15");
+			GestoreCommits gestoreCo7 = new GestoreCommits(sc7, "1.1");
 
 			// GestoreCommits gestore2=new GestoreCommits(sc1);
-			GestoreClones gestoreCl7 = new GestoreClones("files/" + f + "-2.4.15" + ".xml", "2.4.15");
+			GestoreClones gestoreCl7 = new GestoreClones("files/" + f + "-1.1" + ".xml", "1.1");
 
 			HashMap<String, Commit> commits7 = gestoreCo7.getCommits();
 
@@ -370,12 +370,12 @@ public class Controller {
 
 			gestoreDB.insertAssociations(associations7);
 
-			Scanner sc8 = new Scanner(new File("files/" + f + "-2.5"+".txt"));
+			Scanner sc8 = new Scanner(new File("files/" + f + "-1.2"+".txt"));
 			// Scanner sc1=new Scanner(new File("test"));
-			GestoreCommits gestoreCo8 = new GestoreCommits(sc8, "2.5");
+			GestoreCommits gestoreCo8 = new GestoreCommits(sc8, "1.2");
 
 			// GestoreCommits gestore2=new GestoreCommits(sc1);
-			GestoreClones gestoreCl8 = new GestoreClones("files/" + f + "-2.5" + ".xml", "2.5");
+			GestoreClones gestoreCl8 = new GestoreClones("files/" + f + "-1.2" + ".xml", "1.2");
 
 			HashMap<String, Commit> commits8 = gestoreCo8.getCommits();
 
@@ -405,12 +405,12 @@ public class Controller {
 
 			gestoreDB.insertAssociations(associations8);
 
-			Scanner sc9 = new Scanner(new File("files/" + f + "-3.0"+".txt"));
+			Scanner sc9 = new Scanner(new File("files/" + f + "-1.3"+".txt"));
 			// Scanner sc1=new Scanner(new File("test"));
-			GestoreCommits gestoreCo9 = new GestoreCommits(sc9, "3.0");
+			GestoreCommits gestoreCo9 = new GestoreCommits(sc9, "1.3");
 
 			// GestoreCommits gestore2=new GestoreCommits(sc1);
-			GestoreClones gestoreCl9 = new GestoreClones("files/" + f + "-3.0" + ".xml", "3.0");
+			GestoreClones gestoreCl9 = new GestoreClones("files/" + f + "-1.3" + ".xml", "1.3");
 
 			HashMap<String, Commit> commits9 = gestoreCo9.getCommits();
 
@@ -439,6 +439,76 @@ public class Controller {
 			gestoreDB.insertRanges(ranges9);
 
 			gestoreDB.insertAssociations(associations9);
+			
+			Scanner sc99 = new Scanner(new File("files/" + f + "-1.0"+".txt"));
+			// Scanner sc1=new Scanner(new File("test"));
+			GestoreCommits gestoreCo99 = new GestoreCommits(sc99, "1.0");
+
+			// GestoreCommits gestore2=new GestoreCommits(sc1);
+			GestoreClones gestoreCl99 = new GestoreClones("files/" + f + "-1.0" + ".xml", "1.0");
+
+			HashMap<String, Commit> commits99 = gestoreCo99.getCommits();
+
+			HashMap<String, Clone> clones99 = gestoreCl99.getClones();
+
+			HashMap<String, File1> files99 = gestoreCo99.getFiles();
+
+			HashMap<String, Committer> committers99 = gestoreCo99.getCommitters();
+			HashMap<String, ClassClone> classClone99 = gestoreCl99.getClassi();
+			HashMap<String, Range> ranges99 = gestoreCo99.getRanges();
+			HashMap<String, Change> changes99 = gestoreCo99.getChanges();
+
+			GestoreAssociation g99 = new GestoreAssociation(commits99, clones99);
+
+			HashMap<String, Association> associations99 = g99.getAssociation();
+
+			gestoreDB.insertFiles(files99);
+
+			gestoreDB.insertCommitters(committers99);
+			gestoreDB.insertClassClone(classClone99);
+			gestoreDB.insertCommits(commits99);
+			gestoreDB.insertChanges(changes99);
+
+			gestoreDB.insertClones(clones99);
+
+			gestoreDB.insertRanges(ranges99);
+
+			gestoreDB.insertAssociations(associations99);
+			
+			Scanner sc999 = new Scanner(new File("files/" + f + "-1.4"+".txt"));
+			// Scanner sc1=new Scanner(new File("test"));
+			GestoreCommits gestoreCo999 = new GestoreCommits(sc999, "1.4");
+
+			// GestoreCommits gestore2=new GestoreCommits(sc1);
+			GestoreClones gestoreCl999 = new GestoreClones("files/" + f + "-1.4" + ".xml", "1.4");
+
+			HashMap<String, Commit> commits999 = gestoreCo999.getCommits();
+
+			HashMap<String, Clone> clones999 = gestoreCl999.getClones();
+
+			HashMap<String, File1> files999 = gestoreCo999.getFiles();
+
+			HashMap<String, Committer> committers999 = gestoreCo999.getCommitters();
+			HashMap<String, ClassClone> classClone999 = gestoreCl999.getClassi();
+			HashMap<String, Range> ranges999 = gestoreCo999.getRanges();
+			HashMap<String, Change> changes999 = gestoreCo999.getChanges();
+
+			GestoreAssociation g999 = new GestoreAssociation(commits999, clones999);
+
+			HashMap<String, Association> associations999 = g999.getAssociation();
+
+			gestoreDB.insertFiles(files999);
+
+			gestoreDB.insertCommitters(committers999);
+			gestoreDB.insertClassClone(classClone999);
+			gestoreDB.insertCommits(commits999);
+			gestoreDB.insertChanges(changes999);
+
+			gestoreDB.insertClones(clones999);
+
+			gestoreDB.insertRanges(ranges999);
+
+			gestoreDB.insertAssociations(associations999);
 
 			System.err.println("Inseriment completed");
 
@@ -551,6 +621,10 @@ public class Controller {
 
 			gestoreDB.insertAssociations(associations12);
 
+			System.err.println("Inseriment completed");
+
+			break;
+			
 		default:
 			Scanner sc = new Scanner(new File("files/" + f+".txt"));
 			// Scanner sc1=new Scanner(new File("test"));

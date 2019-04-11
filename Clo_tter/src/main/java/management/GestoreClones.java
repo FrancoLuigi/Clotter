@@ -57,7 +57,6 @@ public class GestoreClones {
 			classid = n5.getAttributes().getNamedItem("classid").getNodeValue();
 
 			String nClones = n5.getAttributes().getNamedItem("nclones").getNodeValue();
-
 			String nLines = n5.getAttributes().getNamedItem("nlines").getNodeValue();
 			String simila = n5.getAttributes().getNamedItem("similarity").getNodeValue();
 
@@ -66,7 +65,6 @@ public class GestoreClones {
 			int similarity = Integer.parseInt(simila);
 
 			ClassClone c = new ClassClone(classid, nclones, nlines, similarity,version);
-
 			classi.put(classid+version, c);
 
 			n = n + nclones;
@@ -82,13 +80,11 @@ public class GestoreClones {
 				int startline = Integer.parseInt(startLine);
 				int endline = Integer.parseInt(endLine);
 				String pcid = n6.getAttributes().getNamedItem("pcid").getNodeValue();
-
-				Clone cl = new Clone(file, startline, endline, pcid, classid,version);
 				
+				Clone cl = new Clone(file, startline, endline, pcid, classid,version);
 				cloni.put(pcid+version, cl);
 				
 			}
-
 			a = a + nclones;
 
 		}

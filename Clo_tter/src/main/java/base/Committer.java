@@ -43,6 +43,8 @@ public class Committer {
 		this.email = email;
 	}
 
+	
+	
 	private String nome;
 	private String email;
 	private HashMap<String, Clone> clones;

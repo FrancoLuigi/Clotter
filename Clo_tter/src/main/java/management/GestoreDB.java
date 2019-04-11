@@ -9,6 +9,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.mysql.fabric.xmlrpc.base.Array;
+
 import base.Association;
 import base.Change;
 import base.ClassClone;
@@ -195,7 +197,7 @@ public class GestoreDB {
 			String sql3 = "CREATE TABLE IF NOT EXISTS clones ("
 					+ "  file varchar(250)CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, "
 					+ "  startline int(15) NOT NULL, " + "  endline int(15) NOT NULL," + "  pcid varchar(15),"
-					+ "  classid varchar(15)," + "  version varchar(50) NOT NULL, " +
+					+ "  classid varchar(15)," + "  version varchar(50) NOT NULL," + 
 
 					"  PRIMARY KEY (pcid,version)," + " FOREIGN KEY (file) REFERENCES files(file),"
 					+ " FOREIGN KEY (classid) REFERENCES classclone(id)" + ") ENGINE=InnoDB DEFAULT CHARSET=utf8;";
@@ -347,18 +349,12 @@ public class GestoreDB {
 
 	public void insertClones(HashMap<String, Clone> clones) {
 		try {
-			Statement myStmt = connection.createStatement();
-
-		
-
+			Statement myStmt = connection.createStatement();		
+			
 			for (Clone c : clones.values()) {
-
-				
-				
-
-				String sql = "insert  ignore into clones " + " (file, startLine, endLine, pcid, classid, version)" + " values ('"
+				String sql = "insert ignore into clones " + " (file, startLine, endLine, pcid, classid, version)" + " values ('"
 						+ c.getFile() + "', '" + c.getStartLine() + "', '" + c.getEndLine() + "', '" + c.getPcid()
-						+ "', '" + c.getClassid() + "', '" + c.getVersion() + "')";
+						+ "', '" + c.getClassid() + "', '" +c.getVersion() + "')";
 
 				myStmt.executeUpdate(sql);
 			}
@@ -380,7 +376,7 @@ public class GestoreDB {
 
 	
 				String sql = "insert ignore into classclone " + " (id, clones,righe,similarity,version)" + " values ('"
-						+ c.getId() + "', '" + c.getClones() + "', '" + c.getLines() + "', '" + c.getSimilarity()
+						+ c.getId() + "', '" + c.getNClones() + "', '" + c.getLines() + "', '" + c.getSimilarity()
 						+ "', '" + c.getVersion() + "')";
 
 				myStmt.executeUpdate(sql);
@@ -490,7 +486,7 @@ public class GestoreDB {
 			Statement myStmt = connection.createStatement();
 			ResultSet myRs = myStmt.executeQuery(
 					"select * from associations as a, clones as cl, commits as co, committers as c WHERE c.email='"
-							+ email + "' AND  a.idclone=cl.pcid AND a.idcommit=co.id AND co.email=c.email;");
+							+ email + "' AND  a.idclone=cl.pcid AND a.idcommit=co.id  AND co.email=c.email;");
 
 	
 
@@ -511,8 +507,46 @@ public class GestoreDB {
 		return clones;
 	}
 
-	public HashMap<String, Commit> readAssociationsCommits(String idClone) {
+	public HashMap<String, Commit> readAssociationsCommitsVersione(String idClone, String version) {
 	
+
+		Commit c;
+		Committer committer;
+
+		HashMap<String, Commit> commits = new HashMap<String, Commit>();
+		try {
+			Statement myStmt = connection.createStatement();
+			ResultSet myRs = myStmt.executeQuery(
+					"select * from associations as a, clones as cl, commits as co, committers as c WHERE a.idClone='"
+							+ idClone + "' AND a.version='" + version + "' AND  a.idClone=cl.pcid AND a.idCommit=co.id AND co.email=c.email;");
+
+			SimpleDateFormat sd = new SimpleDateFormat("yyy-MM-dd HH:mm:ss");
+
+			while (myRs.next()) {
+				if ((myRs.getString("idClone")) != null) {
+
+					committer = new Committer(myRs.getString("nome"), myRs.getString("email"));
+					c = new Commit(myRs.getString("id"), sd.parse(myRs.getString("data")),
+							myRs.getString("descrizione"),  myRs.getString("version"),committer, null);
+
+					
+					commits.put(c.getId(), c);
+
+				} else
+					System.out.println("---------- Errore nella lettura dei cloni" + myRs.getRow());
+			}
+		} catch (Exception exc) {
+			exc.printStackTrace();
+		}
+
+		
+		return commits;
+	}
+
+	
+	
+	public HashMap<String, Commit> readAssociationsCommits(String idClone) {
+		
 
 		Commit c;
 		Committer committer;
@@ -546,7 +580,7 @@ public class GestoreDB {
 		
 		return commits;
 	}
-
+	
 	public HashMap<String, Committer> readAssociationsCommitters() {
 
 		Committer committer;
@@ -596,6 +630,7 @@ public class GestoreDB {
 
 					c = new Clone(myRs.getString("file"), myRs.getInt("startLine"), myRs.getInt("endLine"),
 							myRs.getString("pcid"), myRs.getString("classid"), myRs.getString("version"));
+
 					committer = new Committer(myRs.getString("nome"), myRs.getString("email"));
 					co = new Commit(myRs.getString("id"), sd.parse(myRs.getString("data")),
 							myRs.getString("descrizione"), myRs.getString("version"), committer, null);
@@ -637,6 +672,7 @@ public class GestoreDB {
 
 					c = new Clone(myRs.getString("file"), myRs.getInt("startLine"), myRs.getInt("endLine"),
 							myRs.getString("pcid"), myRs.getString("classid"), myRs.getString("version"));
+
 					committer = new Committer(myRs.getString("nome"), myRs.getString("email"));
 					committer.addClone(c);
 				
@@ -665,7 +701,7 @@ public class GestoreDB {
 		try {
 			Statement myStmt = connection.createStatement();
 			ResultSet myRs = myStmt.executeQuery(
-					"select * from associations as a, clones as cl, commits as co, committers as c WHERE a.idclone=cl.pcid AND a.idcommit=co.id AND co.email=c.email;");
+					"select * from associations as a, clones as cl, commits as co, committers as c WHERE a.idclone=cl.pcid AND a.idcommit=co.id AND a.version=cl.version AND co.email=c.email;");
 
 		
 
@@ -686,6 +722,110 @@ public class GestoreDB {
 		return clones;
 	}
 	
+	public HashMap<String, Clone> readClonesFromVersion(String version) {
+
+		Clone c;
+
+		HashMap<String, Clone> clones = new HashMap<String, Clone>();
+		try {
+			Statement myStmt = connection.createStatement();
+			ResultSet myRs = myStmt.executeQuery(
+					"select * from clones as c where version='" + version + "';");
+
+		
+
+			while (myRs.next()) {
+				if ((myRs.getString("pcid")) != null) {
+
+					c = new Clone(myRs.getString("file"), myRs.getInt("startLine"), myRs.getInt("endLine"),
+							myRs.getString("pcid"), myRs.getString("classid"), myRs.getString("version"));
+
+					
+					clones.put(c.getPcid(), c);
+				} else
+					System.out.println("---------- Errore nella lettura dei cloni" + myRs.getRow());
+			}
+		} catch (Exception exc) {
+			exc.printStackTrace();
+		}
+
+		return clones;
+	}
+	
+	public HashMap<String, ClassClone> readClassClonesFromVersion(String version) {
+
+		ClassClone cc;
+
+		HashMap<String, ClassClone> classi = new HashMap<String, ClassClone>();
+		try {
+			Statement myStmt = connection.createStatement();
+			ResultSet myRs = myStmt.executeQuery(
+					"select * from classclone where version='" + version + "';");
+
+		
+
+			while (myRs.next()) {
+				if ((myRs.getString("id")) != null) {
+
+					cc = new ClassClone(myRs.getString("id"), myRs.getInt("clones"), myRs.getInt("righe"),
+							myRs.getInt("similarity"), myRs.getString("version"));
+					
+					classi.put(cc.getId(), cc);
+				} else
+					System.out.println("---------- Errore nella lettura delle classi di cloni" + myRs.getRow());
+			}
+		} catch (Exception exc) {
+			exc.printStackTrace();
+		}
+
+		return classi;
+	}
+	
+	public ArrayList<String> readVersion(){
+		ArrayList<String> versioni = new ArrayList<>();
+		
+		try {
+			Statement myStmt = connection.createStatement();
+			ResultSet myRs = myStmt.executeQuery(
+					"select distinct clones.version from clones;");
+
+		
+
+			while (myRs.next()) {
+				if ((myRs.getString("version")) != null) {
+					String version = myRs.getString("version");
+					versioni.add(version);
+				} else
+					System.out.println("---------- Errore nella lettura delle versioni" + myRs.getRow());
+			}
+		} catch (Exception exc) {
+			exc.printStackTrace();
+		}
+		
+		return versioni;
+	}
+	
+	public ClassClone getClassClone(String id, String version) {
+		ClassClone cc = null;
+		
+		try {
+			Statement myStmt = connection.createStatement();
+			ResultSet myRs = myStmt.executeQuery(
+					"select * from classclone where id='" + id + "' AND version='" + version + "';");
+
+			while (myRs.next()) {
+				if ((myRs.getString("id")) != null) {
+					cc = new ClassClone(myRs.getString("id"), myRs.getInt("clones"), myRs.getInt("righe"), myRs.getInt("similarity"), myRs.getString("version"));
+				} else
+					System.out.println("---------- Errore nella lettura" + myRs.getRow());
+			}
+		} catch (Exception exc) {
+			exc.printStackTrace();
+		}
+		
+		return cc;
+	}
+	
 	public HashMap<String, Clone> readClones() {
 
 		Clone c;
@@ -703,8 +843,9 @@ public class GestoreDB {
 
 					c = new Clone(myRs.getString("file"), myRs.getInt("startLine"), myRs.getInt("endLine"),
 							myRs.getString("pcid"), myRs.getString("classid"), myRs.getString("version"));
-
-					clones.put(c.getPcid(), c);
+	
+					
+					clones.put(c.getPcid()+c.getVersion(), c);
 				} else
 					System.out.println("---------- Errore nella lettura dei cloni" + myRs.getRow());
 			}
@@ -733,7 +874,7 @@ public class GestoreDB {
 					c = new ClassClone(myRs.getString("id"), myRs.getInt("clones"), myRs.getInt("righe"),
 							myRs.getInt("similarity"), myRs.getString("version"));
 
-					classclones.put(c.getId(), c);
+					classclones.put(c.getId()+c.getVersion(), c);
 				} else
 					System.out.println("---------- Errore nella lettura dei classicloni" + myRs.getRow());
 			}

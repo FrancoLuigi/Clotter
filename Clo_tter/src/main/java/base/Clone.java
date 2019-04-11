@@ -18,9 +18,11 @@ public class Clone {
 
 	@Override
 	public String toString() {
-		return "Id: " + pcid + " File: " + file + ", Class id: " + classid + ", StartLine: " + startLine + ", EndLine: "
+		return "Clone ID: " + pcid + ", File: " + file + ", Class ID: " + classid + ", StartLine: " + startLine + ", EndLine: "
 				+ endLine;
 	}
+
+	
 
 	public HashMap<String, Commit> getCommits() {
 		return commits;
@@ -82,6 +84,48 @@ public class Clone {
 	public void setVersion(String version) {
 		this.version = version;
 	}
+
+	
+	
+
+
+
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + endLine;
+		result = prime * result + ((file == null) ? 0 : file.hashCode());
+		result = prime * result + startLine;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Clone other = (Clone) obj;
+		if (endLine != other.endLine)
+			return false;
+		if (file == null) {
+			if (other.file != null)
+				return false;
+		} else if (!file.equals(other.file))
+			return false;
+		if (startLine != other.startLine)
+			return false;
+		return true;
+	}
+
+
+
+
+
 
 
 	private String file, pcid, classid, version;

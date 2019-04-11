@@ -21,7 +21,7 @@ public class Range {
 
 	@Override
 	public String toString() {
-		return "Range [id=" + id + ", riga=" + riga + ", intervallo=" + intervallo + "]";
+		return "Range ID: " + id + ", Riga: " + riga + ", Intervallo: " + intervallo;
 	}
 
 	public String getId() {

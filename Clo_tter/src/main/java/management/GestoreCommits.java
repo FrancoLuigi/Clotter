@@ -49,6 +49,7 @@ public class GestoreCommits {
 			c = Commit.read(sc);
 
 		}
+		
 
 		System.err.println("Commits read");
 

@@ -81,14 +81,10 @@ public class HomeFrame {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 
-		Color back = new Color(102, 197, 45);
+		Color back = new Color(255, 255, 255);
 		frame.getContentPane().setBackground(back);
 
-		ImageIcon img = new ImageIcon("images/ovejas1.png");
-		JLabel lblImage = new JLabel(img);
-		lblImage.setBounds(20, 0, 320, 200);
-
-		frame.getContentPane().add(lblImage);
+		
 
 		JLabel lblNewLabel = new JLabel("Seleziona uno dei seguenti progetti software:");
 		lblNewLabel.setBounds(50, 180, 500, 100);
@@ -98,9 +94,6 @@ public class HomeFrame {
 		
 		listModel.addElement("AdminBus");
 		listModel.addElement("Dnsjava");
-		listModel.addElement("Flink");
-		listModel.addElement("Groovy");
-		listModel.addElement("NoteManager");
 		listModel.addElement("Tika");
 
 		list = new JList<String>(listModel);

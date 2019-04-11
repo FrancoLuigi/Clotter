@@ -74,7 +74,7 @@ public class FrameAssociationCommit {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLayout(new FlowLayout());
 
-		String col[] = { "id Clone", "file", "id Class", "startLine", "endLine" };
+		String col[] = { "Id Clone", "File", "Id Class", "StartLine", "EndLine", "Version" };
 
 		controller = Controller.getInstance();
 		g = GestoreDB.getInstance();
@@ -88,18 +88,22 @@ public class FrameAssociationCommit {
 		frame.getContentPane().add(lblNewLabel);
 		frame.getContentPane().add(l);
 
-		Object[][] data = new Object[clones.size()][5];
+		Object[][] data = new Object[clones.size()][6];
 
 		int row = 0;
 
 		for (Clone c : clones.values()) {
+
 			data[row][0] = Integer.parseInt(c.getPcid());
+
 			data[row][1] = c.getFile();
 			data[row][2] = Integer.parseInt(c.getClassid());
 			data[row][3] = c.getStartLine();
 			data[row][4] = c.getEndLine();
+			data[row][5] = c.getVersion();
 			row++;
 		}
+
 
 		DefaultTableModel model = new DefaultTableModel(data, col);
 

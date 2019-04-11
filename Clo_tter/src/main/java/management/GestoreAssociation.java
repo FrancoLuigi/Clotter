@@ -38,13 +38,12 @@ public class GestoreAssociation {
 								// System.out.println(r.getRiga()+r.getIntervallo()+"-"+cl.getEndLine());
 
 								Association a = new Association(cl.getPcid(), c.getId(), cl.getVersion());
-
 								associations.put(cl.getPcid() + c.getId() + c.getVersion(), a);
 								// System.out.println(cl.getPcid()+c.getId());
 								// System.out.println("---");
 							}
 
-							if (cl.getStartLine() <= r.getRiga() && cl.getEndLine() >= r.getRiga() + r.getIntervallo()
+							if (cl.getStartLine() <= r.getRiga() && cl.getEndLine() >= (r.getRiga() + r.getIntervallo())
 									&& r.getChange().getFile().equals(cl.getFile())) {
 
 								Association a = new Association(cl.getPcid(), c.getId(), c.getVersion());

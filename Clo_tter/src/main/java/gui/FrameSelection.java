@@ -8,10 +8,17 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.Console;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Scanner;
 
 import javax.swing.DebugGraphics;
 import javax.swing.DefaultComboBoxModel;
@@ -32,7 +39,9 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
+import base.ClassClone;
 import base.Clone;
+import base.Commit;
 import base.Committer;
 import management.Controller;
 import management.ForcedListSelectionModel;
@@ -61,7 +70,6 @@ public class FrameSelection {
 		initialize();
 
 		try {
-
 			controller = Controller.getInstance();
 		} catch (ParseException ex) {
 			ex.printStackTrace();
@@ -97,6 +105,93 @@ public class FrameSelection {
 		JButton btnAnnulla = new JButton("Indietro");
 
 		g = GestoreDB.getInstance();
+		
+		// cloni per versione
+		
+		ArrayList<String> versioni	 = g.readVersion();
+		HashMap<String, Clone> cloni_tot = g.readClones();
+		HashMap<String, ClassClone> classi = g.readClassClones();
+		HashMap<String, Commit> commit_tot = g.readCommits();
+
+
+		System.out.println("");
+		System.out.println("_______________________________________________________________________");
+		for(String v:versioni) {
+			HashMap<String, Clone> cloniVersione = new HashMap<>();
+			for(Clone cl:cloni_tot.values()) {
+				if(cl.getVersion().equalsIgnoreCase(v)) {
+					cloniVersione.put(cl.getPcid(), cl);
+				}
+			}
+			System.out.println("Versione " + v);
+			System.out.println("-cloni " + cloniVersione.size());
+			
+			HashMap<String, ClassClone> classiVersione = new HashMap<>();
+			for(ClassClone cc:classi.values()) {
+				if(cc.getVersion().equalsIgnoreCase(v)) {
+					classiVersione.put(cc.getId(), cc);
+				}
+ 			}
+			System.out.println("-classi di cloni " + classiVersione.size());
+			
+			HashMap<String, Committer> committerVersione = new HashMap<>();
+			HashMap<String, Commit> commitVersione = new HashMap<>();
+			for(Commit co:commit_tot.values()) {
+				if(co.getVersion().equalsIgnoreCase(v)) {
+					commitVersione.put(co.getId(), co);
+					if(!committerVersione.containsKey(co.getCommitter().getEmail()))
+						committerVersione.put(co.getCommitter().getEmail(), co.getCommitter());
+				}
+			}
+			System.out.println("-commits " + commitVersione.size());
+			System.out.println("-committers " + committerVersione.size());
+		}
+		
+		
+		// Consideriamo due release dello stesso sistema
+		
+		String versione1 = "2.1.6";
+		String versione2 = "2.1.7";
+		HashMap<String, Clone> cloniVersione2 = g.readClonesFromVersion(versione2);
+		
+		HashMap<String, Clone> cloniEsistenti = new HashMap<>();
+		
+		
+		HashMap<String, Clone> cloniIntrodotti = new HashMap<>();
+		for(Clone c:cloniVersione2.values()) {
+			HashMap<String, Commit> commitClone	=  g.readAssociationsCommitsVersione(c.getPcid(), c.getVersion());
+			if(commitClone.isEmpty()) {
+				cloniEsistenti.put(c.getPcid(), c);
+			}
+			else
+				cloniIntrodotti.put(c.getPcid(), c);
+		}
+		
+		HashMap<String, ClassClone> classiIntrodotte = new HashMap<>();
+		for(Clone ci:cloniIntrodotti.values()) {
+			ClassClone cc = g.getClassClone(ci.getClassid(), ci.getVersion());
+			classiIntrodotte.put(cc.getId(), cc);
+		}
+		
+		System.out.println("");
+		System.out.println("Cloni esistenti nella versione " + versione1 + " e nella versione " + versione2 + " : " + cloniEsistenti.size());
+		System.out.println("");
+
+		System.out.println("Cloni introdotti nella versione " + versione2 + ": " + cloniIntrodotti.size());
+		System.out.println("");
+		for(Clone ci: cloniIntrodotti.values()) {	
+			HashMap<String, Commit> commits = g.readAssociationsCommitsVersione(ci.getPcid(), ci.getVersion()); 
+			HashMap<String, Committer> committersNew = new HashMap<>();
+			for(Commit co:commits.values()) {
+				committersNew.put(co.getCommitter().getEmail(), co.getCommitter());
+			}
+			System.out.println("-" + ci.toString());
+			for(Committer cr:committersNew.values()) {
+				System.out.println("--" + cr.toString());
+			}
+		}
+		
+		
 		JTable table = new JTable();
 		committers = g.readAssociationsCommitters();
 		Object[][] data = new Object[committers.size()][2];
@@ -284,7 +379,6 @@ public class FrameSelection {
 					frame.getContentPane().validate();
 
 				}
-
 			}
 		});
 
@@ -311,7 +405,8 @@ public class FrameSelection {
 			}
 
 		});
-
+		
+		
 		button.setBounds(100, 430, 100, 52);
 
 		button.setFont(new Font("Lucida Grande", Font.PLAIN, 15));

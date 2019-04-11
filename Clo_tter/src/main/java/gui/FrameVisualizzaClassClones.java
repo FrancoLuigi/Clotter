@@ -49,7 +49,7 @@ public class FrameVisualizzaClassClones {
 
 		JPanel panel = new JPanel();
 
-		String col[] = { "Id", "Clones Number", "Lines", "Similarity" };
+		String col[] = { "Id", "Clones Number", "Lines", "Similarity", "Version" };
 
 		controller = Controller.getInstance();
 		g = GestoreDB.getInstance();
@@ -60,7 +60,7 @@ public class FrameVisualizzaClassClones {
 		lblNewLabel.setBounds(100, 50, 500, 500);
 		frame.getContentPane().add(lblNewLabel);
 
-		Object[][] data = new Object[classClones.size()][4];
+		Object[][] data = new Object[classClones.size()][5];
 
 		int row = 0;
 
@@ -69,6 +69,7 @@ public class FrameVisualizzaClassClones {
 			data[row][1] = c.getClones();
 			data[row][2] = c.getLines();
 			data[row][3] = c.getSimilarity();
+			data[row][4] = c.getVersion();
 
 			row++;
 		}
