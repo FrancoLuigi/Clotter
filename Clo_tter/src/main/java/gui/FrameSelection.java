@@ -150,45 +150,73 @@ public class FrameSelection {
 		
 		// Consideriamo due release dello stesso sistema
 		
-		String versione1 = "2.1.6";
-		String versione2 = "2.1.7";
+		String versione1 = "1.2";
+		String versione2 = "1.3";
 		HashMap<String, Clone> cloniVersione2 = g.readClonesFromVersion(versione2);
+		HashMap<String, ClassClone> classiVersione2 = g.readClassClonesFromVersion(versione2);
 		
-		HashMap<String, Clone> cloniEsistenti = new HashMap<>();
-		
-		
-		HashMap<String, Clone> cloniIntrodotti = new HashMap<>();
+		HashMap<String, Clone> cloniEsistenti = new HashMap<>();	
+		HashMap<String, Clone> cloniNuovi = new HashMap<>();
 		for(Clone c:cloniVersione2.values()) {
 			HashMap<String, Commit> commitClone	=  g.readAssociationsCommitsVersione(c.getPcid(), c.getVersion());
 			if(commitClone.isEmpty()) {
 				cloniEsistenti.put(c.getPcid(), c);
 			}
 			else
-				cloniIntrodotti.put(c.getPcid(), c);
+				cloniNuovi.put(c.getPcid(), c);
 		}
 		
-		HashMap<String, ClassClone> classiIntrodotte = new HashMap<>();
-		for(Clone ci:cloniIntrodotti.values()) {
-			ClassClone cc = g.getClassClone(ci.getClassid(), ci.getVersion());
-			classiIntrodotte.put(cc.getId(), cc);
+		for(ClassClone cc:classiVersione2.values()) {
+			for(Clone c:cloniVersione2.values()) {
+				if(c.getClassid().equalsIgnoreCase(cc.getId())) {
+					cc.addClone(c);
+				}
+			}
+		}
+		
+		HashMap<String, ClassClone> classiEsistenti = new HashMap<>();
+		HashMap<String, ClassClone> nuoveClassi = new HashMap<>();
+		for(ClassClone cc:classiVersione2.values()) {
+			int i = 0;
+			for(Clone c:cc.getClones().values()) {
+				if(cloniEsistenti.containsValue(c)) {
+					i++;
+				}
+			}
+			
+			if(i<=1) {
+				nuoveClassi.put(cc.getId(), cc);
+			}
+			else
+				classiEsistenti.put(cc.getId(), cc);
 		}
 		
 		System.out.println("");
 		System.out.println("Cloni esistenti nella versione " + versione1 + " e nella versione " + versione2 + " : " + cloniEsistenti.size());
 		System.out.println("");
 
-		System.out.println("Cloni introdotti nella versione " + versione2 + ": " + cloniIntrodotti.size());
+		System.out.println("Nuovi cloni nella versione " + versione2 + ": " + cloniNuovi.size());
 		System.out.println("");
-		for(Clone ci: cloniIntrodotti.values()) {	
-			HashMap<String, Commit> commits = g.readAssociationsCommitsVersione(ci.getPcid(), ci.getVersion()); 
+		for(Clone c: cloniNuovi.values()) {	
+			HashMap<String, Commit> commits = g.readAssociationsCommitsVersione(c.getPcid(), c.getVersion()); 
 			HashMap<String, Committer> committersNew = new HashMap<>();
 			for(Commit co:commits.values()) {
 				committersNew.put(co.getCommitter().getEmail(), co.getCommitter());
 			}
-			System.out.println("-" + ci.toString());
+			System.out.println("-" + c.toString());
 			for(Committer cr:committersNew.values()) {
 				System.out.println("--" + cr.toString());
 			}
+		}
+		
+		System.out.println("");
+		System.out.println("Classi di cloni esistenti nella versione " + versione1 + " e nella versione " + versione2 + " : " + classiEsistenti.size());
+		System.out.println("");
+		
+		System.out.println("Nuove classi nella versione " + versione2 + ": " + nuoveClassi.size());
+		System.out.println("");
+		for(ClassClone cc:nuoveClassi.values()) {
+			System.out.println("-" + cc.toString());
 		}
 		
 		
