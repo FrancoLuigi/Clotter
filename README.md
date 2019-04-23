@@ -1,5 +1,6 @@
 # Clo_tter
 The present project aims to analyze data recorded in repositories of open-source software projects to identify the presence of software clones in them and associate them with the related committers.
+The functionalities that have been added regard the evolution of the clones in more releases: analyze two consecutive releases for detection of: new clones (with related committers) and pre-existent clones; new class clones and pre-existent class clones.
 
 # PREREQUISITES
 - Database MySQL 5.7
