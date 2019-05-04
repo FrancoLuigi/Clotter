@@ -8,8 +8,7 @@ public class Association {
 		this.version=version;
 
 	}
-
-	
+//ciao
 	public String getVersion() {
 		return version;
 	}
